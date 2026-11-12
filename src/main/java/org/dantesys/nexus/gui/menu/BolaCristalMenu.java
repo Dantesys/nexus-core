@@ -112,13 +112,7 @@ public class BolaCristalMenu extends AbstractContainerMenu {
     }
 
     public static String getRank(int value) {
-        if (value < 1) return "F";
-        if (value < 170) return "E";
-        if (value < 340) return "D";
-        if (value < 510) return "C";
-        if (value < 680) return "B";
-        if (value < 850) return "A";
-        return "S";
+        return org.dantesys.nexus.util.Ranks.of(value).name();
     }
 
     private record StatusData(ServerPlayer player) implements ContainerData {

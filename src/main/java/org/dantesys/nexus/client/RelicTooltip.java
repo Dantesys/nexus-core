@@ -32,7 +32,7 @@ public final class RelicTooltip {
         RelicMastery mastery = event.getEntity().getData(ModAttachmentType.RELIC_MASTERY);
         int level = mastery.level(relic.masteryId());
         var lines = event.getToolTip();
-        lines.add(Component.literal("Maestria: " + level + "/100").withStyle(ChatFormatting.GOLD));
+        lines.add(Component.literal("Maestria: " + level + "/" + RelicMastery.MAX_LEVEL).withStyle(ChatFormatting.GOLD));
         var elemento = relic.getElement(event.getItemStack());
             lines.add(Component.literal("Mana de funcionamento: ").append(elemento == null
                     ? Component.translatable("element.nexus.nao_elemental")
@@ -45,40 +45,33 @@ public final class RelicTooltip {
             lines.add(Component.literal("Experiência: " + mastery.experience(relic.masteryId()) % RelicMastery.XP_PER_LEVEL
                     + "/" + RelicMastery.XP_PER_LEVEL).withStyle(ChatFormatting.GRAY));
         }
+        lines.addAll(relic.extraTooltip(event.getItemStack()));
+        int selected = relic.selectedSkill(event.getItemStack());
+        int last = relic.getSkills().size() - 1;
         for (int slot = 0; slot < relic.getSkills().size(); slot++) {
             RelicSkill skill = relic.getSkills().get(slot);
             int required = RelicSkill.requiredLevel(slot);
-            if (slot == 3 && !mastery.isDiscovered(relic.masteryId())) {
-                lines.add(Component.literal((relic.selectedSkill(event.getItemStack()) == slot ? "> " : "")
-                        + "Habilidade secreta: ??? (maestria 100)").withStyle(ChatFormatting.DARK_PURPLE));
-                if (level == 100 && skill.kind() == RelicSkill.Kind.PASSIVE) {
-                    lines.add(Component.literal(mastery.isPassiveEnabled(relic.masteryId(), slot)
-                            ? "Passiva: ligada" : "Passiva: desligada").withStyle(ChatFormatting.GRAY));
-                }
-                continue;
-            }
             boolean unlocked = level >= required;
-            String type = skill.kind() == RelicSkill.Kind.PASSIVE ? "Passiva" : "Ativa";
-            lines.add(Component.literal((relic.selectedSkill(event.getItemStack()) == slot ? "> " : "")
-                    + (slot + 1) + ". ").append(skill.name()).append(" — " + type
-                    + (unlocked ? " (liberada)" : " (maestria " + required + ")"))
+            boolean active = skill.kind() == RelicSkill.Kind.ACTIVE;
+            String type = active ? (slot == last && slot == RelicSkill.MAX_SKILLS - 1 ? "Ativa (final)" : "Ativa") : "Passiva";
+            lines.add(Component.literal((active && selected == slot ? "> " : "") + "Nv " + required + " · ")
+                    .append(skill.name()).append(" — " + type + (unlocked ? "" : " (bloqueada)"))
                     .withStyle(unlocked ? ChatFormatting.GREEN : ChatFormatting.GRAY));
-            if (unlocked && skill.kind() == RelicSkill.Kind.PASSIVE) {
-                lines.add(Component.literal(mastery.isPassiveEnabled(relic.masteryId(), slot)
-                        ? "Ligada" : "Desligada").withStyle(ChatFormatting.YELLOW));
+            if (active && unlocked) {
+                int cost = relic.getManaCost(event.getItemStack(), slot);
+                long cooldown = relic.getCooldownRemaining(event.getItemStack(), event.getEntity().level().getGameTime(), slot);
+                lines.add(Component.literal("Mana: " + cost + (cooldown > 0 ? " · recarga " + (cooldown + 19) / 20 + "s" : ""))
+                        .withStyle(ChatFormatting.AQUA));
             }
-            lines.add(Component.literal("Mana base por efeito: " + relic.getManaCost(event.getItemStack(), slot))
-                    .withStyle(ChatFormatting.AQUA));
-            if (!relic.skillDescription(event.getItemStack(), slot).getString().isEmpty()) {
-                lines.add(relic.skillDescription(event.getItemStack(), slot).copy().withStyle(ChatFormatting.GRAY));
-            }
-            if (slot == 3) {
-                lines.add(Component.literal("Condição: ").append(skill.conditionDescription()).withStyle(ChatFormatting.LIGHT_PURPLE));
+            Component description = relic.skillDescription(event.getItemStack(), slot);
+            if (!description.getString().isEmpty()) lines.add(description.copy().withStyle(ChatFormatting.GRAY));
+            if (!skill.conditionDescription().getString().isEmpty()) {
+                lines.add(Component.literal("Requisitos: ").append(skill.conditionDescription()).withStyle(ChatFormatting.LIGHT_PURPLE));
             }
         }
         lines.add(Component.literal("Selecionar: Shift + clique direito ou Shift + rolagem")
                 .withStyle(ChatFormatting.DARK_GRAY));
-        lines.add(Component.literal("Tecla da relíquia: usar selecionada ou ligar/desligar passiva")
+        lines.add(Component.literal("Tecla da relíquia: usar a habilidade ativa selecionada")
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

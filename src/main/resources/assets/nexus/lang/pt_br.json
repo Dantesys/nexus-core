@@ -69,5 +69,7 @@
   "item.nexus.cristal_mana_d": "Cristal de Mana [D]",
   "item.nexus.cristal_mana_e": "Cristal de Mana [E]",
   "item.nexus.cristal_mana_f": "Cristal de Mana [F]",
-  "message.nexus.crystal.mana_created": "Cristal de Mana de rank %1$s criado."
+  "message.nexus.crystal.mana_created": "Cristal de Mana de rank %1$s criado.",
+  "death.attack.rupty_corte": "%1$s foi retalhado pelos fragmentos da Rupty de %2$s",
+  "death.attack.rupty_magia": "%1$s foi consumido pela mana da Rupty de %2$s"
 }

@@ -70,6 +70,27 @@ public class MagicHud {
                 TEXTURE_WIDTH,
                 TEXTURE_HEIGHT
         );
+        renderRelic(guiGraphics, minecraft, y);
+    }
+
+    /** Linha acima da barra: habilidade ativa selecionada, recarga e info da reliquia (ex.: fragmentos). */
+    private static void renderRelic(GuiGraphicsExtractor guiGraphics, Minecraft minecraft, int barY) {
+        var stack = org.dantesys.nexus.relic.RelicItem.controlledRelic(minecraft.player);
+        if (!(stack.getItem() instanceof org.dantesys.nexus.relic.RelicItem relic) || relic.getSkills().isEmpty()) return;
+        int slot = relic.selectedSkill(stack);
+        var skill = relic.getSkills().get(slot);
+        net.minecraft.network.chat.MutableComponent line;
+        if (skill.kind() != org.dantesys.nexus.relic.RelicSkill.Kind.ACTIVE || !relic.isUnlocked(minecraft.player, slot)) {
+            line = net.minecraft.network.chat.Component.literal("Sem habilidade ativa");
+        } else {
+            line = skill.name().copy();
+            long cooldown = relic.getCooldownRemaining(stack, minecraft.player.level().getGameTime(), slot);
+            if (cooldown > 0) line.append(" (" + (cooldown + 19) / 20 + "s)");
+        }
+        var info = relic.hudInfo(stack);
+        if (info != null) line.append("  ·  ").append(info);
+        int width = minecraft.font.width(line);
+        guiGraphics.text(minecraft.font, line, (guiGraphics.guiWidth() - width) / 2, barY - 10, 0xFFC890FF, true);
     }
 
     private static ManaTexture manaTexture(String name, int width, int height) {

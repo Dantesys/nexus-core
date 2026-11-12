@@ -1,17 +1,30 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import org.dantesys.nexus.magic.MagicStatus;
+import net.minecraft.world.item.component.CustomModelData;
+import org.dantesys.nexus.api.element.NexusElement;
 import org.dantesys.nexus.data.ModAttachmentType;
+import org.dantesys.nexus.magic.MagicStatus;
 import org.dantesys.nexus.util.MatrizModos;
+import org.jspecify.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Base de todas as reliquias, independente de serem armas, armaduras ou acessorios.
- * A recarga pertence ao ItemStack; o custo de mana e pago pelo jogador.
+ * Base de todas as reliquias. Habilidades acumuladas (niveis 1, 5, 10, 15 e 20 de maestria);
+ * passivas ficam sempre ligadas depois de liberadas; ativas custam mana e tem recarga.
+ * A recarga pertence ao ItemStack; a maestria pertence ao jogador.
  */
 public class RelicItem extends Item {
 
@@ -19,115 +32,90 @@ public class RelicItem extends Item {
     public static final int MAX_CATALYST_CAPACITY = 10;
 
     private static final String COOLDOWN_TAG = "NexusRelicCooldownUntil";
+    private static final String SELECTED_TAG = "NexusRelicSelectedSkill";
 
     private final MatrizModos mode;
-
     private final int baseManaCost;
     private final int baseCooldownTicks;
     private final int catalystCapacity;
-    private final java.util.List<RelicSkill> skills;
+    private final List<RelicSkill> skills;
 
-    public java.util.List<RelicSkill> getSkills() { return skills; }
-    public net.minecraft.network.chat.Component skillDescription(int slot) {
-        return net.minecraft.network.chat.Component.empty();
-    }
-    public net.minecraft.network.chat.Component skillDescription(ItemStack stack, int slot) { return skillDescription(slot); }
-    public String masteryId() { return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(this).toString(); }
-
-    /** Mesma prioridade para selecionar e usar; falhar nao ativa outra reliquia. */
-    public static ItemStack controlledRelic(net.minecraft.world.entity.player.Player player) {
-        for (var slot : new net.minecraft.world.entity.EquipmentSlot[]{
-                net.minecraft.world.entity.EquipmentSlot.MAINHAND, net.minecraft.world.entity.EquipmentSlot.OFFHAND,
-                net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST,
-                net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET}) {
-            ItemStack stack = player.getItemBySlot(slot);
-            if (stack.getItem() instanceof RelicItem) return stack;
-        }
-        return ItemStack.EMPTY;
-    }
-
-    public int selectedSkill(ItemStack stack) {
-        return (int) Math.min(Math.max(0, skills.size() - 1), readLong(stack, "NexusRelicSelectedSkill"));
-    }
-
-    public void selectSkill(ServerPlayer player, ItemStack stack, boolean next) {
-        if (!stack.is(this) || skills.isEmpty()) return;
-        RelicMastery mastery = player.getData(ModAttachmentType.RELIC_MASTERY);
-        int slot = RelicSkill.nextSlot(selectedSkill(stack), skills.size(), mastery.level(masteryId()), next);
-        writeLong(stack, "NexusRelicSelectedSkill", slot);
-        var name = slot == 3 && !mastery.isDiscovered(masteryId())
-                ? net.minecraft.network.chat.Component.literal("Habilidade secreta: ???") : skills.get(slot).name().copy();
-        player.sendSystemMessage(net.minecraft.network.chat.Component.literal("Selecionada: ").append(name), true);
-    }
-
-    /** Chamar no servidor somente depois de um uso funcional bem-sucedido, inclusive fora de combate.
-     * Ativacoes de habilidade ja registram o uso; nao chamar novamente para o mesmo efeito. */
-    public void recordSuccessfulUse(ServerPlayer player, ItemStack stack) {
-        if (!stack.is(this)) return;
-        if (player.getData(ModAttachmentType.RELIC_MASTERY).addExperience(masteryId(), RelicMastery.XP_PER_USE)) {
-            player.syncData(ModAttachmentType.RELIC_MASTERY);
-        }
-    }
-
-    public RelicItem(Properties properties, MatrizModos mode, int manaCost,
-                     int cooldownTicks, int catalystCapacity, RelicSkill first, RelicSkill second,
-                     RelicSkill third, RelicSkill secret) {
-        this(properties, mode, manaCost, cooldownTicks, catalystCapacity,
-                java.util.List.of(first, second, third, secret));
-    }
-
-    public RelicItem(Properties properties, MatrizModos mode, int manaCost,
-                     int cooldownTicks, int catalystCapacity, RelicAbility ability) {
-        this(properties, mode, manaCost, cooldownTicks, catalystCapacity,
-                ability == null ? java.util.List.of() : java.util.List.of(RelicSkill.active(
-                        net.minecraft.network.chat.Component.literal("Habilidade 1"), ability)));
-    }
-
-    private RelicItem(Properties properties, MatrizModos mode, int manaCost,
-                      int cooldownTicks, int catalystCapacity, java.util.List<RelicSkill> skills) {
+    public RelicItem(Properties properties, MatrizModos mode, int manaCost, int cooldownTicks,
+                     int catalystCapacity, RelicSkill... skills) {
         super(properties.stacksTo(1));
         if (mode == null) throw new IllegalArgumentException("Relic mode cannot be null");
-
         if (manaCost < 0 || cooldownTicks < 0) {
             throw new IllegalArgumentException("Relic mana and cooldown values cannot be negative");
         }
         if (catalystCapacity < MIN_CATALYST_CAPACITY || catalystCapacity > MAX_CATALYST_CAPACITY) {
             throw new IllegalArgumentException("Relics must have catalyst weight capacity between 2 and 10");
         }
+        if (skills.length > RelicSkill.MAX_SKILLS) throw new IllegalArgumentException("Relics have at most 5 skills");
         this.mode = mode;
-
         this.baseManaCost = manaCost;
         this.baseCooldownTicks = cooldownTicks;
         this.catalystCapacity = catalystCapacity;
-        this.skills = java.util.List.copyOf(skills);
+        this.skills = List.of(skills);
     }
 
+    public List<RelicSkill> getSkills() { return skills; }
+    public Component skillDescription(int slot) { return Component.empty(); }
+    public Component skillDescription(ItemStack stack, int slot) { return skillDescription(slot); }
+    /** Linhas extras na tooltip (ex.: fragmentos da Rupty). Roda no cliente. */
+    public List<Component> extraTooltip(ItemStack stack) { return List.of(); }
+    /** Texto curto mostrado no HUD ao lado da habilidade selecionada. Roda no cliente. */
+    public @Nullable Component hudInfo(ItemStack stack) { return null; }
+    public String masteryId() { return net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(this).toString(); }
     public MatrizModos getMode() { return mode; }
     public int getCatalystCapacity() { return catalystCapacity; }
-    /** Mana bruta (null) por padrão; apenas catalisadores instalados podem alterar o elemento. */
-    public net.minecraft.core.@org.jspecify.annotations.Nullable Holder<org.dantesys.nexus.api.element.NexusElement> getElement(ItemStack stack) {
-        net.minecraft.core.Holder<org.dantesys.nexus.api.element.NexusElement> element = null;
+
+    public static boolean isUnlocked(int level, int slot) { return level >= RelicSkill.requiredLevel(slot); }
+    public int masteryLevel(Player player) { return player.getData(ModAttachmentType.RELIC_MASTERY).level(masteryId()); }
+    public boolean isUnlocked(Player player, int slot) {
+        return slot >= 0 && slot < skills.size() && isUnlocked(masteryLevel(player), slot);
+    }
+
+    /** Mesma prioridade para selecionar e usar; falhar nao ativa outra reliquia. */
+    public static ItemStack controlledRelic(Player player) {
+        for (var slot : new EquipmentSlot[]{EquipmentSlot.MAINHAND, EquipmentSlot.OFFHAND,
+                EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+            ItemStack stack = player.getItemBySlot(slot);
+            if (stack.getItem() instanceof RelicItem) return stack;
+        }
+        return ItemStack.EMPTY;
+    }
+
+    // ---------- Selecao (so ativas) ----------
+
+    public int selectedSkill(ItemStack stack) {
+        int stored = (int) readLong(stack, SELECTED_TAG);
+        if (stored >= 0 && stored < skills.size() && skills.get(stored).kind() == RelicSkill.Kind.ACTIVE) return stored;
+        for (int i = 0; i < skills.size(); i++) if (skills.get(i).kind() == RelicSkill.Kind.ACTIVE) return i;
+        return 0;
+    }
+
+    public void selectSkill(ServerPlayer player, ItemStack stack, boolean next) {
+        if (!stack.is(this) || skills.isEmpty()) return;
+        int slot = RelicSkill.nextActive(selectedSkill(stack), skills, masteryLevel(player), next);
+        if (slot < 0) {
+            player.sendSystemMessage(Component.literal("Nenhuma habilidade ativa liberada ainda."), true);
+            return;
+        }
+        writeLong(stack, SELECTED_TAG, slot);
+        player.sendSystemMessage(Component.literal("Selecionada: ").append(skills.get(slot).name().copy()), true);
+    }
+
+    // ---------- Custos e recargas ----------
+
+    /** Mana bruta (null) por padrao; apenas catalisadores instalados podem alterar o elemento. */
+    public @Nullable Holder<NexusElement> getElement(ItemStack stack) {
+        Holder<NexusElement> element = null;
         for (ItemStack catalyst : RelicCatalysts.get(stack)) {
             if (catalyst.getItem() instanceof RelicCatalyst modifier) {
                 element = modifier.modifyRelicElement(catalyst, stack, element);
             }
         }
         return element;
-    }    public long getCooldownRemaining(ItemStack stack, long gameTime) {
-        return getCooldownRemaining(stack, gameTime, selectedSkill(stack));
-    }
-
-    public int getManaCost(ItemStack stack) {
-        return Math.max(0, (int) Math.round(modify(stack, RelicAttribute.MANA_COST, baseManaCost)));
-    }
-
-    public int getCooldownTicks(ItemStack stack) {
-        return Math.max(0, (int) Math.round(modify(stack, RelicAttribute.COOLDOWN, baseCooldownTicks)));
-    }
-
-    public int getCooldownTicks(ItemStack stack, int slot) { return getCooldownTicks(stack); }
-    public long getCooldownRemaining(ItemStack stack, long gameTime, int slot) {
-        return Math.max(0L, readLong(stack, COOLDOWN_TAG + slot) - gameTime);
     }
 
     public double modify(ItemStack relic, RelicAttribute attribute, double baseValue) {
@@ -140,91 +128,149 @@ public class RelicItem extends Item {
         return value;
     }
 
-    public boolean activate(ServerPlayer player, ItemStack stack) {
-        return activate(player, stack, selectedSkill(stack));
+    public int getManaCost(ItemStack stack) {
+        return Math.max(0, (int) Math.round(modify(stack, RelicAttribute.MANA_COST, baseManaCost)));
     }
-
     public int getManaCost(ItemStack stack, int slot) {
         int cost = skills.get(slot).manaCost();
         return cost < 0 ? getManaCost(stack)
                 : Math.max(0, (int) Math.round(modify(stack, RelicAttribute.MANA_COST, cost)));
     }
+    public int getCooldownTicks(ItemStack stack) {
+        return Math.max(0, (int) Math.round(modify(stack, RelicAttribute.COOLDOWN, baseCooldownTicks)));
+    }
+    public int getCooldownTicks(ItemStack stack, int slot) { return getCooldownTicks(stack); }
+    public long getCooldownRemaining(ItemStack stack, long gameTime) {
+        return getCooldownRemaining(stack, gameTime, selectedSkill(stack));
+    }
+    public long getCooldownRemaining(ItemStack stack, long gameTime, int slot) {
+        return Math.max(0L, readLong(stack, COOLDOWN_TAG + slot) - gameTime);
+    }
+
+    // ---------- Ativacao ----------
+
+    public boolean activate(ServerPlayer player, ItemStack stack) {
+        return activate(player, stack, selectedSkill(stack));
+    }
 
     public boolean activate(ServerPlayer player, ItemStack stack, int slot) {
         if (!stack.is(this) || slot < 0 || slot >= skills.size()) return false;
-        if (skills.get(slot).kind() == RelicSkill.Kind.PASSIVE) {
-            RelicMastery mastery = player.getData(ModAttachmentType.RELIC_MASTERY);
-            if (!mastery.togglePassive(masteryId(), slot)) return false;
-            player.syncData(ModAttachmentType.RELIC_MASTERY);
-            var name = slot == 3 && !mastery.isDiscovered(masteryId())
-                    ? net.minecraft.network.chat.Component.literal("Habilidade secreta") : skills.get(slot).name().copy();
-            player.sendSystemMessage(name.append(mastery.isPassiveEnabled(masteryId(), slot)
-                    ? ": ligada" : ": desligada"), true);
-            return true;
-        }
-        return executeSkill(player, stack, slot, RelicSkill.Kind.ACTIVE);
+        if (skills.get(slot).kind() == RelicSkill.Kind.PASSIVE) return false;
+        return executeSkill(player, stack, slot, RelicSkill.Kind.ACTIVE, true);
     }
 
-    /** O evento funcional da reliquia chama este metodo; nunca conceder XP por apenas equipa-la. */
+    /** O evento funcional da reliquia chama este metodo; passivas liberadas estao sempre ligadas. */
     public boolean triggerPassive(ServerPlayer player, ItemStack stack, int slot) {
-        return executeSkill(player, stack, slot, RelicSkill.Kind.PASSIVE);
+        return executeSkill(player, stack, slot, RelicSkill.Kind.PASSIVE, false);
     }
 
-    private boolean executeSkill(ServerPlayer player, ItemStack stack, int slot, RelicSkill.Kind kind) {
+    private boolean executeSkill(ServerPlayer player, ItemStack stack, int slot, RelicSkill.Kind kind, boolean feedback) {
         if (!stack.is(this) || slot < 0 || slot >= skills.size()) return false;
         RelicSkill skill = skills.get(slot);
-        RelicMastery mastery = player.getData(ModAttachmentType.RELIC_MASTERY);
-        if (kind == RelicSkill.Kind.PASSIVE && !mastery.isPassiveEnabled(masteryId(), slot)) return false;
-        if (skill.kind() != kind || mastery.level(masteryId()) < RelicSkill.requiredLevel(slot)
-                || !skill.condition().test(player, stack)) return false;
+        if (skill.kind() != kind) return false;
+        if (!isUnlocked(player, slot)) {
+            if (feedback) player.sendSystemMessage(Component.literal("Liberada na maestria " + RelicSkill.requiredLevel(slot) + "."), true);
+            return false;
+        }
         long gameTime = player.level().getGameTime();
-        if (getCooldownRemaining(stack, gameTime, slot) > 0) return false;
+        long remaining = getCooldownRemaining(stack, gameTime, slot);
+        if (remaining > 0) {
+            if (feedback) player.sendSystemMessage(skill.name().copy().append(" em recarga: " + (remaining + 19) / 20 + "s"), true);
+            return false;
+        }
+        if (!skill.condition().test(player, stack)) {
+            if (feedback && !skill.conditionDescription().getString().isEmpty())
+                player.sendSystemMessage(skill.name().copy().append(": ").append(skill.conditionDescription()), true);
+            return false;
+        }
 
         MagicStatus magic = player.getData(ModAttachmentType.MAGIC_STATS);
         if (!magic.isCreated()) return false;
-        // Ressonância reduz custo e recarga (até a metade); afinidade aumenta o poder.
+        // Ressonancia reduz custo e recarga (ate a metade); afinidade aumenta o poder.
         int resonance = Math.clamp(magic.getRessonancia(), 0, MagicStatus.MAX_STATUS);
         int affinity = Math.clamp(magic.getAfinidade(), 0, MagicStatus.MAX_STATUS);
         int cost = scaleDownToHalf(getManaCost(stack, slot), resonance);
         int cooldown = scaleDownToHalf(getCooldownTicks(stack, slot), resonance);
         double power = 1.0D + affinity / (double) MagicStatus.MAX_STATUS;
-        RelicAbilityContext abilityContext = new RelicAbilityContext(
-                getElement(stack), resonance, affinity, cost, cooldown, power);
+        RelicAbilityContext context = new RelicAbilityContext(getElement(stack), resonance, affinity, cost, cooldown, power);
 
-        RelicPayment payment = planSameElementPayment(magic, cost);
-        if (payment == null || !skill.effect().activate(player, stack, abilityContext)) return false;
+        if (magic.getMana() < cost) {
+            if (feedback) player.sendSystemMessage(Component.literal("Mana insuficiente (" + cost + ")."), true);
+            return false;
+        }
+        if (!skill.effect().activate(player, stack, context)) return false;
 
-        applyPayment(player, magic, payment);
-        writeLong(stack, COOLDOWN_TAG + slot, gameTime + cooldown);
-        player.syncData(ModAttachmentType.MAGIC_STATS);
-        boolean changed = mastery.addExperience(masteryId(), RelicMastery.XP_PER_USE);
-        if (slot == 3) changed |= mastery.discover(masteryId());
-        if (changed) player.syncData(ModAttachmentType.RELIC_MASTERY);
+        if (cost > 0) {
+            magic.useMana(cost);
+            player.syncData(ModAttachmentType.MAGIC_STATS);
+        }
+        if (cooldown > 0) writeLong(stack, COOLDOWN_TAG + slot, gameTime + cooldown);
+        if (kind == RelicSkill.Kind.ACTIVE) addMasteryXp(player, RelicMastery.XP_PER_USE);
         return true;
+    }
+
+    /** XP de maestria por acao tematica de cada reliquia. */
+    public void addMasteryXp(ServerPlayer player, int amount) {
+        if (amount <= 0) return;
+        if (player.getData(ModAttachmentType.RELIC_MASTERY).addExperience(masteryId(), amount)) {
+            player.syncData(ModAttachmentType.RELIC_MASTERY);
+        }
+    }
+
+    /** Compatibilidade: um uso funcional bem-sucedido vale 1 XP. */
+    public void recordSuccessfulUse(ServerPlayer player, ItemStack stack) {
+        if (stack.is(this)) addMasteryXp(player, RelicMastery.XP_PER_USE);
     }
 
     private static int scaleDownToHalf(int base, int resonance) {
         return Math.max(0, (int) Math.ceil(base * (1.0D - 0.5D * resonance / MagicStatus.MAX_STATUS)));
     }
 
-    private static RelicPayment planSameElementPayment(MagicStatus magic, int cost) {
-        if (magic.getMana() < cost) return null;
-        int playerMana = Math.min(magic.getMana(), cost);
-        return new RelicPayment(playerMana);
+    // ---------- Aparencia ----------
+
+    /** Estagio visual (0 a 3) pela maestria de quem carrega: dormente, desperta (5), ressonante (15), final (20). */
+    public static int visualStage(int masteryLevel) { return RelicSkill.visualStage(masteryLevel); }
+
+    /** Valores extras do custom_model_data depois do estagio (indice 0). */
+    protected List<Float> extraModelData(ServerPlayer player, ItemStack stack) { return List.of(); }
+
+    /** Atualiza o custom_model_data (indice 0 = estagio; demais = extraModelData) se mudou. */
+    public void refreshModelData(ServerPlayer player, ItemStack stack) {
+        if (!stack.is(this)) return;
+        List<Float> floats = new ArrayList<>();
+        floats.add((float) visualStage(masteryLevel(player)));
+        floats.addAll(extraModelData(player, stack));
+        CustomModelData current = stack.get(DataComponents.CUSTOM_MODEL_DATA);
+        if (current != null && current.floats().equals(floats)) return;
+        stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(floats, List.of(), List.of(), List.of()));
     }
 
-    private static void applyPayment(ServerPlayer player, MagicStatus magic, RelicPayment payment) {
-        magic.useMana(payment.playerMana());
+    public static float modelValue(ItemStack stack, int index, float fallback) {
+        CustomModelData data = stack.get(DataComponents.CUSTOM_MODEL_DATA);
+        if (data == null) return fallback;
+        Float value = data.getFloat(index);
+        return value == null ? fallback : value;
     }
 
-    private record RelicPayment(int playerMana) {}
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
+        super.inventoryTick(stack, level, owner, slot);
+        if (owner instanceof ServerPlayer player && level.getGameTime() % 10 == 0) refreshModelData(player, stack);
+    }
 
-    private static long readLong(ItemStack stack, String key) {
+    /** Mudancas de dados (estagio, fragmentos, recarga) nao refazem a animacao de sacar o item. */
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return slotChanged || !ItemStack.isSameItem(oldStack, newStack);
+    }
+
+    // ---------- Dados no ItemStack ----------
+
+    protected static long readLong(ItemStack stack, String key) {
         return Math.max(0L, stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getLongOr(key, 0L));
     }
 
-    private static void writeLong(ItemStack stack, String key, long value) {
+    protected static void writeLong(ItemStack stack, String key, long value) {
         CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putLong(key, Math.max(0L, value)));
     }
-
 }

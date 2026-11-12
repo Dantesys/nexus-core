@@ -67,7 +67,7 @@ public class NexusCommands {
                                                         net.minecraft.core.registries.BuiltInRegistries.ITEM.stream()
                                                                 .filter(item -> item instanceof org.dantesys.nexus.relic.RelicItem)
                                                                 .map(net.minecraft.core.registries.BuiltInRegistries.ITEM::getKey), builder))
-                                                .then(Commands.argument("nivel", IntegerArgumentType.integer(1, 100))
+                                                .then(Commands.argument("nivel", IntegerArgumentType.integer(1, org.dantesys.nexus.relic.RelicMastery.MAX_LEVEL))
                                                         .executes(NexusCommands::setMastery)))))));
     }
 

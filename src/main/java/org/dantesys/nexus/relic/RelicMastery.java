@@ -11,9 +11,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/** Progresso por tipo de reliquia, pertencente ao jogador, nunca ao ItemStack. */
+/** Progresso por tipo de reliquia (niveis 1 a 20), pertencente ao jogador, nunca ao ItemStack. */
 public class RelicMastery implements ValueIOSerializable {
-    public static final int MAX_LEVEL = 100;
+    public static final int MAX_LEVEL = 20;
     public static final int XP_PER_LEVEL = 100;
     public static final int XP_PER_USE = 1;
     private static final int MAX_XP = (MAX_LEVEL - 1) * XP_PER_LEVEL;
@@ -23,12 +23,12 @@ public class RelicMastery implements ValueIOSerializable {
     private final Map<String, Integer> enabledPassives = new HashMap<>();
 
     public boolean isPassiveEnabled(String relic, int slot) {
-        return slot >= 0 && slot < 4 && (enabledPassives.getOrDefault(relic, 0) & (1 << slot)) != 0;
+        return slot >= 0 && slot < RelicSkill.MAX_SKILLS && (enabledPassives.getOrDefault(relic, 0) & (1 << slot)) != 0;
     }
 
     /** Preferencia do jogador; alternar nao conta como uso nem revela a secreta. */
     public boolean togglePassive(String relic, int slot) {
-        if (slot < 0 || slot > 3) return false;
+        if (slot < 0 || slot >= RelicSkill.MAX_SKILLS) return false;
         if (!isPassiveEnabled(relic, slot) && level(relic) < RelicSkill.requiredLevel(slot)) return false;
         int mask = enabledPassives.getOrDefault(relic, 0) ^ (1 << slot);
         if (mask == 0) enabledPassives.remove(relic);
@@ -43,10 +43,10 @@ public class RelicMastery implements ValueIOSerializable {
 
     /** Define o inicio do nivel, preservando descobertas e desligando passivas que voltaram a ficar bloqueadas. */
     public void setLevel(String relic, int level) {
-        if (level < 1 || level > MAX_LEVEL) throw new IllegalArgumentException("Mastery level must be between 1 and 100");
+        if (level < 1 || level > MAX_LEVEL) throw new IllegalArgumentException("Mastery level must be between 1 and " + MAX_LEVEL);
         experience.put(relic, (level - 1) * XP_PER_LEVEL);
         int mask = enabledPassives.getOrDefault(relic, 0);
-        for (int slot = 0; slot < 4; slot++) {
+        for (int slot = 0; slot < RelicSkill.MAX_SKILLS; slot++) {
             if (level < RelicSkill.requiredLevel(slot)) mask &= ~(1 << slot);
         }
         if (mask == 0) enabledPassives.remove(relic);
@@ -71,7 +71,7 @@ public class RelicMastery implements ValueIOSerializable {
         experience.clear();
         enabledPassives.clear();
         input.read("enabled_passives", XP_CODEC).orElse(Map.of()).forEach((id, mask) ->
-                enabledPassives.put(id, mask & 15));
+                enabledPassives.put(id, mask & 31));
         input.read("experience", XP_CODEC).orElse(Map.of()).forEach((id, xp) ->
                 experience.put(id, Math.clamp(xp, 0, MAX_XP)));
         discovered.clear();
@@ -86,7 +86,7 @@ public class RelicMastery implements ValueIOSerializable {
             int secrets = buf.readVarInt();
             for (int i = 0; i < secrets; i++) result.discovered.add(buf.readUtf());
             int passives = buf.readVarInt();
-            for (int i = 0; i < passives; i++) result.enabledPassives.put(buf.readUtf(), buf.readVarInt() & 15);
+            for (int i = 0; i < passives; i++) result.enabledPassives.put(buf.readUtf(), buf.readVarInt() & 31);
             return result;
         }
         @Override public void encode(RegistryFriendlyByteBuf buf, RelicMastery value) {
