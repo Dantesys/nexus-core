@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": "#c:ingots/steel",
+    "T": "minecraft:stick"
+  },
+  "pattern": [
+    "SS",
+    " T",
+    " T"
+  ],
+  "result": {
+    "id": "nexus:steel_hoe"
+  }
+}

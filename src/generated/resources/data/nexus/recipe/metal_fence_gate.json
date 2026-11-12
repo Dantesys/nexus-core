@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "group": "metal",
+  "key": {
+    "#": "minecraft:stick",
+    "W": "nexus:metal_planks"
+  },
+  "pattern": [
+    "#W#",
+    "#W#"
+  ],
+  "result": {
+    "id": "nexus:metal_fence_gate"
+  }
+}

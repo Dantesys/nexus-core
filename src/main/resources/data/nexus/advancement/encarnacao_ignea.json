@@ -1,0 +1,23 @@
+{
+  "parent": "nexus:um_com_o_nexus",
+  "display": {
+    "icon": {
+      "id": "nexus:esmeralda_ignea"
+    },
+    "title": {
+      "text": "Encarnação das Chamas"
+    },
+    "description": {
+      "text": "Alcance Afinidade e Ressonância 1000 com a mana Ígnea."
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "conquistado": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

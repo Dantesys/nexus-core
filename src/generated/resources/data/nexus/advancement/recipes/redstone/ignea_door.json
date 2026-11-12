@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ignea_planks": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexus:ignea_planks"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "nexus:ignea_door"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_ignea_planks"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexus:ignea_door"
+    ]
+  }
+}

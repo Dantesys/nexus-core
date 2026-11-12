@@ -1,0 +1,23 @@
+{
+  "parent": "nexus:todas_as_faces_da_mana",
+  "display": {
+    "icon": {
+      "id": "nexus:matriz_primordial_unica"
+    },
+    "title": {
+      "text": "Afinidade Absoluta"
+    },
+    "description": {
+      "text": "Alcance Afinidade S em todas as seis manas elementais."
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "conquistado": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

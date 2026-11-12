@@ -1,0 +1,22 @@
+{
+  "anvil_cost": 2,
+  "description": {
+    "translate": "enchantment.nexus.disturbio_mana"
+  },
+  "exclusive_set": "#nexus:exclusive_set/nucleo",
+  "max_cost": {
+    "base": 30,
+    "per_level_above_first": 6
+  },
+  "max_level": 10,
+  "min_cost": {
+    "base": 12,
+    "per_level_above_first": 4
+  },
+  "primary_items": "#nexus:nucleo",
+  "slots": [
+    "any"
+  ],
+  "supported_items": "#nexus:nucleo",
+  "weight": 5
+}

@@ -1,0 +1,23 @@
+{
+  "parent": "nexus:todas_as_faces_da_mana",
+  "display": {
+    "icon": {
+      "id": "nexus:nucleo_forja"
+    },
+    "title": {
+      "text": "Um com o Nexus"
+    },
+    "description": {
+      "text": "Alcance Afinidade e Ressonância S em todas as seis manas elementais."
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "conquistado": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

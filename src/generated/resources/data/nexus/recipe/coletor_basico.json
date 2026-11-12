@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "F": "nexus:steel_block",
+    "I": "nexus:steel",
+    "N": "nexus:nucleo",
+    "O": "minecraft:obsidian",
+    "V": "minecraft:glass"
+  },
+  "pattern": [
+    "VVV",
+    "ONO",
+    "IFI"
+  ],
+  "result": {
+    "id": "nexus:coletor_basico"
+  }
+}

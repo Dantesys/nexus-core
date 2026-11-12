@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "group": "sombria",
+  "key": {
+    "#": "minecraft:stick",
+    "W": "nexus:sombria_planks"
+  },
+  "pattern": [
+    "#W#",
+    "#W#"
+  ],
+  "result": {
+    "id": "nexus:sombria_fence_gate"
+  }
+}

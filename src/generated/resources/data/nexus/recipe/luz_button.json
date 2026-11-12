@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "group": "luz",
+  "ingredients": [
+    "nexus:luz_planks"
+  ],
+  "result": {
+    "id": "nexus:luz_button"
+  }
+}

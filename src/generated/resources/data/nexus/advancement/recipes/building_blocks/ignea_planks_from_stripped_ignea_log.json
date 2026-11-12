@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_stripped_ignea_log": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexus:stripped_ignea_log"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "nexus:ignea_planks_from_stripped_ignea_log"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_stripped_ignea_log"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexus:ignea_planks_from_stripped_ignea_log"
+    ]
+  }
+}

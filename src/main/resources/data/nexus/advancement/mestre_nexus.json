@@ -1,0 +1,23 @@
+{
+  "parent": "nexus:um_com_o_nexus",
+  "display": {
+    "icon": {
+      "id": "nexus:nucleo_forja"
+    },
+    "title": {
+      "text": "Mestre Nexus"
+    },
+    "description": {
+      "text": "Alcance Afinidade e Ressonância 1000 em todas as seis manas elementais."
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "conquistado": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "group": "tempestade",
+  "key": {
+    "#": "minecraft:stick",
+    "W": "nexus:tempestade_planks"
+  },
+  "pattern": [
+    "#W#",
+    "#W#"
+  ],
+  "result": {
+    "id": "nexus:tempestade_fence_gate"
+  }
+}

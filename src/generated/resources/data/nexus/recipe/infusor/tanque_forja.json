@@ -1,0 +1,13 @@
+{
+  "type": "nexus:infusor",
+  "ingredients": [
+    "minecraft:obsidian",
+    "nexus:steel_block",
+    "minecraft:bucket",
+    "minecraft:bucket"
+  ],
+  "mana": 100,
+  "result": {
+    "id": "nexus:tanque_forja"
+  }
+}

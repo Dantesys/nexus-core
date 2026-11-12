@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "nexus:block/tempestade_planks",
+    "side": "nexus:block/tempestade_planks",
+    "top": "nexus:block/tempestade_planks"
+  }
+}

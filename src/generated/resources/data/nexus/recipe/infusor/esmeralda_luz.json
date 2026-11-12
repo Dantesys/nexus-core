@@ -1,0 +1,14 @@
+{
+  "type": "nexus:infusor",
+  "ingredients": [
+    "minecraft:emerald",
+    "nexus:fragmento_luz",
+    "minecraft:emerald",
+    "nexus:fragmento_luz"
+  ],
+  "mana": 100,
+  "result": {
+    "count": 2,
+    "id": "nexus:esmeralda_luz"
+  }
+}

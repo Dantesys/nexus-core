@@ -1,0 +1,16 @@
+{
+  "values": [
+    "nexus:ignea_log",
+    "nexus:stripped_ignea_log",
+    "nexus:luz_log",
+    "nexus:stripped_luz_log",
+    "nexus:metal_log",
+    "nexus:stripped_metal_log",
+    "nexus:sombria_log",
+    "nexus:stripped_sombria_log",
+    "nexus:tempestade_log",
+    "nexus:stripped_tempestade_log",
+    "nexus:vida_log",
+    "nexus:stripped_vida_log"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "#": "nexus:sombria_planks"
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "id": "nexus:sombria_pressure_plate"
+  }
+}

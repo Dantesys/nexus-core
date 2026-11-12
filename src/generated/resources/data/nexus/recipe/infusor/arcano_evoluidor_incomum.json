@@ -1,0 +1,13 @@
+{
+  "type": "nexus:infusor",
+  "ingredients": [
+    "nexus:nucleo",
+    "nexus:nucleo",
+    "#nexus:cristais_rank_f",
+    "#nexus:cristais_rank_f"
+  ],
+  "mana": 1000,
+  "result": {
+    "id": "nexus:arcano_evoluidor_incomum"
+  }
+}

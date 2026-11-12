@@ -1,0 +1,13 @@
+{
+  "type": "nexus:infusor",
+  "ingredients": [
+    "minecraft:obsidian",
+    "minecraft:obsidian",
+    "nexus:steel_block",
+    "nexus:steel_block"
+  ],
+  "mana": 300,
+  "result": {
+    "id": "nexus:controlador_forja"
+  }
+}

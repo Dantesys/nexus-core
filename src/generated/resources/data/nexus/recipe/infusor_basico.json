@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:amethyst_shard",
+    "G": "minecraft:gold_nugget",
+    "I": "minecraft:iron_ingot",
+    "O": "minecraft:obsidian",
+    "V": "minecraft:glass"
+  },
+  "pattern": [
+    "BVB",
+    "GIG",
+    "IOI"
+  ],
+  "result": {
+    "id": "nexus:infusor_basico"
+  }
+}

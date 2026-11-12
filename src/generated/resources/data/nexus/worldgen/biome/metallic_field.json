@@ -1,0 +1,72 @@
+{
+  "carvers": [],
+  "downfall": 0.2,
+  "effects": {
+    "dry_foliage_color": "#748894",
+    "foliage_color": "#8ea6b4",
+    "grass_color": "#8a9a8b",
+    "water_color": "#6f9fb5"
+  },
+  "features": [
+    [],
+    [],
+    [
+      "nexus:metal_pilar_placed"
+    ],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+      "nexus:metal_placed",
+      "minecraft:patch_grass_normal",
+      "minecraft:patch_tall_grass"
+    ]
+  ],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [
+      {
+        "type": "minecraft:sheep",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 22
+      },
+      {
+        "type": "minecraft:pig",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 20
+      },
+      {
+        "type": "minecraft:chicken",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 20
+      },
+      {
+        "type": "minecraft:cow",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 20
+      },
+      {
+        "type": "minecraft:rabbit",
+        "maxCount": 3,
+        "minCount": 2,
+        "weight": 18
+      }
+    ],
+    "misc": [],
+    "monster": [],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.4
+}

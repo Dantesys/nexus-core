@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "nexus:block/ignea_planks",
+    "side": "nexus:block/ignea_planks",
+    "top": "nexus:block/ignea_planks"
+  }
+}

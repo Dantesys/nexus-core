@@ -1,0 +1,23 @@
+{
+  "parent": "nexus:todas_as_faces_da_mana",
+  "display": {
+    "icon": {
+      "id": "nexus:esmeralda_sombria"
+    },
+    "title": {
+      "text": "Sussurro do Abismo"
+    },
+    "description": {
+      "text": "Alcance Ressonância S com a mana Sombria."
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "conquistado": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

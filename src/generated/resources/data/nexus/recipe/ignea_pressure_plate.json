@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "key": {
+    "#": "nexus:ignea_planks"
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "id": "nexus:ignea_pressure_plate"
+  }
+}

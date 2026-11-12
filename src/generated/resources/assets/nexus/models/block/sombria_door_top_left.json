@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_top_left",
+  "textures": {
+    "bottom": "nexus:block/sombria_door_bottom",
+    "top": "nexus:block/sombria_door_top"
+  }
+}

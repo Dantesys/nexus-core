@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "nexus:vida_slab"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_vida_planks": {
+      "conditions": {
+        "items": [
+          {
+            "items": "nexus:vida_planks"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_vida_planks"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "nexus:vida_slab"
+    ]
+  }
+}

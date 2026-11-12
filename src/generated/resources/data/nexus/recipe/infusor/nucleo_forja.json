@@ -1,0 +1,13 @@
+{
+  "type": "nexus:infusor",
+  "ingredients": [
+    "minecraft:lava_bucket",
+    "minecraft:lava_bucket",
+    "nexus:nucleo",
+    "nexus:nucleo"
+  ],
+  "mana": 200,
+  "result": {
+    "id": "nexus:nucleo_forja"
+  }
+}

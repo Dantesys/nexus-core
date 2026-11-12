@@ -1,0 +1,13 @@
+{
+  "type": "nexus:infusor",
+  "ingredients": [
+    "#nexus:esmeraldas",
+    "#nexus:esmeraldas",
+    "#nexus:esmeraldas",
+    "#nexus:esmeraldas"
+  ],
+  "mana": 200,
+  "result": {
+    "id": "nexus:nucleo"
+  }
+}

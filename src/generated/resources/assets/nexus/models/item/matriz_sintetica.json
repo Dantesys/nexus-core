@@ -1,0 +1,7 @@
+{
+  "parent": "nexus:item/molde_comum",
+  "textures": {
+    "0": "nexus:item/molde_base_sintetico",
+    "particle": "nexus:item/molde_base_sintetico"
+  }
+}

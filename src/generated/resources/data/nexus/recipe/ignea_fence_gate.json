@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "group": "ignea",
+  "key": {
+    "#": "minecraft:stick",
+    "W": "nexus:ignea_planks"
+  },
+  "pattern": [
+    "#W#",
+    "#W#"
+  ],
+  "result": {
+    "id": "nexus:ignea_fence_gate"
+  }
+}

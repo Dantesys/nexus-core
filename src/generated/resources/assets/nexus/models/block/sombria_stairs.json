@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "nexus:block/sombria_planks",
+    "side": "nexus:block/sombria_planks",
+    "top": "nexus:block/sombria_planks"
+  }
+}
