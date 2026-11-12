@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:sombria_fence"
+        "recipes": "nexus:sombria_fence"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

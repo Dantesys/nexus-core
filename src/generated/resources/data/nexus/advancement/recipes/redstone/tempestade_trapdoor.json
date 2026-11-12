@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:tempestade_trapdoor"
+        "recipes": "nexus:tempestade_trapdoor"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

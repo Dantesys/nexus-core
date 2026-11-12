@@ -1,5 +1,6 @@
 package org.dantesys.nexus.events;
 
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -404,9 +405,9 @@ public class NexusPlayerEvents {
     private static void triggerSombriaEvent(ServerLevel level, ServerPlayer player) {
         RandomSource random = player.getRandom();
         Mob mob = switch (random.nextInt(3)) {
-            case 0 -> EntityType.HUSK.create(level, EntitySpawnReason.TRIGGERED);
-            case 1 -> EntityType.PARCHED.create(level, EntitySpawnReason.TRIGGERED);
-            default -> EntityType.WITHER_SKELETON.create(level, EntitySpawnReason.TRIGGERED);
+            case 0 -> EntityTypes.HUSK.create(level, EntitySpawnReason.TRIGGERED);
+            case 1 -> EntityTypes.PARCHED.create(level, EntitySpawnReason.TRIGGERED);
+            default -> EntityTypes.WITHER_SKELETON.create(level, EntitySpawnReason.TRIGGERED);
         };
         if (mob == null) {
             return;
@@ -434,7 +435,7 @@ public class NexusPlayerEvents {
 
     private static void triggerMetalEvent(ServerLevel level, ServerPlayer player) {
         player.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 20 * 8, 0, true, false, true));
-        Mob golem = EntityType.IRON_GOLEM.create(level, EntitySpawnReason.TRIGGERED);
+        Mob golem = EntityTypes.IRON_GOLEM.create(level, EntitySpawnReason.TRIGGERED);
         if (golem == null) {
             return;
         }
@@ -483,7 +484,7 @@ public class NexusPlayerEvents {
     }
 
     private static void spawnRandomTempestadeLightning(ServerLevel level, ServerPlayer player) {
-        LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.TRIGGERED);
+        LightningBolt lightning = EntityTypes.LIGHTNING_BOLT.create(level, EntitySpawnReason.TRIGGERED);
         if (lightning != null) {
             BlockPos eventPos = findNearbyGroundPos(level, player, TEMPESTADE_LIGHTNING_STORM_RADIUS, 0);
             lightning.setPos(eventPos.getX() + 0.5, eventPos.getY(), eventPos.getZ() + 0.5);

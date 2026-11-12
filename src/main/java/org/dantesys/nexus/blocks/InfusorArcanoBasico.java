@@ -20,7 +20,6 @@ import org.dantesys.nexus.blocks.blockentity.ModBlockEntities;
 import org.jspecify.annotations.Nullable;
 
 public class InfusorArcanoBasico extends BaseEntityBlock {
-    public static final MapCodec<InfusorArcanoBasico> CODEC = simpleCodec(InfusorArcanoBasico::new);
     public static final BooleanProperty CRAFTING = BooleanProperty.create("crafting");
 
     public InfusorArcanoBasico(Properties properties) {
@@ -28,10 +27,6 @@ public class InfusorArcanoBasico extends BaseEntityBlock {
         registerDefaultState(stateDefinition.any().setValue(CRAFTING, false));
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {

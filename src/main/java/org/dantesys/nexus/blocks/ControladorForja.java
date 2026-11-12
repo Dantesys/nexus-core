@@ -32,7 +32,6 @@ import org.dantesys.nexus.items.ModItems;
 import org.jspecify.annotations.Nullable;
 
 public class ControladorForja extends BaseEntityBlock {
-    public static final MapCodec<ControladorForja> CODEC = simpleCodec(ControladorForja::new);
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty FORMED = BooleanProperty.create("formed");
 
@@ -41,10 +40,6 @@ public class ControladorForja extends BaseEntityBlock {
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(FORMED, false));
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

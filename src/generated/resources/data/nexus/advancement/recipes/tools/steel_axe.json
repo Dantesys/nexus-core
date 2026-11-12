@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:steel_axe"
+        "recipes": "nexus:steel_axe"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

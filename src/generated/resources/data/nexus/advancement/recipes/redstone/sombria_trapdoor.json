@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:sombria_trapdoor"
+        "recipes": "nexus:sombria_trapdoor"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

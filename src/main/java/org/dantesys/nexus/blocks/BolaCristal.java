@@ -31,16 +31,11 @@ import java.util.List;
 import java.util.Random;
 
 public class BolaCristal extends BaseEntityBlock {
-    public static final MapCodec<BolaCristal> CODEC = simpleCodec(BolaCristal::new);
 
     public BolaCristal(Properties properties) {
         super(properties);
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

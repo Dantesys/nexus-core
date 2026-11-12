@@ -111,7 +111,7 @@ public class BolaCristalBE extends BlockEntity implements Container, MenuProvide
             if (!stack.isEmpty()) {
                 returnedAny = true;
                 if (!player.addItem(stack)) {
-                    player.drop(stack, false);
+                    player.drop(stack, false, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
             }
         }

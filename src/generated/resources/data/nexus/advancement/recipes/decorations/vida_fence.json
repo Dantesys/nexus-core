@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:vida_fence"
+        "recipes": "nexus:vida_fence"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

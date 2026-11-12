@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:metal_stairs"
+        "recipes": "nexus:metal_stairs"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

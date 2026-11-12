@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:coletor_basico"
+        "recipes": "nexus:coletor_basico"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -1,4 +1,30 @@
 {
+  "attributes": {
+    "minecraft:gameplay/natural_mob_spawns": {
+      "argument": {
+        "spawn_costs": {},
+        "spawns_by_category": {
+          "monster": [
+            {
+              "type": "minecraft:magma_cube",
+              "count": {
+                "type": "minecraft:uniform",
+                "max_inclusive": 4,
+                "min_inclusive": 1
+              },
+              "weight": 90
+            },
+            {
+              "type": "minecraft:blaze",
+              "count": 1,
+              "weight": 3
+            }
+          ]
+        }
+      },
+      "modifier": "overlay"
+    }
+  },
   "carvers": [],
   "downfall": 0.0,
   "effects": {
@@ -30,29 +56,5 @@
     ]
   ],
   "has_precipitation": false,
-  "spawn_costs": {},
-  "spawners": {
-    "ambient": [],
-    "axolotls": [],
-    "creature": [],
-    "misc": [],
-    "monster": [
-      {
-        "type": "minecraft:magma_cube",
-        "maxCount": 4,
-        "minCount": 1,
-        "weight": 90
-      },
-      {
-        "type": "minecraft:blaze",
-        "maxCount": 1,
-        "minCount": 1,
-        "weight": 3
-      }
-    ],
-    "underground_water_creature": [],
-    "water_ambient": [],
-    "water_creature": []
-  },
   "temperature": 2.0
 }

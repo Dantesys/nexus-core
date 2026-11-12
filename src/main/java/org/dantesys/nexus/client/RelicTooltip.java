@@ -13,20 +13,17 @@ import org.dantesys.nexus.data.ModAttachmentType;
 import org.dantesys.nexus.relic.RelicItem;
 import org.dantesys.nexus.relic.RelicMastery;
 import org.dantesys.nexus.relic.RelicSkill;
-import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = Nexus.MODID, value = Dist.CLIENT)
 public final class RelicTooltip {
     private RelicTooltip() {}
     public static boolean shiftDown() {
-        var window = Minecraft.getInstance().getWindow();
-        return InputConstants.isKeyDown(window, GLFW.GLFW_KEY_LEFT_SHIFT)
-                || InputConstants.isKeyDown(window, GLFW.GLFW_KEY_RIGHT_SHIFT);
+        return InputConstants.isKeyDown(InputConstants.KEY_LSHIFT)
+                || InputConstants.isKeyDown(InputConstants.KEY_RSHIFT);
     }
     public static boolean controlDown() {
-        var window = Minecraft.getInstance().getWindow();
-        return InputConstants.isKeyDown(window, GLFW.GLFW_KEY_LEFT_CONTROL)
-                || InputConstants.isKeyDown(window, GLFW.GLFW_KEY_RIGHT_CONTROL);
+        return InputConstants.isKeyDown(InputConstants.KEY_LCONTROL)
+                || InputConstants.isKeyDown(InputConstants.KEY_RCONTROL);
     }
 
     @SubscribeEvent

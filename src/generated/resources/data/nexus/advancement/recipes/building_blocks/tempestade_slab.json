@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:tempestade_slab"
+        "recipes": "nexus:tempestade_slab"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

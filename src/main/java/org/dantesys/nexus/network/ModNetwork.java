@@ -218,7 +218,7 @@ public class ModNetwork {
                     Math.max(0.15D, direction.y * pushDistance),
                     direction.z * pushDistance
             );
-            target.hurtMarked = true;
+            target.needsSync = true;
         }
     }
 

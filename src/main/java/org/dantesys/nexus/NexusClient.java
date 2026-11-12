@@ -46,30 +46,30 @@ public class NexusClient {
     );
     private static final KeyMapping PREVIOUS_MANA = new KeyMapping(
             "key.nexus.previous_mana",
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.KEY_LEFT,
             NEXUS_CATEGORY
     );
     private static final KeyMapping NEXT_MANA = new KeyMapping(
             "key.nexus.next_mana",
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.KEY_RIGHT,
             NEXUS_CATEGORY
     );
     private static final KeyMapping TOGGLE_MANA_SKIN = new KeyMapping(
             "key.nexus.toggle_mana_skin",
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.KEY_G,
             NEXUS_CATEGORY
     );
     private static final KeyMapping USE_MANA = new KeyMapping(
             "key.nexus.use_mana",
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.KEYBOARD,
             InputConstants.KEY_R,
             NEXUS_CATEGORY
     );
     private static final KeyMapping ACTIVATE_RELIC = new KeyMapping(
-            "key.nexus.activate_relic", InputConstants.Type.KEYSYM, InputConstants.KEY_V, NEXUS_CATEGORY);
+            "key.nexus.activate_relic", InputConstants.Type.KEYBOARD, InputConstants.KEY_V, NEXUS_CATEGORY);
 
     public NexusClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
@@ -149,15 +149,15 @@ public class NexusClient {
 
     @SubscribeEvent
     static void onRelicClick(InputEvent.MouseButton.Pre event) {
-        if (event.getButton() != org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_RIGHT
-                || event.getAction() != org.lwjgl.glfw.GLFW.GLFW_PRESS || !canSelectRelic()) return;
+        if (event.getButton() != InputConstants.MOUSE_BUTTON_RIGHT
+                || event.getAction() != InputConstants.PRESS || !canSelectRelic()) return;
         event.setCanceled(true);
         ClientPacketDistributor.sendToServer(new org.dantesys.nexus.network.SelectRelicSkillPayload(true));
     }
 
     private static boolean canSelectRelic() {
         var minecraft = Minecraft.getInstance();
-        return minecraft.player != null && minecraft.screen == null
+        return minecraft.player != null && minecraft.gui.screen() == null
                 && org.dantesys.nexus.client.RelicTooltip.shiftDown()
                 && !org.dantesys.nexus.relic.RelicItem.controlledRelic(minecraft.player).isEmpty();
     }

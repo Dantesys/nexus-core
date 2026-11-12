@@ -1,5 +1,6 @@
 package org.dantesys.nexus.magic;
 
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.particles.ParticleOptions;
@@ -114,7 +115,7 @@ public final class SimpleElementalSpells {
         player.teleportTo(destination.x, destination.y, destination.z);
         particleBurst(player, ParticleTypes.ELECTRIC_SPARK, 35, 0.8D);
         if (affinity >= SECONDARY_EFFECT_AFFINITY) {
-            LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.TRIGGERED);
+            LightningBolt lightning = EntityTypes.LIGHTNING_BOLT.create(level, EntitySpawnReason.TRIGGERED);
             if (lightning != null) {
                 lightning.setPos(origin.x, origin.y, origin.z);
                 level.addFreshEntity(lightning);

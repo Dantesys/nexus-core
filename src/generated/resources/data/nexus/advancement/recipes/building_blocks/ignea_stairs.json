@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:ignea_stairs"
+        "recipes": "nexus:ignea_stairs"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

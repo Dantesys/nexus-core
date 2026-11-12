@@ -1,22 +1,22 @@
 package org.dantesys.nexus.datagen;
 
 import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import org.dantesys.nexus.blocks.ModBlocks;
 import org.dantesys.nexus.items.ModItems;
 
 import java.util.Set;
 
 public class ModBlocksLootTableProvider extends BlockLootSubProvider {
-    public ModBlocksLootTableProvider(HolderLookup.Provider registries) {
-        super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
+    public ModBlocksLootTableProvider(LootTableSubProvider.Context context) {
+        super(Set.of(), FeatureFlags.REGISTRY.allFlags(), context);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class ModBlocksLootTableProvider extends BlockLootSubProvider {
         add(ModBlocks.IGNEA_LEAVES.get(), block ->
                 createLeavesDrops(block, ModBlocks.IGNEA_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES)
                         .withPool(LootPool.lootPool()
-                                .setRolls(ConstantValue.exactly(1))
+                                .setRolls(ContextIntProviders.exactly(1))
                                 .add(LootItem.lootTableItem(ModItems.FRAGMENTO_IGNEA.get())
                                         .when(LootItemRandomChanceCondition.randomChance(0.05f))
                                 )
@@ -113,7 +113,7 @@ public class ModBlocksLootTableProvider extends BlockLootSubProvider {
         add(ModBlocks.LUZ_LEAVES.get(), block ->
                 createLeavesDrops(block, ModBlocks.LUZ_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES)
                         .withPool(LootPool.lootPool()
-                                .setRolls(ConstantValue.exactly(1))
+                                .setRolls(ContextIntProviders.exactly(1))
                                 .add(LootItem.lootTableItem(ModItems.FRAGMENTO_LUZ.get())
                                         .when(LootItemRandomChanceCondition.randomChance(0.05f))
                                 )
@@ -121,7 +121,7 @@ public class ModBlocksLootTableProvider extends BlockLootSubProvider {
         add(ModBlocks.METAL_LEAVES.get(), block ->
                 createLeavesDrops(block, ModBlocks.METAL_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES)
                         .withPool(LootPool.lootPool()
-                                .setRolls(ConstantValue.exactly(1))
+                                .setRolls(ContextIntProviders.exactly(1))
                                 .add(LootItem.lootTableItem(ModItems.FRAGMENTO_METAL.get())
                                         .when(LootItemRandomChanceCondition.randomChance(0.05f))
                                 )
@@ -129,7 +129,7 @@ public class ModBlocksLootTableProvider extends BlockLootSubProvider {
         add(ModBlocks.SOMBRIA_LEAVES.get(), block ->
                 createLeavesDrops(block, ModBlocks.SOMBRIA_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES)
                         .withPool(LootPool.lootPool()
-                                .setRolls(ConstantValue.exactly(1))
+                                .setRolls(ContextIntProviders.exactly(1))
                                 .add(LootItem.lootTableItem(ModItems.FRAGMENTO_SOMBRIA.get())
                                         .when(LootItemRandomChanceCondition.randomChance(0.05f))
                                 )
@@ -137,7 +137,7 @@ public class ModBlocksLootTableProvider extends BlockLootSubProvider {
         add(ModBlocks.TEMPESTADE_LEAVES.get(), block ->
                 createLeavesDrops(block, ModBlocks.TEMPESTADE_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES)
                         .withPool(LootPool.lootPool()
-                                .setRolls(ConstantValue.exactly(1))
+                                .setRolls(ContextIntProviders.exactly(1))
                                 .add(LootItem.lootTableItem(ModItems.FRAGMENTO_TEMPESTADE.get())
                                         .when(LootItemRandomChanceCondition.randomChance(0.05f))
                                 )
@@ -145,7 +145,7 @@ public class ModBlocksLootTableProvider extends BlockLootSubProvider {
         add(ModBlocks.VIDA_LEAVES.get(), block ->
                 createLeavesDrops(block, ModBlocks.VIDA_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES)
                         .withPool(LootPool.lootPool()
-                                .setRolls(ConstantValue.exactly(1))
+                                .setRolls(ContextIntProviders.exactly(1))
                                 .add(LootItem.lootTableItem(ModItems.FRAGMENTO_VIDA.get())
                                         .when(LootItemRandomChanceCondition.randomChance(0.05f))
                                 )

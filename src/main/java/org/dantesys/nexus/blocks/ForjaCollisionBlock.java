@@ -11,16 +11,11 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ForjaCollisionBlock extends Block {
-    public static final MapCodec<ForjaCollisionBlock> CODEC = simpleCodec(ForjaCollisionBlock::new);
 
     public ForjaCollisionBlock(Properties properties) {
         super(properties);
     }
 
-    @Override
-    protected MapCodec<? extends Block> codec() {
-        return CODEC;
-    }
 
     @Override
     protected RenderShape getRenderShape(BlockState state) {

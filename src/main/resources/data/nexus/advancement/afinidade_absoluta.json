@@ -2,7 +2,7 @@
   "parent": "nexus:todas_as_faces_da_mana",
   "display": {
     "icon": {
-      "id": "nexus:matriz_primordial_unica"
+      "id": "nexus:matriz_primordial"
     },
     "title": {
       "text": "Afinidade Absoluta"

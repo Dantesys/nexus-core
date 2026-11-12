@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:steel_leggings"
+        "recipes": "nexus:steel_leggings"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

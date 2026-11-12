@@ -1,6 +1,6 @@
 package org.dantesys.nexus.worldgen.features;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
@@ -8,23 +8,29 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 
-public class IgneaMiniVolcanoFeature extends Feature<NoneFeatureConfiguration> {
+public final class IgneaMiniVolcanoFeature implements Feature {
+    public static final IgneaMiniVolcanoFeature INSTANCE = new IgneaMiniVolcanoFeature();
+    public static final MapCodec<IgneaMiniVolcanoFeature> CODEC = MapCodec.unit(INSTANCE);
+
     private static final BlockState BLACKSTONE = Blocks.BLACKSTONE.defaultBlockState();
     private static final BlockState MAGMA = Blocks.MAGMA_BLOCK.defaultBlockState();
     private static final BlockState LAVA = Blocks.LAVA.defaultBlockState();
 
-    public IgneaMiniVolcanoFeature(Codec<NoneFeatureConfiguration> codec) {
-        super(codec);
+    private IgneaMiniVolcanoFeature() {
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
-        RandomSource random = context.random();
-        BlockPos surface = findSurface(level, context.origin());
+    public MapCodec<IgneaMiniVolcanoFeature> codec() {
+        return CODEC;
+    }
+
+
+
+    @Override
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
+        BlockPos surface = findSurface(level, origin);
         int height = 5 + random.nextInt(3);
         int baseRadius = 4;
 

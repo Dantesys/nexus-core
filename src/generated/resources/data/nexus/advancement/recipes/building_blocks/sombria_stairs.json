@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:sombria_stairs"
+        "recipes": "nexus:sombria_stairs"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

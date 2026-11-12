@@ -1,5 +1,6 @@
 package org.dantesys.nexus.blocks.blockentity;
 
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -93,7 +94,7 @@ public class ControladorForjaBE extends BlockEntity implements Container, MenuPr
         if (!player.hasInfiniteMaterials()) {
             stack.shrink(1);
             ItemStack bucket = new ItemStack(Items.BUCKET);
-            if (!player.addItem(bucket)) player.drop(bucket, false);
+            if (!player.addItem(bucket)) player.drop(bucket, false, net.minecraft.util.Prediction.SERVER_ONLY);
         }
         markChangedAndSync();
         return true;
@@ -196,7 +197,7 @@ public class ControladorForjaBE extends BlockEntity implements Container, MenuPr
     @Override
     public boolean stillValid(Player player) {
         return level != null && level.getBlockEntity(worldPosition) == this
-                && player.distanceToSqr(worldPosition.getCenter()) <= 64.0;
+                && player.distanceToSqr(Vec3.atCenterOf(worldPosition)) <= 64.0;
     }
 
     @Override

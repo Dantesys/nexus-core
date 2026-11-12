@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:bola_cristal"
+        "recipes": "nexus:bola_cristal"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

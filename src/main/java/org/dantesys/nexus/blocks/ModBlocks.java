@@ -211,8 +211,8 @@ public class ModBlocks {
     public static final DeferredBlock<SaplingBlock> VIDA_SAPLING = registerBlock("vida_sapling",
             properties -> new SaplingBlock(ModTreeGrowes.VIDA,properties.strength(2.0F).sound(SoundType.WOOD)));
 
-    public static class NexusLeavesBlock extends LeavesBlock {
-        public static final MapCodec<NexusLeavesBlock> CODEC = simpleCodec(NexusLeavesBlock::new);
+    /** Folhas com partícula caindo tingida pela cor do bioma (como as de carvalho). */
+    public static class NexusLeavesBlock extends net.minecraft.world.level.block.TintedParticleLeavesBlock {
 
         public NexusLeavesBlock(BlockBehaviour.Properties properties) {
             super(0.01F, properties
@@ -221,18 +221,7 @@ public class ModBlocks {
                     .sound(SoundType.GRASS)
                     .noOcclusion()
                     .isSuffocating((state, level, pos) -> false)
-                    .isViewBlocking((state, level, pos) -> false));
-        }
-
-        @Override
-        public MapCodec<? extends LeavesBlock> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected void spawnFallingLeavesParticle(Level level, BlockPos pos, RandomSource random) {
-            ColorParticleOption particle = ColorParticleOption.create(ParticleTypes.TINTED_LEAVES, level.getClientLeafTintColor(pos));
-            ParticleUtils.spawnParticleBelow(level, pos, random, particle);
+                    .isViewBlocking((state, level, pos, box) -> false));
         }
     }
 

@@ -47,7 +47,7 @@ public class ColetorArcanoBasicoRenderer implements
                        CameraRenderState camera) {
         poseStack.pushPose();
         poseStack.translate(0.5F, 1.02F, 0.5F);
-        poseStack.mulPose(Axis.YP.rotationDegrees(state.angle));
+        poseStack.rotateDegrees(Axis.YP, state.angle);
         poseStack.scale(0.5F, 0.5F, 0.5F);
         state.core.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         poseStack.popPose();

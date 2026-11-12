@@ -95,6 +95,12 @@ public class ModModelProvider extends ModelProvider {
     public ModModelProvider(PackOutput output) {
         super(output, Nexus.MODID);
     }
+    // A Rupty usa uma definição de item feita à mão (src/main/resources/assets/nexus/items/rupty.json).
+    @Override
+    protected java.util.stream.Stream<? extends net.minecraft.core.Holder<net.minecraft.world.item.Item>> getKnownItems() {
+        return super.getKnownItems().filter(h -> !h.unwrapKey().map(k -> k.identifier().getPath().equals("rupty")).orElse(false));
+    }
+
 
     @Override
     protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {

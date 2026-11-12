@@ -72,7 +72,7 @@ public class InfusorArcanoBasicoRenderer implements
 
             poseStack.pushPose();
             poseStack.translate(x, y, z);
-            poseStack.mulPose(Axis.YP.rotationDegrees(state.age * 2.5F + slot * 90.0F));
+            poseStack.rotateDegrees(Axis.YP, state.age * 2.5F + slot * 90.0F);
             poseStack.scale(0.35F, 0.35F, 0.35F);
             state.items[slot].submit(
                     poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);
@@ -84,7 +84,7 @@ public class InfusorArcanoBasicoRenderer implements
             float bob = Mth.sin(state.age * 0.12F) * 0.045F;
             poseStack.pushPose();
             poseStack.translate(0.5F, CENTER_ITEM_Y + bob, 0.5F);
-            poseStack.mulPose(Axis.YP.rotationDegrees(state.age * 2.5F));
+            poseStack.rotateDegrees(Axis.YP, state.age * 2.5F);
             poseStack.scale(0.42F, 0.42F, 0.42F);
             result.submit(
                     poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, 0);

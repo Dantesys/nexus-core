@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:steel_spear"
+        "recipes": "nexus:steel_spear"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

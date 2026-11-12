@@ -1,0 +1,41 @@
+{
+  "type": "minecraft:random_selector",
+  "default": {
+    "feature": {
+      "type": "minecraft:block_blob",
+      "can_place_on": {
+        "type": "minecraft:true"
+      },
+      "state": "minecraft:raw_iron_block"
+    },
+    "placement": []
+  },
+  "features": [
+    {
+      "chance": 0.42,
+      "feature": {
+        "feature": {
+          "type": "minecraft:block_blob",
+          "can_place_on": {
+            "type": "minecraft:true"
+          },
+          "state": "minecraft:raw_copper_block"
+        },
+        "placement": []
+      }
+    },
+    {
+      "chance": 0.18,
+      "feature": {
+        "feature": {
+          "type": "minecraft:block_blob",
+          "can_place_on": {
+            "type": "minecraft:true"
+          },
+          "state": "minecraft:raw_gold_block"
+        },
+        "placement": []
+      }
+    }
+  ]
+}

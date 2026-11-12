@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:infusor_basico"
+        "recipes": "nexus:infusor_basico"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -130,7 +130,7 @@ public class InfusorArcanoBasicoBE extends BlockEntity implements Container, Men
                 if (!stack.isEmpty()) {
                     returnedAny = true;
                     if (!player.addItem(stack)) {
-                        player.drop(stack, false);
+                        player.drop(stack, false, net.minecraft.util.Prediction.SERVER_ONLY);
                     }
                 }
             }
@@ -139,7 +139,7 @@ public class InfusorArcanoBasicoBE extends BlockEntity implements Container, Men
             if (!stack.isEmpty()) {
                 returnedAny = true;
                 if (!player.addItem(stack)) {
-                    player.drop(stack, false);
+                    player.drop(stack, false, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
             }
         }

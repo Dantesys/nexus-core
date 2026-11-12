@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:metal_slab"
+        "recipes": "nexus:metal_slab"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

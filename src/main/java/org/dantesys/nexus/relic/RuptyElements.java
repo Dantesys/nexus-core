@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -151,7 +152,7 @@ public final class RuptyElements {
                 target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, RuptyRules.RUPTURE_DEBUFF_TICKS, 0));
         }
         if (element == Elementos.TEMPESTADE) {
-            var bolt = EntityType.LIGHTNING_BOLT.create(level, EntitySpawnReason.TRIGGERED);
+            var bolt = EntityTypes.LIGHTNING_BOLT.create(level, EntitySpawnReason.TRIGGERED);
             if (bolt != null) { bolt.setPos(point.x, point.y, point.z); bolt.setVisualOnly(true); level.addFreshEntity(bolt); }
         }
     }

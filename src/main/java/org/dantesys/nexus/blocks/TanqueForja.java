@@ -16,16 +16,11 @@ import org.dantesys.nexus.blocks.blockentity.TanqueForjaBE;
 import org.jspecify.annotations.Nullable;
 
 public class TanqueForja extends BaseEntityBlock {
-    public static final MapCodec<TanqueForja> CODEC = simpleCodec(TanqueForja::new);
 
     public TanqueForja(Properties properties) {
         super(properties);
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
@@ -49,7 +44,7 @@ public class TanqueForja extends BaseEntityBlock {
             if (!player.hasInfiniteMaterials()) {
                 stack.shrink(1);
                 ItemStack lava = new ItemStack(Items.LAVA_BUCKET);
-                if (!player.addItem(lava)) player.drop(lava, false);
+                if (!player.addItem(lava)) player.drop(lava, false, net.minecraft.util.Prediction.SERVER_ONLY);
             }
             player.sendSystemMessage(tank.status());
             return InteractionResult.SUCCESS_SERVER;

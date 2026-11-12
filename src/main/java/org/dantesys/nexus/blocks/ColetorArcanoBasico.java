@@ -23,7 +23,6 @@ import org.dantesys.nexus.blocks.blockentity.ModBlockEntities;
 import org.jspecify.annotations.Nullable;
 
 public class ColetorArcanoBasico extends BaseEntityBlock {
-    public static final MapCodec<ColetorArcanoBasico> CODEC = simpleCodec(ColetorArcanoBasico::new);
     public static final BooleanProperty ACTIVE = BooleanProperty.create("active");
     private static final VoxelShape SHAPE = box(4, 0, 4, 12, 12, 12);
 
@@ -32,10 +31,6 @@ public class ColetorArcanoBasico extends BaseEntityBlock {
         registerDefaultState(stateDefinition.any().setValue(ACTIVE, false));
     }
 
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

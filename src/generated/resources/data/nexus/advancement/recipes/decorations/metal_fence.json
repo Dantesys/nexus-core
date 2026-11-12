@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:metal_fence"
+        "recipes": "nexus:metal_fence"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

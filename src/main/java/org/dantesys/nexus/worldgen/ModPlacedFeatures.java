@@ -7,7 +7,7 @@ import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.valueproviders.UniformInt;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.placement.*;
 import org.dantesys.nexus.Nexus;
 import org.dantesys.nexus.blocks.ModBlocks;
@@ -29,7 +29,7 @@ public class ModPlacedFeatures {
     public static final ResourceKey<PlacedFeature> IGNEA_MINI_VOLCANO_PLACED_KEY = registerKey("ignea_mini_volcano_placed");
 
     public static void bootstrap(BootstrapContext<PlacedFeature> context) {
-        var configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
+        var configuredFeatures = context.lookup(Registries.FEATURE);
         registerSparseTree(context, IGNEA_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguratedFeatures.IGNEA_KEY),
                 ModBlocks.IGNEA_SAPLING.get());
         registerMediumTree(context, TEMPESTADE_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguratedFeatures.TEMPESTADE_KEY),
@@ -53,7 +53,7 @@ public class ModPlacedFeatures {
         return ResourceKey.create(Registries.PLACED_FEATURE, Identifier.fromNamespaceAndPath(Nexus.MODID, name));
     }
     private static void registerStone(BootstrapContext<PlacedFeature> ctx,
-                                      Holder<ConfiguredFeature<?, ?>> configuration){
+                                      Holder<Feature> configuration){
         List<PlacementModifier> modifiers = List.of(
                 CountPlacement.of(1),
                 InSquarePlacement.spread(),
@@ -66,7 +66,7 @@ public class ModPlacedFeatures {
     }
 
     private static void registerLavaLake(BootstrapContext<PlacedFeature> ctx,
-                                         Holder<ConfiguredFeature<?, ?>> configuration) {
+                                         Holder<Feature> configuration) {
         List<PlacementModifier> modifiers = List.of(
                 RarityFilter.onAverageOnceEvery(10),
                 InSquarePlacement.spread(),
@@ -78,7 +78,7 @@ public class ModPlacedFeatures {
     }
 
     private static void registerMagmaCluster(BootstrapContext<PlacedFeature> ctx,
-                                             Holder<ConfiguredFeature<?, ?>> configuration) {
+                                             Holder<Feature> configuration) {
         List<PlacementModifier> modifiers = List.of(
                 CountPlacement.of(UniformInt.of(1, 2)),
                 InSquarePlacement.spread(),
@@ -91,7 +91,7 @@ public class ModPlacedFeatures {
     }
 
     private static void registerRock(BootstrapContext<PlacedFeature> ctx,
-                                     Holder<ConfiguredFeature<?, ?>> configuration) {
+                                     Holder<Feature> configuration) {
         List<PlacementModifier> modifiers = List.of(
                 CountPlacement.of(2),
                 InSquarePlacement.spread(),
@@ -104,7 +104,7 @@ public class ModPlacedFeatures {
     }
 
     private static void registerMiniVolcano(BootstrapContext<PlacedFeature> ctx,
-                                            Holder<ConfiguredFeature<?, ?>> configuration) {
+                                            Holder<Feature> configuration) {
         List<PlacementModifier> modifiers = List.of(
                 RarityFilter.onAverageOnceEvery(48),
                 InSquarePlacement.spread(),
@@ -117,7 +117,7 @@ public class ModPlacedFeatures {
     }
 
     private static void registerLake(BootstrapContext<PlacedFeature> ctx,
-                                     Holder<ConfiguredFeature<?, ?>> configuration) {
+                                     Holder<Feature> configuration) {
         List<PlacementModifier> modifiers = List.of(
                 RarityFilter.onAverageOnceEvery(18),
                 InSquarePlacement.spread(),
@@ -131,7 +131,7 @@ public class ModPlacedFeatures {
     private static void registerTree(
             BootstrapContext<PlacedFeature> ctx,
             ResourceKey<PlacedFeature> key,
-            Holder<ConfiguredFeature<?, ?>> configuration,
+            Holder<Feature> configuration,
             net.minecraft.world.level.block.Block sapling) {
 
         List<PlacementModifier> modifiers = List.of(
@@ -151,7 +151,7 @@ public class ModPlacedFeatures {
     private static void registerSparseTree(
             BootstrapContext<PlacedFeature> ctx,
             ResourceKey<PlacedFeature> key,
-            Holder<ConfiguredFeature<?, ?>> configuration,
+            Holder<Feature> configuration,
             net.minecraft.world.level.block.Block sapling) {
 
         List<PlacementModifier> modifiers = List.of(
@@ -170,7 +170,7 @@ public class ModPlacedFeatures {
     private static void registerMediumTree(
             BootstrapContext<PlacedFeature> ctx,
             ResourceKey<PlacedFeature> key,
-            Holder<ConfiguredFeature<?, ?>> configuration,
+            Holder<Feature> configuration,
             net.minecraft.world.level.block.Block sapling) {
 
         List<PlacementModifier> modifiers = List.of(

@@ -92,7 +92,7 @@ public class ColetorArcanoBasicoBE extends BlockEntity {
 
         AABB area = new AABB(origin).inflate(RANGE);
         var entities = level.getEntities((Entity) null, area, this::canReceive);
-        entities.sort(Comparator.comparingDouble(entity -> entity.distanceToSqr(origin.getCenter())));
+        entities.sort(Comparator.comparingDouble(entity -> entity.distanceToSqr(Vec3.atCenterOf(origin))));
         for (Entity entity : entities) {
             if (sendToEntity(entity)) {
                 return true;
@@ -122,7 +122,7 @@ public class ColetorArcanoBasicoBE extends BlockEntity {
 
         mana -= accepted;
         if (level instanceof ServerLevel serverLevel) {
-            spawnManaTrail(serverLevel, origin.getCenter().add(0.0, 0.65, 0.0), targetPos.getCenter());
+            spawnManaTrail(serverLevel, Vec3.atCenterOf(origin).add(0.0, 0.65, 0.0), Vec3.atCenterOf(targetPos));
         }
         return true;
     }
@@ -171,7 +171,7 @@ public class ColetorArcanoBasicoBE extends BlockEntity {
             int accepted = Math.clamp(receiver.receiveNonElementalMana(mana), 0, mana);
             mana -= accepted;
             if (accepted > 0 && level instanceof ServerLevel serverLevel) {
-                spawnManaTrail(serverLevel, worldPosition.getCenter().add(0.0, 0.65, 0.0),
+                spawnManaTrail(serverLevel, Vec3.atCenterOf(worldPosition).add(0.0, 0.65, 0.0),
                         entity.position().add(0.0, entity.getBbHeight() * 0.5, 0.0));
             }
             return accepted > 0;
@@ -183,7 +183,7 @@ public class ColetorArcanoBasicoBE extends BlockEntity {
             mana -= accepted;
             player.syncData(ModAttachmentType.MAGIC_STATS);
             if (accepted > 0 && level instanceof ServerLevel serverLevel) {
-                spawnManaTrail(serverLevel, worldPosition.getCenter().add(0.0, 0.65, 0.0),
+                spawnManaTrail(serverLevel, Vec3.atCenterOf(worldPosition).add(0.0, 0.65, 0.0),
                         player.position().add(0.0, player.getBbHeight() * 0.5, 0.0));
             }
             return accepted > 0;
@@ -213,7 +213,7 @@ public class ColetorArcanoBasicoBE extends BlockEntity {
         configuredTarget = targets.get(currentIndex + 1);
         setChanged();
         if (level instanceof ServerLevel serverLevel) {
-            spawnManaTrail(serverLevel, worldPosition.getCenter().add(0.0, 0.65, 0.0), configuredTarget.getCenter());
+            spawnManaTrail(serverLevel, Vec3.atCenterOf(worldPosition).add(0.0, 0.65, 0.0), Vec3.atCenterOf(configuredTarget));
         }
         return true;
     }
@@ -231,7 +231,7 @@ public class ColetorArcanoBasicoBE extends BlockEntity {
     }
 
     private void spawnCollectionParticles(ServerLevel level, BlockPos pos) {
-        Vec3 center = pos.getCenter();
+        Vec3 center = Vec3.atCenterOf(pos);
         level.sendParticles(ParticleTypes.ENCHANT,
                 center.x(), center.y() + 0.9, center.z(),
                 12, 0.35, 0.25, 0.35, 0.02);

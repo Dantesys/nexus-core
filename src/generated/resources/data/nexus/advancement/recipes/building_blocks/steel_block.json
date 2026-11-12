@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:steel_block"
+        "recipes": "nexus:steel_block"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

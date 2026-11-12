@@ -25,7 +25,7 @@ import org.dantesys.nexus.worldgen.features.ModFeatures;
 import org.slf4j.Logger;
 import terrablender.api.RegionType;
 import terrablender.api.Regions;
-import terrablender.api.SurfaceRuleManager;
+import terrablender.api.MaterialRuleManager;
 
 @Mod(Nexus.MODID)
 public class Nexus {
@@ -49,12 +49,12 @@ public class Nexus {
         NeoForge.EVENT_BUS.register(NexusPlayerEvents.class);
         NeoForge.EVENT_BUS.register(NexusServerEvents.class);
 
-        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.LOCAL, Config.SPEC);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
         Regions.register(new ModRegion(Identifier.fromNamespaceAndPath(MODID,"overworld_1"), RegionType.OVERWORLD,1));
-        SurfaceRuleManager.addSurfaceRules(SurfaceRuleManager.RuleCategory.OVERWORLD, MODID, ModSurfaceRule.registerAll());
+        MaterialRuleManager.addRules(MaterialRuleManager.RuleCategory.OVERWORLD, MODID, ModSurfaceRule::registerAll);
     }
 
 }

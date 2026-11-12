@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:ignea_button"
+        "recipes": "nexus:ignea_button"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

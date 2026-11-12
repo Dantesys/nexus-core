@@ -1,6 +1,10 @@
 package org.dantesys.nexus.datagen;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.ItemTags;
 import net.neoforged.neoforge.common.data.ItemTagsProvider;
@@ -16,152 +20,157 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         super(output, lookupProvider, Nexus.MODID);
     }
 
+    // Na 26.3 as tags recebem ResourceKey em vez do item.
+    private static ResourceKey<Item> k(ItemLike item) {
+        return BuiltInRegistries.ITEM.getResourceKey(item.asItem()).orElseThrow();
+    }
+
     @Override
     protected void addTags(HolderLookup.Provider registries) {
         tag(ModTags.Items.ESMERALDAS)
-                .add(ModItems.ESMERALDA_TEMPESTADE.get())
-                .add(ModItems.ESMERALDA_SOMBRIA.get())
-                .add(ModItems.ESMERALDA_VIDA.get())
-                .add(ModItems.ESMERALDA_METAL.get())
-                .add(ModItems.ESMERALDA_IGNEA.get())
-                .add(ModItems.ESMERALDA_LUZ.get());
-        tag(ModTags.Items.NUCLEO).add(ModItems.NUCLEO.get());
+                .add(k(ModItems.ESMERALDA_TEMPESTADE))
+                .add(k(ModItems.ESMERALDA_SOMBRIA))
+                .add(k(ModItems.ESMERALDA_VIDA))
+                .add(k(ModItems.ESMERALDA_METAL))
+                .add(k(ModItems.ESMERALDA_IGNEA))
+                .add(k(ModItems.ESMERALDA_LUZ));
+        tag(ModTags.Items.NUCLEO).add(k(ModItems.NUCLEO));
         tag(ModTags.Items.MATRIZ_RELIQUIA)
-                .add(ModItems.MATRIZ_PRIMORDIAL.get(), ModItems.MATRIZ_SINTETICA.get());
+                .add(k(ModItems.MATRIZ_PRIMORDIAL), k(ModItems.MATRIZ_SINTETICA));
         tag(ModTags.Items.MATRIZ_PRIMORDIAL)
-                .add(ModItems.MATRIZ_PRIMORDIAL.get());
+                .add(k(ModItems.MATRIZ_PRIMORDIAL));
         tag(ModTags.Items.MATRIZ_SINTETICA)
-                .add(ModItems.MATRIZ_SINTETICA.get());
+                .add(k(ModItems.MATRIZ_SINTETICA));
         tag(ModTags.Items.CRISTAIS_RANK_F)
-                .add(ModItems.CRISTAL_MANA_F.get());
+                .add(k(ModItems.CRISTAL_MANA_F));
         tag(ModTags.Items.CRISTAIS_RANK_E)
-                .add(ModItems.CRISTAL_MANA_E.get());
+                .add(k(ModItems.CRISTAL_MANA_E));
         tag(ModTags.Items.CRISTAIS_RANK_D)
-                .add(ModItems.CRISTAL_MANA_D.get());
+                .add(k(ModItems.CRISTAL_MANA_D));
         tag(ModTags.Items.CRISTAIS_RANK_C)
-                .add(ModItems.CRISTAL_MANA_C.get());
+                .add(k(ModItems.CRISTAL_MANA_C));
         tag(ModTags.Items.CRISTAIS_RANK_B)
-                .add(ModItems.CRISTAL_MANA_B.get());
+                .add(k(ModItems.CRISTAL_MANA_B));
         tag(ModTags.Items.CRISTAIS_RANK_A)
-                .add(ModItems.CRISTAL_MANA_A.get());
+                .add(k(ModItems.CRISTAL_MANA_A));
         tag(ModTags.Items.CRISTAIS_RANK_S)
-                .add(ModItems.CRISTAL_MANA_S.get());
-        tag(ModTags.Items.STEEL_INGOTS).add(ModItems.STEEL.get());
-        tag(ModTags.Items.STEEL_STORAGE_BLOCKS).add(ModBlocks.STEEL_BLOCK.get().asItem());
+                .add(k(ModItems.CRISTAL_MANA_S));
+        tag(ModTags.Items.STEEL_INGOTS).add(k(ModItems.STEEL));
+        tag(ModTags.Items.STEEL_STORAGE_BLOCKS).add(k(ModBlocks.STEEL_BLOCK));
 
-        tag(ItemTags.SWORDS).add(ModItems.STEEL_SWORD.get());
-        tag(ItemTags.PICKAXES).add(ModItems.STEEL_PICKAXE.get());
-        tag(ItemTags.AXES).add(ModItems.STEEL_AXE.get());
-        tag(ItemTags.SHOVELS).add(ModItems.STEEL_SHOVEL.get());
-        tag(ItemTags.HOES).add(ModItems.STEEL_HOE.get());
-        tag(ItemTags.SPEARS).add(ModItems.STEEL_SPEAR.get());
-        tag(ItemTags.HEAD_ARMOR).add(ModItems.STEEL_HELMET.get());
-        tag(ItemTags.CHEST_ARMOR).add(ModItems.STEEL_CHESTPLATE.get());
-        tag(ItemTags.LEG_ARMOR).add(ModItems.STEEL_LEGGINGS.get());
-        tag(ItemTags.FOOT_ARMOR).add(ModItems.STEEL_BOOTS.get());
+        tag(ItemTags.SWORDS).add(k(ModItems.STEEL_SWORD));
+        tag(ItemTags.PICKAXES).add(k(ModItems.STEEL_PICKAXE));
+        tag(ItemTags.AXES).add(k(ModItems.STEEL_AXE));
+        tag(ItemTags.SHOVELS).add(k(ModItems.STEEL_SHOVEL));
+        tag(ItemTags.HOES).add(k(ModItems.STEEL_HOE));
+        tag(ItemTags.SPEARS).add(k(ModItems.STEEL_SPEAR));
+        tag(ItemTags.HEAD_ARMOR).add(k(ModItems.STEEL_HELMET));
+        tag(ItemTags.CHEST_ARMOR).add(k(ModItems.STEEL_CHESTPLATE));
+        tag(ItemTags.LEG_ARMOR).add(k(ModItems.STEEL_LEGGINGS));
+        tag(ItemTags.FOOT_ARMOR).add(k(ModItems.STEEL_BOOTS));
 
         tag(ItemTags.MELEE_WEAPON_ENCHANTABLE)
-                .add(ModItems.STEEL_SWORD.get())
-                .add(ModItems.STEEL_AXE.get())
-                .add(ModItems.STEEL_SPEAR.get());
+                .add(k(ModItems.STEEL_SWORD))
+                .add(k(ModItems.STEEL_AXE))
+                .add(k(ModItems.STEEL_SPEAR));
         tag(ItemTags.WEAPON_ENCHANTABLE)
-                .add(ModItems.STEEL_SWORD.get())
-                .add(ModItems.STEEL_SPEAR.get());
-        tag(ItemTags.LUNGE_ENCHANTABLE).add(ModItems.STEEL_SPEAR.get());
-        tag(ItemTags.SWEEPING_ENCHANTABLE).add(ModItems.STEEL_SWORD.get());
-        tag(ItemTags.FIRE_ASPECT_ENCHANTABLE).add(ModItems.STEEL_SWORD.get());
+                .add(k(ModItems.STEEL_SWORD))
+                .add(k(ModItems.STEEL_SPEAR));
+        tag(ItemTags.LUNGE_ENCHANTABLE).add(k(ModItems.STEEL_SPEAR));
+        tag(ItemTags.SWEEPING_ENCHANTABLE).add(k(ModItems.STEEL_SWORD));
+        tag(ItemTags.FIRE_ASPECT_ENCHANTABLE).add(k(ModItems.STEEL_SWORD));
         tag(ItemTags.SHARP_WEAPON_ENCHANTABLE)
-                .add(ModItems.STEEL_SWORD.get())
-                .add(ModItems.STEEL_AXE.get());
+                .add(k(ModItems.STEEL_SWORD))
+                .add(k(ModItems.STEEL_AXE));
         tag(ItemTags.MINING_ENCHANTABLE)
-                .add(ModItems.STEEL_PICKAXE.get())
-                .add(ModItems.STEEL_AXE.get())
-                .add(ModItems.STEEL_SHOVEL.get())
-                .add(ModItems.STEEL_HOE.get());
+                .add(k(ModItems.STEEL_PICKAXE))
+                .add(k(ModItems.STEEL_AXE))
+                .add(k(ModItems.STEEL_SHOVEL))
+                .add(k(ModItems.STEEL_HOE));
         tag(ItemTags.MINING_LOOT_ENCHANTABLE)
-                .add(ModItems.STEEL_PICKAXE.get())
-                .add(ModItems.STEEL_AXE.get())
-                .add(ModItems.STEEL_SHOVEL.get())
-                .add(ModItems.STEEL_HOE.get());
-        tag(ItemTags.HEAD_ARMOR_ENCHANTABLE).add(ModItems.STEEL_HELMET.get());
-        tag(ItemTags.CHEST_ARMOR_ENCHANTABLE).add(ModItems.STEEL_CHESTPLATE.get());
-        tag(ItemTags.LEG_ARMOR_ENCHANTABLE).add(ModItems.STEEL_LEGGINGS.get());
-        tag(ItemTags.FOOT_ARMOR_ENCHANTABLE).add(ModItems.STEEL_BOOTS.get());
+                .add(k(ModItems.STEEL_PICKAXE))
+                .add(k(ModItems.STEEL_AXE))
+                .add(k(ModItems.STEEL_SHOVEL))
+                .add(k(ModItems.STEEL_HOE));
+        tag(ItemTags.HEAD_ARMOR_ENCHANTABLE).add(k(ModItems.STEEL_HELMET));
+        tag(ItemTags.CHEST_ARMOR_ENCHANTABLE).add(k(ModItems.STEEL_CHESTPLATE));
+        tag(ItemTags.LEG_ARMOR_ENCHANTABLE).add(k(ModItems.STEEL_LEGGINGS));
+        tag(ItemTags.FOOT_ARMOR_ENCHANTABLE).add(k(ModItems.STEEL_BOOTS));
         tag(ItemTags.ARMOR_ENCHANTABLE)
-                .add(ModItems.STEEL_HELMET.get())
-                .add(ModItems.STEEL_CHESTPLATE.get())
-                .add(ModItems.STEEL_LEGGINGS.get())
-                .add(ModItems.STEEL_BOOTS.get());
+                .add(k(ModItems.STEEL_HELMET))
+                .add(k(ModItems.STEEL_CHESTPLATE))
+                .add(k(ModItems.STEEL_LEGGINGS))
+                .add(k(ModItems.STEEL_BOOTS));
         tag(ItemTags.EQUIPPABLE_ENCHANTABLE)
-                .add(ModItems.STEEL_HELMET.get())
-                .add(ModItems.STEEL_CHESTPLATE.get())
-                .add(ModItems.STEEL_LEGGINGS.get())
-                .add(ModItems.STEEL_BOOTS.get());
+                .add(k(ModItems.STEEL_HELMET))
+                .add(k(ModItems.STEEL_CHESTPLATE))
+                .add(k(ModItems.STEEL_LEGGINGS))
+                .add(k(ModItems.STEEL_BOOTS));
         tag(ItemTags.DURABILITY_ENCHANTABLE)
-                .add(ModItems.STEEL_SWORD.get())
-                .add(ModItems.STEEL_PICKAXE.get())
-                .add(ModItems.STEEL_AXE.get())
-                .add(ModItems.STEEL_SHOVEL.get())
-                .add(ModItems.STEEL_HOE.get())
-                .add(ModItems.STEEL_SPEAR.get())
-                .add(ModItems.STEEL_HELMET.get())
-                .add(ModItems.STEEL_CHESTPLATE.get())
-                .add(ModItems.STEEL_LEGGINGS.get())
-                .add(ModItems.STEEL_BOOTS.get());
+                .add(k(ModItems.STEEL_SWORD))
+                .add(k(ModItems.STEEL_PICKAXE))
+                .add(k(ModItems.STEEL_AXE))
+                .add(k(ModItems.STEEL_SHOVEL))
+                .add(k(ModItems.STEEL_HOE))
+                .add(k(ModItems.STEEL_SPEAR))
+                .add(k(ModItems.STEEL_HELMET))
+                .add(k(ModItems.STEEL_CHESTPLATE))
+                .add(k(ModItems.STEEL_LEGGINGS))
+                .add(k(ModItems.STEEL_BOOTS));
         tag(ItemTags.VANISHING_ENCHANTABLE)
-                .add(ModItems.STEEL_SWORD.get())
-                .add(ModItems.STEEL_PICKAXE.get())
-                .add(ModItems.STEEL_AXE.get())
-                .add(ModItems.STEEL_SHOVEL.get())
-                .add(ModItems.STEEL_HOE.get())
-                .add(ModItems.STEEL_SPEAR.get())
-                .add(ModItems.STEEL_HELMET.get())
-                .add(ModItems.STEEL_CHESTPLATE.get())
-                .add(ModItems.STEEL_LEGGINGS.get())
-                .add(ModItems.STEEL_BOOTS.get());
+                .add(k(ModItems.STEEL_SWORD))
+                .add(k(ModItems.STEEL_PICKAXE))
+                .add(k(ModItems.STEEL_AXE))
+                .add(k(ModItems.STEEL_SHOVEL))
+                .add(k(ModItems.STEEL_HOE))
+                .add(k(ModItems.STEEL_SPEAR))
+                .add(k(ModItems.STEEL_HELMET))
+                .add(k(ModItems.STEEL_CHESTPLATE))
+                .add(k(ModItems.STEEL_LEGGINGS))
+                .add(k(ModItems.STEEL_BOOTS));
         tag(ItemTags.PLANKS)
-                .add(ModBlocks.IGNEA_PLANKS.asItem())
-                .add(ModBlocks.LUZ_PLANKS.asItem())
-                .add(ModBlocks.METAL_PLANKS.asItem())
-                .add(ModBlocks.SOMBRIA_PLANKS.asItem())
-                .add(ModBlocks.TEMPESTADE_PLANKS.asItem())
-                .add(ModBlocks.VIDA_PLANKS.asItem());
+                .add(k(ModBlocks.IGNEA_PLANKS))
+                .add(k(ModBlocks.LUZ_PLANKS))
+                .add(k(ModBlocks.METAL_PLANKS))
+                .add(k(ModBlocks.SOMBRIA_PLANKS))
+                .add(k(ModBlocks.TEMPESTADE_PLANKS))
+                .add(k(ModBlocks.VIDA_PLANKS));
         tag(ItemTags.LOGS)
-                .add(ModBlocks.IGNEA_LOG.asItem(), ModBlocks.STRIPPED_IGNEA_LOG.asItem())
-                .add(ModBlocks.LUZ_LOG.asItem(), ModBlocks.STRIPPED_LUZ_LOG.asItem())
-                .add(ModBlocks.METAL_LOG.asItem(), ModBlocks.STRIPPED_METAL_LOG.asItem())
-                .add(ModBlocks.SOMBRIA_LOG.asItem(), ModBlocks.STRIPPED_SOMBRIA_LOG.asItem())
-                .add(ModBlocks.TEMPESTADE_LOG.asItem(), ModBlocks.STRIPPED_TEMPESTADE_LOG.asItem())
-                .add(ModBlocks.VIDA_LOG.asItem(), ModBlocks.STRIPPED_VIDA_LOG.asItem());
+                .add(k(ModBlocks.IGNEA_LOG), k(ModBlocks.STRIPPED_IGNEA_LOG))
+                .add(k(ModBlocks.LUZ_LOG), k(ModBlocks.STRIPPED_LUZ_LOG))
+                .add(k(ModBlocks.METAL_LOG), k(ModBlocks.STRIPPED_METAL_LOG))
+                .add(k(ModBlocks.SOMBRIA_LOG), k(ModBlocks.STRIPPED_SOMBRIA_LOG))
+                .add(k(ModBlocks.TEMPESTADE_LOG), k(ModBlocks.STRIPPED_TEMPESTADE_LOG))
+                .add(k(ModBlocks.VIDA_LOG), k(ModBlocks.STRIPPED_VIDA_LOG));
         tag(ItemTags.WOODEN_STAIRS)
-                .add(ModBlocks.IGNEA_STAIRS.asItem(), ModBlocks.LUZ_STAIRS.asItem(), ModBlocks.METAL_STAIRS.asItem())
-                .add(ModBlocks.SOMBRIA_STAIRS.asItem(), ModBlocks.TEMPESTADE_STAIRS.asItem(), ModBlocks.VIDA_STAIRS.asItem());
+                .add(k(ModBlocks.IGNEA_STAIRS), k(ModBlocks.LUZ_STAIRS), k(ModBlocks.METAL_STAIRS))
+                .add(k(ModBlocks.SOMBRIA_STAIRS), k(ModBlocks.TEMPESTADE_STAIRS), k(ModBlocks.VIDA_STAIRS));
         tag(ItemTags.WOODEN_SLABS)
-                .add(ModBlocks.IGNEA_SLAB.asItem(), ModBlocks.LUZ_SLAB.asItem(), ModBlocks.METAL_SLAB.asItem())
-                .add(ModBlocks.SOMBRIA_SLAB.asItem(), ModBlocks.TEMPESTADE_SLAB.asItem(), ModBlocks.VIDA_SLAB.asItem());
+                .add(k(ModBlocks.IGNEA_SLAB), k(ModBlocks.LUZ_SLAB), k(ModBlocks.METAL_SLAB))
+                .add(k(ModBlocks.SOMBRIA_SLAB), k(ModBlocks.TEMPESTADE_SLAB), k(ModBlocks.VIDA_SLAB));
         tag(ItemTags.WOODEN_BUTTONS)
-                .add(ModBlocks.IGNEA_BUTTON.asItem(), ModBlocks.LUZ_BUTTON.asItem(), ModBlocks.METAL_BUTTON.asItem())
-                .add(ModBlocks.SOMBRIA_BUTTON.asItem(), ModBlocks.TEMPESTADE_BUTTON.asItem(), ModBlocks.VIDA_BUTTON.asItem());
+                .add(k(ModBlocks.IGNEA_BUTTON), k(ModBlocks.LUZ_BUTTON), k(ModBlocks.METAL_BUTTON))
+                .add(k(ModBlocks.SOMBRIA_BUTTON), k(ModBlocks.TEMPESTADE_BUTTON), k(ModBlocks.VIDA_BUTTON));
         tag(ItemTags.WOODEN_PRESSURE_PLATES)
-                .add(ModBlocks.IGNEA_PRESSURE_PLATE.asItem(), ModBlocks.LUZ_PRESSURE_PLATE.asItem(), ModBlocks.METAL_PRESSURE_PLATE.asItem())
-                .add(ModBlocks.SOMBRIA_PRESSURE_PLATE.asItem(), ModBlocks.TEMPESTADE_PRESSURE_PLATE.asItem(), ModBlocks.VIDA_PRESSURE_PLATE.asItem());
+                .add(k(ModBlocks.IGNEA_PRESSURE_PLATE), k(ModBlocks.LUZ_PRESSURE_PLATE), k(ModBlocks.METAL_PRESSURE_PLATE))
+                .add(k(ModBlocks.SOMBRIA_PRESSURE_PLATE), k(ModBlocks.TEMPESTADE_PRESSURE_PLATE), k(ModBlocks.VIDA_PRESSURE_PLATE));
         tag(ItemTags.WOODEN_DOORS)
-                .add(ModBlocks.IGNEA_DOOR.asItem(), ModBlocks.LUZ_DOOR.asItem(), ModBlocks.METAL_DOOR.asItem())
-                .add(ModBlocks.SOMBRIA_DOOR.asItem(), ModBlocks.TEMPESTADE_DOOR.asItem(), ModBlocks.VIDA_DOOR.asItem());
+                .add(k(ModBlocks.IGNEA_DOOR), k(ModBlocks.LUZ_DOOR), k(ModBlocks.METAL_DOOR))
+                .add(k(ModBlocks.SOMBRIA_DOOR), k(ModBlocks.TEMPESTADE_DOOR), k(ModBlocks.VIDA_DOOR));
         tag(ItemTags.WOODEN_TRAPDOORS)
-                .add(ModBlocks.IGNEA_TRAPDOOR.asItem(), ModBlocks.LUZ_TRAPDOOR.asItem(), ModBlocks.METAL_TRAPDOOR.asItem())
-                .add(ModBlocks.SOMBRIA_TRAPDOOR.asItem(), ModBlocks.TEMPESTADE_TRAPDOOR.asItem(), ModBlocks.VIDA_TRAPDOOR.asItem());
+                .add(k(ModBlocks.IGNEA_TRAPDOOR), k(ModBlocks.LUZ_TRAPDOOR), k(ModBlocks.METAL_TRAPDOOR))
+                .add(k(ModBlocks.SOMBRIA_TRAPDOOR), k(ModBlocks.TEMPESTADE_TRAPDOOR), k(ModBlocks.VIDA_TRAPDOOR));
         tag(ItemTags.WOODEN_FENCES)
-                .add(ModBlocks.IGNEA_FENCE.asItem(), ModBlocks.LUZ_FENCE.asItem(), ModBlocks.METAL_FENCE.asItem())
-                .add(ModBlocks.SOMBRIA_FENCE.asItem(), ModBlocks.TEMPESTADE_FENCE.asItem(), ModBlocks.VIDA_FENCE.asItem());
+                .add(k(ModBlocks.IGNEA_FENCE), k(ModBlocks.LUZ_FENCE), k(ModBlocks.METAL_FENCE))
+                .add(k(ModBlocks.SOMBRIA_FENCE), k(ModBlocks.TEMPESTADE_FENCE), k(ModBlocks.VIDA_FENCE));
         tag(ItemTags.FENCE_GATES)
-                .add(ModBlocks.IGNEA_FENCE_GATE.asItem(), ModBlocks.LUZ_FENCE_GATE.asItem(), ModBlocks.METAL_FENCE_GATE.asItem())
-                .add(ModBlocks.SOMBRIA_FENCE_GATE.asItem(), ModBlocks.TEMPESTADE_FENCE_GATE.asItem(), ModBlocks.VIDA_FENCE_GATE.asItem());
+                .add(k(ModBlocks.IGNEA_FENCE_GATE), k(ModBlocks.LUZ_FENCE_GATE), k(ModBlocks.METAL_FENCE_GATE))
+                .add(k(ModBlocks.SOMBRIA_FENCE_GATE), k(ModBlocks.TEMPESTADE_FENCE_GATE), k(ModBlocks.VIDA_FENCE_GATE));
         tag(ItemTags.LEAVES)
-                .add(ModBlocks.IGNEA_LEAVES.asItem(), ModBlocks.LUZ_LEAVES.asItem(), ModBlocks.METAL_LEAVES.asItem())
-                .add(ModBlocks.SOMBRIA_LEAVES.asItem(), ModBlocks.TEMPESTADE_LEAVES.asItem(), ModBlocks.VIDA_LEAVES.asItem());
+                .add(k(ModBlocks.IGNEA_LEAVES), k(ModBlocks.LUZ_LEAVES), k(ModBlocks.METAL_LEAVES))
+                .add(k(ModBlocks.SOMBRIA_LEAVES), k(ModBlocks.TEMPESTADE_LEAVES), k(ModBlocks.VIDA_LEAVES));
         tag(ItemTags.SAPLINGS)
-                .add(ModBlocks.IGNEA_SAPLING.asItem(), ModBlocks.LUZ_SAPLING.asItem(), ModBlocks.METAL_SAPLING.asItem())
-                .add(ModBlocks.SOMBRIA_SAPLING.asItem(), ModBlocks.TEMPESTADE_SAPLING.asItem(), ModBlocks.VIDA_SAPLING.asItem());
+                .add(k(ModBlocks.IGNEA_SAPLING), k(ModBlocks.LUZ_SAPLING), k(ModBlocks.METAL_SAPLING))
+                .add(k(ModBlocks.SOMBRIA_SAPLING), k(ModBlocks.TEMPESTADE_SAPLING), k(ModBlocks.VIDA_SAPLING));
     }
 }

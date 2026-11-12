@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:metal_button"
+        "recipes": "nexus:metal_button"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

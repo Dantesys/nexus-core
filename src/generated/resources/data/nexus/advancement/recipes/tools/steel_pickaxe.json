@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:steel_pickaxe"
+        "recipes": "nexus:steel_pickaxe"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:vida_door"
+        "recipes": "nexus:vida_door"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

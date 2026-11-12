@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:metal_planks_from_metal_log"
+        "recipes": "nexus:metal_planks_from_metal_log"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

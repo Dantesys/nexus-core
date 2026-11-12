@@ -1,6 +1,6 @@
 package org.dantesys.nexus.effects;
 
-import net.minecraft.ChatFormatting;
+import net.minecraft.world.scores.TeamColor;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
@@ -70,7 +70,7 @@ public class PeleMana extends MobEffect {
             team = scoreboard.addPlayerTeam(teamName);
         }
 
-        team.setColor(manaSkinColor(elemento));
+        team.setColor(java.util.Optional.of(manaSkinColor(elemento)));
         return team;
     }
 
@@ -86,15 +86,15 @@ public class PeleMana extends MobEffect {
         };
     }
 
-    private static ChatFormatting manaSkinColor(Elementos elemento) {
+    private static TeamColor manaSkinColor(Elementos elemento) {
         return switch (elemento) {
-            case TEMPESTADE -> ChatFormatting.AQUA;
-            case SOMBRA -> ChatFormatting.DARK_PURPLE;
-            case IGNEA -> ChatFormatting.RED;
-            case LUZ -> ChatFormatting.YELLOW;
-            case VIDA -> ChatFormatting.GREEN;
-            case METAL -> ChatFormatting.GRAY;
-            case NAO_ELEMENTAL -> ChatFormatting.LIGHT_PURPLE;
+            case TEMPESTADE -> TeamColor.AQUA;
+            case SOMBRA -> TeamColor.DARK_PURPLE;
+            case IGNEA -> TeamColor.RED;
+            case LUZ -> TeamColor.YELLOW;
+            case VIDA -> TeamColor.GREEN;
+            case METAL -> TeamColor.GRAY;
+            case NAO_ELEMENTAL -> TeamColor.LIGHT_PURPLE;
         };
     }
 }

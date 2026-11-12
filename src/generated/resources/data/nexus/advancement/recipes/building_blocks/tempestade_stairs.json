@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:tempestade_stairs"
+        "recipes": "nexus:tempestade_stairs"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

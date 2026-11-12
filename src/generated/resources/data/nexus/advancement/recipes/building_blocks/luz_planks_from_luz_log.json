@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:luz_planks_from_luz_log"
+        "recipes": "nexus:luz_planks_from_luz_log"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

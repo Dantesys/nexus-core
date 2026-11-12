@@ -1,23 +1,34 @@
 package org.dantesys.nexus.worldgen.features;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.TreeConfiguration;
+import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.treedecorators.TreeDecorator;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-public class VidaTreeFeature extends Feature<TreeConfiguration> {
+/** Árvore da Floresta Viva: tronco, folhas e decoradores vêm da configuração (JSON). */
+public record VidaTreeFeature(Holder<BlockStateProvider> trunkProvider, Holder<BlockStateProvider> foliageProvider,
+                              List<TreeDecorator> decorators) implements Feature {
+    public static final MapCodec<VidaTreeFeature> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+            BlockStateProvider.CODEC.fieldOf("trunk_provider").forGetter(VidaTreeFeature::trunkProvider),
+            BlockStateProvider.CODEC.fieldOf("foliage_provider").forGetter(VidaTreeFeature::foliageProvider),
+            TreeDecorator.CODEC.listOf().optionalFieldOf("decorators", List.of()).forGetter(VidaTreeFeature::decorators)
+    ).apply(i, VidaTreeFeature::new));
+
     private static final Direction[] HORIZONTAL_DIRECTIONS = {
             Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST
     };
@@ -26,16 +37,15 @@ public class VidaTreeFeature extends Feature<TreeConfiguration> {
     private static final TreeVariant WIDE_NATURAL = new TreeVariant(8, 11, 6, 0.68F, 3, 2);
     private static final TreeVariant ANCESTRAL = new TreeVariant(15, 19, 7, 0.92F, 4, 3);
 
-    public VidaTreeFeature(Codec<TreeConfiguration> codec) {
-        super(codec);
+    @Override
+    public MapCodec<VidaTreeFeature> codec() {
+        return CODEC;
     }
 
+
+
     @Override
-    public boolean place(FeaturePlaceContext<TreeConfiguration> context) {
-        WorldGenLevel level = context.level();
-        RandomSource random = context.random();
-        BlockPos origin = context.origin();
-        TreeConfiguration config = context.config();
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
         TreeVariant variant = selectVariant(random);
         int height = variant.minHeight() + random.nextInt(variant.maxHeight() - variant.minHeight() + 1);
 
@@ -51,8 +61,8 @@ public class VidaTreeFeature extends Feature<TreeConfiguration> {
         Set<BlockPos> roots = new HashSet<>();
         Set<BlockPos> decorations = new HashSet<>();
 
-        BlockState log = config.trunkProvider.getState(level, random, origin);
-        BlockState leaf = withLeafDistance(config.foliageProvider.getState(level, random, origin), 7);
+        BlockState log = trunkProvider.value().getState(level, random, origin);
+        BlockState leaf = withLeafDistance(foliageProvider.value().getState(level, random, origin), 7);
 
         placeRoots(level, random, origin, log, roots, variant);
         for (int y = 0; y < height; y++) {
@@ -66,9 +76,9 @@ public class VidaTreeFeature extends Feature<TreeConfiguration> {
             decorations.add(pos.immutable());
             level.setBlock(pos, state, 19);
         };
-        if (!config.decorators.isEmpty()) {
+        if (!decorators.isEmpty()) {
             TreeDecorator.Context decoratorContext = new TreeDecorator.Context(level, decorationSetter, random, logs, leaves, roots);
-            config.decorators.forEach(decorator -> decorator.place(decoratorContext));
+            decorators.forEach(decorator -> decorator.place(decoratorContext));
         }
 
         return true;

@@ -1,6 +1,6 @@
 package org.dantesys.nexus.worldgen.features;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
@@ -8,21 +8,27 @@ import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 
-public class IgneaMagmaClusterFeature extends Feature<NoneFeatureConfiguration> {
+public final class IgneaMagmaClusterFeature implements Feature {
+    public static final IgneaMagmaClusterFeature INSTANCE = new IgneaMagmaClusterFeature();
+    public static final MapCodec<IgneaMagmaClusterFeature> CODEC = MapCodec.unit(INSTANCE);
+
     private static final BlockState MAGMA = Blocks.MAGMA_BLOCK.defaultBlockState();
 
-    public IgneaMagmaClusterFeature(Codec<NoneFeatureConfiguration> codec) {
-        super(codec);
+    private IgneaMagmaClusterFeature() {
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
-        RandomSource random = context.random();
-        BlockPos origin = findSurface(level, context.origin());
+    public MapCodec<IgneaMagmaClusterFeature> codec() {
+        return CODEC;
+    }
+
+
+
+    @Override
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos start) {
+        BlockPos origin = findSurface(level, start);
         int radius = 2 + random.nextInt(2);
 
         if (origin.getY() <= level.getMinY() + 1 || origin.getY() + 2 >= level.getMaxY()) {

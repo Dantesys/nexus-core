@@ -3,7 +3,7 @@
   "criteria": {
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:vida_slab"
+        "recipes": "nexus:vida_slab"
       },
       "trigger": "minecraft:recipe_unlocked"
     },

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:metal_door"
+        "recipes": "nexus:metal_door"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

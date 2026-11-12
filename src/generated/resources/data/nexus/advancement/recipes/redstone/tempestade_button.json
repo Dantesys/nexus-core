@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:tempestade_button"
+        "recipes": "nexus:tempestade_button"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -1,5 +1,6 @@
 package org.dantesys.nexus.worldgen;
 
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
@@ -14,7 +15,7 @@ import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
+import net.minecraft.world.level.levelgen.carver.WorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import org.dantesys.nexus.Nexus;
 
@@ -28,7 +29,7 @@ public class ModBiomes {
 
     public static void bootstrap(BootstrapContext<Biome> ctx) {
         HolderGetter<PlacedFeature> placed = ctx.lookup(Registries.PLACED_FEATURE);
-        HolderGetter<ConfiguredWorldCarver<?>> carvers = ctx.lookup(Registries.CONFIGURED_CARVER);
+        HolderGetter<WorldCarver> carvers = ctx.lookup(Registries.CARVER);
         BiomeGenerationSettings.Builder igneaGen = new BiomeGenerationSettings.Builder(placed, carvers);
         igneaGen.addFeature(GenerationStep.Decoration.LAKES, ModPlacedFeatures.IGNEA_LAVA_LAKE_PLACED_KEY);
         igneaGen.addFeature(GenerationStep.Decoration.LOCAL_MODIFICATIONS, ModPlacedFeatures.IGNEA_ROCK_PLACED_KEY);
@@ -175,12 +176,12 @@ public class ModBiomes {
     private static MobSpawnSettings createSombriaSpawns() {
         MobSpawnSettings.Builder spawns = new MobSpawnSettings.Builder();
 
-        addSpawn(spawns, MobCategory.MONSTER, 100, EntityType.ZOMBIE, 2, 4);
-        addSpawn(spawns, MobCategory.MONSTER, 100, EntityType.SKELETON, 2, 4);
-        addSpawn(spawns, MobCategory.MONSTER, 80, EntityType.SPIDER, 1, 4);
-        addSpawn(spawns, MobCategory.MONSTER, 70, EntityType.CREEPER, 1, 3);
-        addSpawn(spawns, MobCategory.MONSTER, 30, EntityType.ENDERMAN, 1, 2);
-        addSpawn(spawns, MobCategory.MONSTER, 12, EntityType.WITCH, 1, 1);
+        addSpawn(spawns, MobCategory.MONSTER, 100, EntityTypes.ZOMBIE, 2, 4);
+        addSpawn(spawns, MobCategory.MONSTER, 100, EntityTypes.SKELETON, 2, 4);
+        addSpawn(spawns, MobCategory.MONSTER, 80, EntityTypes.SPIDER, 1, 4);
+        addSpawn(spawns, MobCategory.MONSTER, 70, EntityTypes.CREEPER, 1, 3);
+        addSpawn(spawns, MobCategory.MONSTER, 30, EntityTypes.ENDERMAN, 1, 2);
+        addSpawn(spawns, MobCategory.MONSTER, 12, EntityTypes.WITCH, 1, 1);
 
         return spawns.build();
     }
@@ -188,8 +189,8 @@ public class ModBiomes {
     private static MobSpawnSettings createIgneaSpawns() {
         MobSpawnSettings.Builder spawns = new MobSpawnSettings.Builder();
 
-        addSpawn(spawns, MobCategory.MONSTER, 90, EntityType.MAGMA_CUBE, 1, 4);
-        addSpawn(spawns, MobCategory.MONSTER, 3, EntityType.BLAZE, 1, 1);
+        addSpawn(spawns, MobCategory.MONSTER, 90, EntityTypes.MAGMA_CUBE, 1, 4);
+        addSpawn(spawns, MobCategory.MONSTER, 3, EntityTypes.BLAZE, 1, 1);
 
         return spawns.build();
     }
@@ -198,9 +199,9 @@ public class ModBiomes {
         MobSpawnSettings.Builder spawns = new MobSpawnSettings.Builder();
 
         addPeacefulLandSpawns(spawns, 4);
-        addSpawn(spawns, MobCategory.CREATURE, 2, EntityType.HORSE, 2, 3);
-        addSpawn(spawns, MobCategory.CREATURE, 1, EntityType.DONKEY, 1, 2);
-        addSpawn(spawns, MobCategory.CREATURE, 1, EntityType.PARROT, 1, 2);
+        addSpawn(spawns, MobCategory.CREATURE, 2, EntityTypes.HORSE, 2, 3);
+        addSpawn(spawns, MobCategory.CREATURE, 1, EntityTypes.DONKEY, 1, 2);
+        addSpawn(spawns, MobCategory.CREATURE, 1, EntityTypes.PARROT, 1, 2);
 
         return spawns.build();
     }
@@ -209,7 +210,7 @@ public class ModBiomes {
         MobSpawnSettings.Builder spawns = new MobSpawnSettings.Builder();
 
         addPeacefulLandSpawns(spawns, 20);
-        addSpawn(spawns, MobCategory.MONSTER, 2, EntityType.BREEZE, 1, 1);
+        addSpawn(spawns, MobCategory.MONSTER, 2, EntityTypes.BREEZE, 1, 1);
 
         return spawns.build();
     }
@@ -227,33 +228,34 @@ public class ModBiomes {
 
         // Fauna terrestre estritamente pacifica.
         addPeacefulLandSpawns(spawns, 10);
-        addSpawn(spawns, MobCategory.CREATURE, 5, EntityType.HORSE, 2, 4);
-        addSpawn(spawns, MobCategory.CREATURE, 2, EntityType.DONKEY, 1, 2);
-        addSpawn(spawns, MobCategory.CREATURE, 4, EntityType.PARROT, 1, 2);
+        addSpawn(spawns, MobCategory.CREATURE, 5, EntityTypes.HORSE, 2, 4);
+        addSpawn(spawns, MobCategory.CREATURE, 2, EntityTypes.DONKEY, 1, 2);
+        addSpawn(spawns, MobCategory.CREATURE, 4, EntityTypes.PARROT, 1, 2);
 
         // Fauna pacifica para rios, lagos e porcoes oceanicas do bioma.
-        addSpawn(spawns, MobCategory.WATER_AMBIENT, 15, EntityType.COD, 3, 6);
-        addSpawn(spawns, MobCategory.WATER_AMBIENT, 15, EntityType.SALMON, 3, 6);
-        addSpawn(spawns, MobCategory.WATER_AMBIENT, 8, EntityType.TROPICAL_FISH, 3, 6);
-        addSpawn(spawns, MobCategory.WATER_CREATURE, 10, EntityType.SQUID, 1, 4);
-        addSpawn(spawns, MobCategory.WATER_CREATURE, 2, EntityType.DOLPHIN, 1, 2);
-        addSpawn(spawns, MobCategory.AXOLOTLS, 4, EntityType.AXOLOTL, 1, 2);
-        addSpawn(spawns, MobCategory.UNDERGROUND_WATER_CREATURE, 5, EntityType.GLOW_SQUID, 1, 3);
+        addSpawn(spawns, MobCategory.WATER_AMBIENT, 15, EntityTypes.COD, 3, 6);
+        addSpawn(spawns, MobCategory.WATER_AMBIENT, 15, EntityTypes.SALMON, 3, 6);
+        addSpawn(spawns, MobCategory.WATER_AMBIENT, 8, EntityTypes.TROPICAL_FISH, 3, 6);
+        addSpawn(spawns, MobCategory.WATER_CREATURE, 10, EntityTypes.SQUID, 1, 4);
+        addSpawn(spawns, MobCategory.WATER_CREATURE, 2, EntityTypes.DOLPHIN, 1, 2);
+        addSpawn(spawns, MobCategory.AXOLOTLS, 4, EntityTypes.AXOLOTL, 1, 2);
+        addSpawn(spawns, MobCategory.UNDERGROUND_WATER_CREATURE, 5, EntityTypes.GLOW_SQUID, 1, 3);
 
         return spawns.build();
     }
 
     private static void addPeacefulLandSpawns(MobSpawnSettings.Builder spawns, int baseWeight) {
-        addSpawn(spawns, MobCategory.CREATURE, baseWeight + 2, EntityType.SHEEP, 2, 4);
-        addSpawn(spawns, MobCategory.CREATURE, baseWeight, EntityType.PIG, 2, 4);
-        addSpawn(spawns, MobCategory.CREATURE, baseWeight, EntityType.CHICKEN, 2, 4);
-        addSpawn(spawns, MobCategory.CREATURE, baseWeight, EntityType.COW, 2, 4);
-        addSpawn(spawns, MobCategory.CREATURE, Math.max(1, baseWeight - 2), EntityType.RABBIT, 2, 3);
+        addSpawn(spawns, MobCategory.CREATURE, baseWeight + 2, EntityTypes.SHEEP, 2, 4);
+        addSpawn(spawns, MobCategory.CREATURE, baseWeight, EntityTypes.PIG, 2, 4);
+        addSpawn(spawns, MobCategory.CREATURE, baseWeight, EntityTypes.CHICKEN, 2, 4);
+        addSpawn(spawns, MobCategory.CREATURE, baseWeight, EntityTypes.COW, 2, 4);
+        addSpawn(spawns, MobCategory.CREATURE, Math.max(1, baseWeight - 2), EntityTypes.RABBIT, 2, 3);
     }
 
     private static void addSpawn(MobSpawnSettings.Builder spawns, MobCategory category, int weight,
                                  EntityType<?> entityType, int minCount, int maxCount) {
-        spawns.addSpawn(category, weight, new MobSpawnSettings.SpawnerData(entityType, minCount, maxCount));
+        // Na 26.3 a categoria vem do próprio tipo de entidade.
+        spawns.addSpawn(entityType, weight, minCount, maxCount);
     }
 
     private static ResourceKey<Biome> registerKey(String name) {

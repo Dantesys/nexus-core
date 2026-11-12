@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "nexus:steel_helmet"
+        "recipes": "nexus:steel_helmet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
