@@ -198,6 +198,12 @@ public class InfusorArcanoBasicoBE extends BlockEntity implements Container, Men
         if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
+        // Sem ingredientes não há receita: evita buscar receita todo tick em infusor vazio.
+        if (Arrays.stream(CRAFT_SLOTS).allMatch(slot -> infusor.items.get(slot).isEmpty())) {
+            infusor.resetProgress();
+            infusor.updateCraftingState(level, pos, false);
+            return;
+        }
         var recipe = infusor.findRecipe(serverLevel);
 
         boolean canCraft = recipe != null && infusor.canAccept(recipe.output().create());

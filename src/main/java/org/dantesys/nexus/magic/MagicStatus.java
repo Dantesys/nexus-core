@@ -214,11 +214,15 @@ public class MagicStatus implements ValueIOSerializable {
         Elementos[] values = Elementos.values();
         int index = selectedMana.ordinal();
 
-        do {
+        // Procura no máximo uma volta completa. Antes, sem nenhuma mana desbloqueada
+        // (status ainda não criado), o laço nunca terminava e travava o servidor.
+        for (int i = 0; i < values.length; i++) {
             index = Math.floorMod(index + step, values.length);
-        } while (!this.elementos.get(values[index]).isUnlocked());
-
-        selectedMana = values[index];
+            if (this.elementos.get(values[index]).isUnlocked()) {
+                selectedMana = values[index];
+                return;
+            }
+        }
     }
 
     public void copyFrom(MagicStatus other) {

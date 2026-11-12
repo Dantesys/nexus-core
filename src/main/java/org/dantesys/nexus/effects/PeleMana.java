@@ -51,12 +51,19 @@ public class PeleMana extends MobEffect {
     public static void applyGlow(ServerPlayer player, Elementos elemento) {
         Scoreboard scoreboard = player.level().getScoreboard();
         PlayerTeam team = getOrCreateManaSkinTeam(scoreboard, elemento);
-        scoreboard.addPlayerToTeam(player.getScoreboardName(), team);
-        player.setGlowingTag(true);
+        // Só mexe no placar quando muda: isto roda todo tick e cada mudança manda pacote para todos.
+        if (player.getTeam() != team) {
+            scoreboard.addPlayerToTeam(player.getScoreboardName(), team);
+        }
+        if (!player.hasGlowingTag()) {
+            player.setGlowingTag(true);
+        }
     }
 
     public static void clearGlow(ServerPlayer player) {
-        player.setGlowingTag(false);
+        if (player.hasGlowingTag()) {
+            player.setGlowingTag(false);
+        }
         PlayerTeam team = player.getTeam();
         if (team != null && team.getName().startsWith("nx_mana_")) {
             player.level().getScoreboard().removePlayerFromTeam(player.getScoreboardName(), team);
@@ -70,7 +77,10 @@ public class PeleMana extends MobEffect {
             team = scoreboard.addPlayerTeam(teamName);
         }
 
-        team.setColor(java.util.Optional.of(manaSkinColor(elemento)));
+        java.util.Optional<TeamColor> cor = java.util.Optional.of(manaSkinColor(elemento));
+        if (!cor.equals(team.getColor())) {
+            team.setColor(cor);
+        }
         return team;
     }
 

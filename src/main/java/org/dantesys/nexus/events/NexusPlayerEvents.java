@@ -68,6 +68,14 @@ public class NexusPlayerEvents {
     }
 
     @SubscribeEvent
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        // Os eventos agendados ficam em mapas estáticos: sem limpar, vazavam memória e,
+        // no singleplayer, "voltavam" ao entrar em outro mundo.
+        SCHEDULED_BIOME_EVENTS.remove(event.getEntity().getUUID());
+        ACTIVE_TEMPESTADE_STORMS.remove(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
@@ -91,7 +99,9 @@ public class NexusPlayerEvents {
         }
 
         MagicStatus status = player.getData(ModAttachmentType.MAGIC_STATS);
-        updateManaSkinEffect(player, status);
+        if (updateManaSkinEffect(player, status)) {
+            player.syncData(ModAttachmentType.MAGIC_STATS);
+        }
 
         if (player.tickCount % 20 != 0) {
             return;
@@ -130,12 +140,14 @@ public class NexusPlayerEvents {
         }
     }
 
-    private static void updateManaSkinEffect(ServerPlayer player, MagicStatus status) {
+    /** Devolve true se a Pele de Mana foi desligada aqui (o cliente precisa saber). */
+    private static boolean updateManaSkinEffect(ServerPlayer player, MagicStatus status) {
         if (!status.isManaSkinActive() || status.getMana() <= 0) {
+            boolean desligou = status.isManaSkinActive();
             status.setManaSkinActive(false);
             player.removeEffect(ModEffects.PELE_MANA);
             PeleMana.clearGlow(player);
-            return;
+            return desligou;
         }
 
         PeleMana.applyGlow(player, status.getSelectedMana());
@@ -147,6 +159,7 @@ public class NexusPlayerEvents {
                 false,
                 true
         ));
+        return false;
     }
 
     private static int getManaSkinCost(ServerPlayer player, MagicStatus status) {

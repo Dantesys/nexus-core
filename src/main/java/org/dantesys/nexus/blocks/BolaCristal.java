@@ -105,8 +105,9 @@ public class BolaCristal extends BaseEntityBlock {
         if (stats.isCreated()) {
             return;
         }
-        stats.setMaxMana(random.nextInt(1001));
-        stats.setRegeneracao(random.nextInt(1001));
+        // Mínimo 1: com 0 o jogador ficava sem mana e sem regeneração para sempre.
+        stats.setMaxMana(random.nextInt(1, 1001));
+        stats.setRegeneracao(random.nextInt(1, 1001));
         stats.setMana(stats.getMaxMana());
         desbloquearAleatorios(stats, quantidadeAleatoria(random), random);
         stats.setCreated(true);
