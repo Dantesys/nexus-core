@@ -19,7 +19,6 @@ public class ModTags {
     }
 
     public static class Items {
-        public static final TagKey<Item> ESMERALDAS = createTag("esmeraldas");
         public static final TagKey<Item> NUCLEO = createTag("nucleo");
         public static final TagKey<Item> MATRIZ_RELIQUIA = createTag("matriz_reliquia");
         public static final TagKey<Item> MATRIZ_PRIMORDIAL = createTag("matriz_primordial");

@@ -7,17 +7,10 @@ import net.minecraft.resources.Identifier;
 import org.dantesys.nexus.Nexus;
 import org.dantesys.nexus.data.ModAttachmentType;
 import org.dantesys.nexus.magic.MagicStatus;
-import org.dantesys.nexus.util.Elementos;
 
 public class MagicHud {
     private static final Identifier BASE_TEXTURE = Identifier.fromNamespaceAndPath(Nexus.MODID, "textures/gui/manabar/base.png");
     private static final ManaTexture NAO_ELEMENTAL_TEXTURE = manaTexture("nao_elemental", 1043, 112);
-    private static final ManaTexture TEMPESTADE_TEXTURE = manaTexture("tempestade", 1044, 104);
-    private static final ManaTexture SOMBRIA_TEXTURE = manaTexture("sombria", 1051, 110);
-    private static final ManaTexture IGNEA_TEXTURE = manaTexture("ignea", 1048, 109);
-    private static final ManaTexture LUZ_TEXTURE = manaTexture("luz", 1044, 114);
-    private static final ManaTexture VIDA_TEXTURE = manaTexture("vida", 1039, 109);
-    private static final ManaTexture METAL_TEXTURE = manaTexture("metal", 1041, 94);
     private static final int TEXTURE_WIDTH = 1428;
     private static final int TEXTURE_HEIGHT = 275;
     private static final int WIDTH = 170;
@@ -43,7 +36,7 @@ public class MagicHud {
         int x = (guiGraphics.guiWidth() - WIDTH) / 2;
         int y = guiGraphics.guiHeight() - 72;
         int fillWidth = Math.max(0, Math.min(INNER_WIDTH, status.getMana() * INNER_WIDTH / status.getMaxMana()));
-        ManaTexture manaTexture = manaTexture(status.getSelectedMana());
+        ManaTexture manaTexture = NAO_ELEMENTAL_TEXTURE;
 
         if (fillWidth > 0) {
             int sourceWidth = Math.max(1, manaTexture.width() * fillWidth / INNER_WIDTH);
@@ -77,18 +70,6 @@ public class MagicHud {
                 TEXTURE_WIDTH,
                 TEXTURE_HEIGHT
         );
-    }
-
-    private static ManaTexture manaTexture(Elementos elemento) {
-        return switch (elemento) {
-            case TEMPESTADE -> TEMPESTADE_TEXTURE;
-            case SOMBRA -> SOMBRIA_TEXTURE;
-            case IGNEA -> IGNEA_TEXTURE;
-            case LUZ -> LUZ_TEXTURE;
-            case VIDA -> VIDA_TEXTURE;
-            case METAL -> METAL_TEXTURE;
-            case NAO_ELEMENTAL -> NAO_ELEMENTAL_TEXTURE;
-        };
     }
 
     private static ManaTexture manaTexture(String name, int width, int height) {

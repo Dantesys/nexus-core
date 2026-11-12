@@ -21,20 +21,6 @@ import java.util.Optional;
 public class ModModelProvider extends ModelProvider {
     private static final TextureSlot MOLDE_TEXTURE = TextureSlot.create("0");
 
-    public static final ModelTemplate ESMERALDA_TEMPLATE = new ModelTemplate(
-            Optional.of(
-                    ModelLocationUtils.decorateItemModelLocation(Nexus.MODID+":esmeralda_elemental")
-            ),
-            Optional.empty(),
-            TextureSlot.LAYER0
-    );
-    public static final ModelTemplate FRAGMENTO_TEMPLATE = new ModelTemplate(
-            Optional.of(
-                    ModelLocationUtils.decorateItemModelLocation(Nexus.MODID+":fragmento_elemental")
-            ),
-            Optional.empty(),
-            TextureSlot.LAYER0
-    );
     public static final ModelTemplate MOLDE_COMUM = new ModelTemplate(
             Optional.of(
                     ModelLocationUtils.decorateItemModelLocation(Nexus.MODID+":molde_comum")
@@ -116,18 +102,6 @@ public class ModModelProvider extends ModelProvider {
         itemModels.declareCustomModelItem(ModItems.ARCANO_EVOLUIDOR_LENDARIO.get());
         itemModels.declareCustomModelItem(ModItems.ARCANO_EVOLUIDOR_UNICO.get());
 
-        itemModels.generateFlatItem(ModItems.ESMERALDA_IGNEA.get(), ESMERALDA_TEMPLATE);
-        itemModels.generateFlatItem(ModItems.ESMERALDA_VIDA.get(), ESMERALDA_TEMPLATE);
-        itemModels.generateFlatItem(ModItems.ESMERALDA_SOMBRIA.get(), ESMERALDA_TEMPLATE);
-        itemModels.generateFlatItem(ModItems.ESMERALDA_LUZ.get(), ESMERALDA_TEMPLATE);
-        itemModels.generateFlatItem(ModItems.ESMERALDA_METAL.get(), ESMERALDA_TEMPLATE);
-        itemModels.generateFlatItem(ModItems.ESMERALDA_TEMPESTADE.get(), ESMERALDA_TEMPLATE);
-        itemModels.generateFlatItem(ModItems.FRAGMENTO_IGNEA.get(), FRAGMENTO_TEMPLATE);
-        itemModels.generateFlatItem(ModItems.FRAGMENTO_VIDA.get(), FRAGMENTO_TEMPLATE);
-        itemModels.generateFlatItem(ModItems.FRAGMENTO_SOMBRIA.get(), FRAGMENTO_TEMPLATE);
-        itemModels.generateFlatItem(ModItems.FRAGMENTO_LUZ.get(), FRAGMENTO_TEMPLATE);
-        itemModels.generateFlatItem(ModItems.FRAGMENTO_METAL.get(), FRAGMENTO_TEMPLATE);
-        itemModels.generateFlatItem(ModItems.FRAGMENTO_TEMPESTADE.get(), FRAGMENTO_TEMPLATE);
         itemModels.generateFlatItem(ModItems.CRISTAL_MANA_S.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.CRISTAL_MANA_A.get(), ModelTemplates.FLAT_ITEM);
         itemModels.generateFlatItem(ModItems.CRISTAL_MANA_B.get(), ModelTemplates.FLAT_ITEM);
@@ -158,89 +132,6 @@ public class ModModelProvider extends ModelProvider {
                 BlockModelGenerators.variant(new Variant(
                         Identifier.fromNamespaceAndPath("minecraft", "block/air")))
         ));
-        blockModels.woodProvider(ModBlocks.IGNEA_LOG.get()).log(ModBlocks.IGNEA_LOG.get());
-        blockModels.woodProvider(ModBlocks.STRIPPED_IGNEA_LOG.get()).log(ModBlocks.STRIPPED_IGNEA_LOG.get());
-        blockModels.woodProvider(ModBlocks.LUZ_LOG.get()).log(ModBlocks.LUZ_LOG.get());
-        blockModels.woodProvider(ModBlocks.STRIPPED_LUZ_LOG.get()).log(ModBlocks.STRIPPED_LUZ_LOG.get());
-        blockModels.woodProvider(ModBlocks.METAL_LOG.get()).log(ModBlocks.METAL_LOG.get());
-        blockModels.woodProvider(ModBlocks.STRIPPED_METAL_LOG.get()).log(ModBlocks.STRIPPED_METAL_LOG.get());
-        blockModels.woodProvider(ModBlocks.SOMBRIA_LOG.get()).log(ModBlocks.SOMBRIA_LOG.get());
-        blockModels.woodProvider(ModBlocks.STRIPPED_SOMBRIA_LOG.get()).log(ModBlocks.STRIPPED_SOMBRIA_LOG.get());
-        blockModels.woodProvider(ModBlocks.TEMPESTADE_LOG.get()).log(ModBlocks.TEMPESTADE_LOG.get());
-        blockModels.woodProvider(ModBlocks.STRIPPED_TEMPESTADE_LOG.get()).log(ModBlocks.STRIPPED_TEMPESTADE_LOG.get());
-        blockModels.woodProvider(ModBlocks.VIDA_LOG.get()).log(ModBlocks.VIDA_LOG.get());
-        blockModels.woodProvider(ModBlocks.STRIPPED_VIDA_LOG.get()).log(ModBlocks.STRIPPED_VIDA_LOG.get());
-        blockModels.createTrivialCube(ModBlocks.IGNEA_LEAVES.get());
-        blockModels.createTrivialCube(ModBlocks.LUZ_LEAVES.get());
-        blockModels.createTrivialCube(ModBlocks.METAL_LEAVES.get());
-        blockModels.createTrivialCube(ModBlocks.SOMBRIA_LEAVES.get());
-        blockModels.createTrivialCube(ModBlocks.TEMPESTADE_LEAVES.get());
-        blockModels.createTrivialCube(ModBlocks.VIDA_LEAVES.get());
-        blockModels.createCrossBlockWithDefaultItem(ModBlocks.IGNEA_SAPLING.get(), BlockModelGenerators.PlantType.NOT_TINTED);
-        blockModels.createCrossBlockWithDefaultItem(ModBlocks.LUZ_SAPLING.get(), BlockModelGenerators.PlantType.NOT_TINTED);
-        blockModels.createCrossBlockWithDefaultItem(ModBlocks.METAL_SAPLING.get(), BlockModelGenerators.PlantType.NOT_TINTED);
-        blockModels.createCrossBlockWithDefaultItem(ModBlocks.SOMBRIA_SAPLING.get(), BlockModelGenerators.PlantType.NOT_TINTED);
-        blockModels.createCrossBlockWithDefaultItem(ModBlocks.TEMPESTADE_SAPLING.get(), BlockModelGenerators.PlantType.NOT_TINTED);
-        blockModels.createCrossBlockWithDefaultItem(ModBlocks.VIDA_SAPLING.get(), BlockModelGenerators.PlantType.NOT_TINTED);
-        blockModels.family(ModBlocks.IGNEA_PLANKS.get())
-                .stairs(ModBlocks.IGNEA_STAIRS.get())
-                .slab(ModBlocks.IGNEA_SLAB.get())
-                .pressurePlate(ModBlocks.IGNEA_PRESSURE_PLATE.get())
-                .button(ModBlocks.IGNEA_BUTTON.get())
-                .fence(ModBlocks.IGNEA_FENCE.get())
-                .fenceGate(ModBlocks.IGNEA_FENCE_GATE.get())
-                .door(ModBlocks.IGNEA_DOOR.get())
-                .trapdoor(ModBlocks.IGNEA_TRAPDOOR.get());
-
-        blockModels.family(ModBlocks.LUZ_PLANKS.get())
-                .stairs(ModBlocks.LUZ_STAIRS.get())
-                .slab(ModBlocks.LUZ_SLAB.get())
-                .pressurePlate(ModBlocks.LUZ_PRESSURE_PLATE.get())
-                .button(ModBlocks.LUZ_BUTTON.get())
-                .fence(ModBlocks.LUZ_FENCE.get())
-                .fenceGate(ModBlocks.LUZ_FENCE_GATE.get())
-                .door(ModBlocks.LUZ_DOOR.get())
-                .trapdoor(ModBlocks.LUZ_TRAPDOOR.get());
-
-        blockModels.family(ModBlocks.METAL_PLANKS.get())
-                .stairs(ModBlocks.METAL_STAIRS.get())
-                .slab(ModBlocks.METAL_SLAB.get())
-                .pressurePlate(ModBlocks.METAL_PRESSURE_PLATE.get())
-                .button(ModBlocks.METAL_BUTTON.get())
-                .fence(ModBlocks.METAL_FENCE.get())
-                .fenceGate(ModBlocks.METAL_FENCE_GATE.get())
-                .door(ModBlocks.METAL_DOOR.get())
-                .trapdoor(ModBlocks.METAL_TRAPDOOR.get());
-
-        blockModels.family(ModBlocks.SOMBRIA_PLANKS.get())
-                .stairs(ModBlocks.SOMBRIA_STAIRS.get())
-                .slab(ModBlocks.SOMBRIA_SLAB.get())
-                .pressurePlate(ModBlocks.SOMBRIA_PRESSURE_PLATE.get())
-                .button(ModBlocks.SOMBRIA_BUTTON.get())
-                .fence(ModBlocks.SOMBRIA_FENCE.get())
-                .fenceGate(ModBlocks.SOMBRIA_FENCE_GATE.get())
-                .door(ModBlocks.SOMBRIA_DOOR.get())
-                .trapdoor(ModBlocks.SOMBRIA_TRAPDOOR.get());
-
-        blockModels.family(ModBlocks.TEMPESTADE_PLANKS.get())
-                .stairs(ModBlocks.TEMPESTADE_STAIRS.get())
-                .slab(ModBlocks.TEMPESTADE_SLAB.get())
-                .pressurePlate(ModBlocks.TEMPESTADE_PRESSURE_PLATE.get())
-                .button(ModBlocks.TEMPESTADE_BUTTON.get())
-                .fence(ModBlocks.TEMPESTADE_FENCE.get())
-                .fenceGate(ModBlocks.TEMPESTADE_FENCE_GATE.get())
-                .door(ModBlocks.TEMPESTADE_DOOR.get())
-                .trapdoor(ModBlocks.TEMPESTADE_TRAPDOOR.get());
-
-        blockModels.family(ModBlocks.VIDA_PLANKS.get())
-                .stairs(ModBlocks.VIDA_STAIRS.get())
-                .slab(ModBlocks.VIDA_SLAB.get())
-                .pressurePlate(ModBlocks.VIDA_PRESSURE_PLATE.get())
-                .button(ModBlocks.VIDA_BUTTON.get())
-                .fence(ModBlocks.VIDA_FENCE.get())
-                .fenceGate(ModBlocks.VIDA_FENCE_GATE.get())
-                .door(ModBlocks.VIDA_DOOR.get())
-                .trapdoor(ModBlocks.VIDA_TRAPDOOR.get());
     }
 
     private void generateForgeController(BlockModelGenerators blockModels) {

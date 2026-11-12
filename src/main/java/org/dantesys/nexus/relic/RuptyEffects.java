@@ -25,7 +25,6 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import org.dantesys.nexus.Nexus;
-import org.dantesys.nexus.util.Elementos;
 import java.util.*;
 
 /** Efeitos de servidor. Marcas sao separadas por alvo e pelo jogador que as aplicou. */
@@ -40,7 +39,7 @@ public final class RuptyEffects {
     private static final Map<UUID, MeleeAttempt> MELEE_ATTEMPTS = new HashMap<>();
     private static LivingEntity passiveTarget;
     private record Scars(int count, long lastHit) {}
-    private record Attack(ServerPlayer player, ItemStack stack, int scars, int slot, Elementos element) {}
+    private record Attack(ServerPlayer player, ItemStack stack, int scars, int slot) {}
     private record MeleeAttempt(LivingEntity target, ItemStack stack, long tick) {}
     private record Charge(ItemStack stack, Vec3 origin, ServerLevel level, long start) {}
     private static final class Wave {
@@ -49,15 +48,15 @@ public final class RuptyEffects {
         final ServerLevel level;
         final ItemStack stack;
         final double power;
-        final Elementos element;
+        
         final Set<UUID> hit = new HashSet<>();
         int ticks;
-        Wave(ServerPlayer player, ItemStack stack, double power, Elementos element) {
+        Wave(ServerPlayer player, ItemStack stack, double power) {
             position = player.getEyePosition(); direction = player.getLookAngle();
-            level = (ServerLevel) player.level(); this.stack = stack; this.power = power; this.element = element;
+            level = (ServerLevel) player.level(); this.stack = stack; this.power = power;
         }
     }
-    private record Zone(ServerLevel level, Vec3 center, ItemStack stack, double power, long start, Elementos element) {}
+    private record Zone(ServerLevel level, Vec3 center, ItemStack stack, double power, long start) {}
     private static final class State {
         Charge charge;
         final List<Wave> waves = new ArrayList<>();
@@ -85,12 +84,12 @@ public final class RuptyEffects {
         return true;
     }
     public static boolean cut(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
-        state(player).waves.add(new Wave(player, stack, context.powerMultiplier(), context.relicElement()));
+        state(player).waves.add(new Wave(player, stack, context.powerMultiplier()));
         return true;
     }
     public static boolean zone(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         state(player).zones.add(new Zone((ServerLevel) player.level(), player.position(), stack,
-                context.powerMultiplier(), player.level().getGameTime(), context.relicElement()));
+                context.powerMultiplier(), player.level().getGameTime()));
         return true;
     }
     public static boolean startCharge(ServerPlayer player, ItemStack stack) {
@@ -108,11 +107,11 @@ public final class RuptyEffects {
         level.sendParticles(ParticleTypes.SWEEP_ATTACK, pos.x, pos.y, pos.z, count, 0.3, 0.3, 0.3, 0);
     }
     private static void hit(ServerPlayer player, ItemStack stack, LivingEntity target, float damage, int marks) {
-        hit(player, stack, target, damage, marks, -1, ((RelicItem) stack.getItem()).getElement(stack));
+        hit(player, stack, target, damage, marks, -1);
     }
-    private static void hit(ServerPlayer player, ItemStack stack, LivingEntity target, float damage, int marks, int slot, Elementos element) {
+    private static void hit(ServerPlayer player, ItemStack stack, LivingEntity target, float damage, int marks, int slot) {
         DamageSource source = player.level().damageSources().playerAttack(player);
-        ATTACKS.put(source, new Attack(player, stack, marks, slot, element));
+        ATTACKS.put(source, new Attack(player, stack, marks, slot));
         try { damage(target, source, damage); }
         finally { ATTACKS.remove(source); }
     }
@@ -126,7 +125,7 @@ public final class RuptyEffects {
         DamageSource source = new DamageSource(level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
                 .getOrThrow(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
                         net.minecraft.resources.Identifier.fromNamespaceAndPath(Nexus.MODID, "rupty_discharge"))), player);
-        ATTACKS.put(source, new Attack(player, stack, 0, -2, Elementos.NAO_ELEMENTAL));
+        ATTACKS.put(source, new Attack(player, stack, 0, -2));
         try {
             damage(target, source, amount);
             level.sendParticles(ParticleTypes.ELECTRIC_SPARK, target.getX(), target.getY() + 1, target.getZ(), 12, 0.3, 0.5, 0.3, 0.05);
@@ -144,19 +143,17 @@ public final class RuptyEffects {
         }
     }
     @SubscribeEvent public static void incoming(LivingIncomingDamageEvent event) {
-        RuptyElements.modifyGeneralDamage(event);
         DamageSource source = event.getSource();
         if (!ATTACKS.containsKey(source) && source.is(DamageTypes.PLAYER_ATTACK)
                 && source.getEntity() instanceof ServerPlayer player && source.getDirectEntity() == player) {
             MeleeAttempt attempt = MELEE_ATTEMPTS.get(player.getUUID());
             if (attempt != null && attempt.target() == event.getEntity() && attempt.tick() == player.level().getGameTime()) {
-                MELEE.put(source, new Attack(player, attempt.stack(), 0, 0, ((RelicItem) attempt.stack().getItem()).getElement(attempt.stack())));
+                MELEE.put(source, new Attack(player, attempt.stack(), 0, 0));
                 MELEE_ATTEMPTS.remove(player.getUUID());
             }
         }
         Attack attack = attack(event.getSource());
         if (attack == null) return;
-        RuptyElements.beforeHit(event, attack.player(), attack.slot(), attack.element());
         event.setAmount((float) Math.min(Float.MAX_VALUE,
                 event.getAmount() * (1 + scars(event.getEntity(), attack.player()) * RuptyRules.DAMAGE_PER_SCAR)));
     }
@@ -181,13 +178,10 @@ public final class RuptyEffects {
             }
             finally { passiveTarget = previous; }
         }
-        if (attack.slot() >= -1) RuptyElements.afterHit(attack.player(), attack.stack(), target, attack.slot(),
-                attack.element(), Math.min(event.getHealthDamage(), healthBefore == null ? 0 : healthBefore), previousScars);
     }
     @SubscribeEvent public static void death(LivingDeathEvent event) {
         Attack attack = attack(event.getSource());
         if (attack == null) return;
-        RuptyElements.killed(attack.player(), attack.element(), attack.slot());
         if (scars(event.getEntity(), attack.player()) < 10) return;
         SCARS.remove(event.getEntity()); // Remove antes dos cortes para evitar recursao no mesmo alvo.
         ServerLevel level = (ServerLevel) event.getEntity().level();
@@ -224,7 +218,7 @@ public final class RuptyEffects {
                 for (LivingEntity target : zone.level().getEntitiesOfClass(LivingEntity.class,
                         new AABB(zone.center(), zone.center()).inflate(RuptyRules.ZONE_RADIUS), t -> canHit(player, t))) {
                     if (target.position().distanceToSqr(zone.center()) <= RuptyRules.ZONE_RADIUS * RuptyRules.ZONE_RADIUS)
-                        hit(player, zone.stack(), target, (float) (RuptyRules.ZONE_DAMAGE * zone.power()), 1, 2, zone.element());
+                        hit(player, zone.stack(), target, (float) (RuptyRules.ZONE_DAMAGE * zone.power()), 1, 2);
                 }
                 for (int i = 0; i < 20; i++) {
                     double angle = i * Math.PI / 10;
@@ -238,7 +232,7 @@ public final class RuptyEffects {
     }
     private static boolean tickWave(ServerPlayer player, Wave wave) {
         if (wave.level != player.level()) return true;
-        double speed = wave.element == Elementos.TEMPESTADE ? 4 : 1;
+        double speed = 1;
         Vec3 end = wave.position.add(wave.direction.scale(speed));
         var block = wave.level.clip(new ClipContext(wave.position, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
         if (block.getType() != HitResult.Type.MISS) end = block.getLocation();
@@ -247,7 +241,7 @@ public final class RuptyEffects {
             if (!wave.hit.contains(target.getUUID()) && (target.getBoundingBox().inflate(0.8).contains(wave.position)
                     || target.getBoundingBox().inflate(0.8).clip(wave.position, end).isPresent())) {
                 wave.hit.add(target.getUUID());
-                hit(player, wave.stack, target, (float) (RuptyRules.CUT_DAMAGE * wave.power), 3, 1, wave.element);
+                hit(player, wave.stack, target, (float) (RuptyRules.CUT_DAMAGE * wave.power), 3, 1);
             }
         }
         particles(wave.level, end, 2);
@@ -272,7 +266,6 @@ public final class RuptyEffects {
             }
             end = point;
             particles(level, point, 2);
-            RuptyElements.rupturePath(player, point, context.relicElement());
         }
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(start, end).inflate(1.5), t -> canHit(player, t))) {
             if (!target.getBoundingBox().inflate(1).contains(start) && target.getBoundingBox().inflate(1).clip(start, end).isEmpty()) continue;
@@ -283,12 +276,11 @@ public final class RuptyEffects {
                 DamageSource source = new DamageSource(level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
                         .getOrThrow(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
                                 net.minecraft.resources.Identifier.fromNamespaceAndPath(Nexus.MODID, "ruptura"))), player);
-                ATTACKS.put(source, new Attack(player, stack, 0, 3, context.relicElement()));
+                ATTACKS.put(source, new Attack(player, stack, 0, 3));
                 try { damage(target, source, Float.MAX_VALUE); }
                 finally { ATTACKS.remove(source); }
-            } else hit(player, stack, target, (float) (RuptyRules.RUPTURE_DAMAGE * context.powerMultiplier()), 0, 3, context.relicElement());
+            } else hit(player, stack, target, (float) (RuptyRules.RUPTURE_DAMAGE * context.powerMultiplier()), 0, 3);
         }
-        RuptyElements.ruptureEnd(player, end, context.relicElement());
         return true;
     }
     @SubscribeEvent public static void logout(net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent event) {
@@ -296,6 +288,6 @@ public final class RuptyEffects {
         MELEE_ATTEMPTS.remove(event.getEntity().getUUID());
     }
     @SubscribeEvent public static void stopped(ServerStoppedEvent event) {
-        STATES.clear(); SCARS.clear(); ATTACKS.clear(); MELEE.clear(); MELEE_ATTEMPTS.clear(); HEALTH_BEFORE.clear(); RuptyElements.clear();
+        STATES.clear(); SCARS.clear(); ATTACKS.clear(); MELEE.clear(); MELEE_ATTEMPTS.clear(); HEALTH_BEFORE.clear();
     }
 }

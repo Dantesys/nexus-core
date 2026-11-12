@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/outer_stairs",
-  "textures": {
-    "bottom": "nexus:block/vida_planks",
-    "side": "nexus:block/vida_planks",
-    "top": "nexus:block/vida_planks"
-  }
-}

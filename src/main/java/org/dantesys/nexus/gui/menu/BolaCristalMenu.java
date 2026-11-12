@@ -2,9 +2,11 @@ package org.dantesys.nexus.gui.menu;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
@@ -14,17 +16,18 @@ import org.dantesys.nexus.blocks.blockentity.BolaCristalBE;
 import org.dantesys.nexus.data.ModAttachmentType;
 import org.dantesys.nexus.gui.ModMenus;
 import org.dantesys.nexus.items.ModItems;
-import org.dantesys.nexus.util.Elementos;
-import org.jetbrains.annotations.NotNull;
+import org.dantesys.nexus.magic.MagicStatus;
 
 import java.util.Objects;
 
 public class BolaCristalMenu extends AbstractContainerMenu {
-    private static final int CONTAINER_SLOTS = 2;
+    private static final int CONTAINER_SLOTS = 1;
+    /** Ordem: capacidade, regeneração, afinidade, ressonância. */
+    public static final int STATUS_COUNT = 4;
 
     private final BolaCristalBE blockEntity;
     private final ContainerLevelAccess access;
-    private final SimpleContainerData data;
+    private final ContainerData data;
     private final Player player;
 
     public BolaCristalMenu(int id, Inventory playerInventory, BolaCristalBE blockEntity) {
@@ -32,25 +35,11 @@ public class BolaCristalMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity;
         this.player = playerInventory.player;
         this.access = ContainerLevelAccess.create(blockEntity.getLevel(), blockEntity.getBlockPos());
-        this.data = new SimpleContainerData(4);
+        // No servidor os valores vêm direto dos status de quem abriu (cada jogador vê os seus).
+        this.data = player instanceof ServerPlayer serverPlayer ? new StatusData(serverPlayer) : new SimpleContainerData(STATUS_COUNT);
         addDataSlots(data);
 
-        if (!player.level().isClientSide()) {
-            blockEntity.updateFromEmerald(player);
-        }
-
-        addSlot(new Slot(blockEntity, 0, 80, 5) {
-            @Override
-            public boolean mayPlace(ItemStack stack) {
-                return stack.is(ModItems.ESMERALDA_TEMPESTADE.get())
-                        || stack.is(ModItems.ESMERALDA_SOMBRIA.get())
-                        || stack.is(ModItems.ESMERALDA_IGNEA.get())
-                        || stack.is(ModItems.ESMERALDA_LUZ.get())
-                        || stack.is(ModItems.ESMERALDA_VIDA.get())
-                        || stack.is(ModItems.ESMERALDA_METAL.get());
-            }
-        });
-        addSlot(new Slot(blockEntity, 1, 80, 64) {
+        addSlot(new Slot(blockEntity, BolaCristalBE.NUCLEO_SLOT, 80, 64) {
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.is(ModItems.NUCLEO.get()) && stack.isEnchanted();
@@ -80,12 +69,7 @@ public class BolaCristalMenu extends AbstractContainerMenu {
     public void broadcastChanges() {
         if (!player.level().isClientSide()) {
             blockEntity.processarNucleo(player);
-            blockEntity.updateFromEmerald(player);
         }
-        data.set(0, blockEntity.mana);
-        data.set(1, blockEntity.regen);
-        data.set(2, blockEntity.afinidade);
-        data.set(3, blockEntity.ressonancia);
         super.broadcastChanges();
     }
 
@@ -120,24 +104,14 @@ public class BolaCristalMenu extends AbstractContainerMenu {
     }
 
     public Component getStatus(int status) {
-        return Component.literal(getString(data.get(Math.clamp(status, 0, 3))));
+        return Component.literal(getRank(data.get(Math.clamp(status, 0, STATUS_COUNT - 1))));
     }
 
     public int getTextColor() {
-        var elemento = blockEntity.getElementoExibido();
-
-        return switch (elemento) {
-            case NAO_ELEMENTAL -> 0xFF888888;
-            case TEMPESTADE -> 0xFFFFFF00;
-            case SOMBRA -> 0xFF363636;
-            case IGNEA -> 0xFFFF0000;
-            case LUZ -> 0xFFFFFFFF;
-            case METAL -> 0xFF909090;
-            case VIDA -> 0xFF00FF00;
-        };
+        return 0xFF8000FF;
     }
 
-    private static @NotNull String getString(int value) {
+    public static String getRank(int value) {
         if (value < 1) return "F";
         if (value < 170) return "E";
         if (value < 340) return "D";
@@ -147,29 +121,25 @@ public class BolaCristalMenu extends AbstractContainerMenu {
         return "S";
     }
 
-    public String getBgStats() {
-        var elemento = blockEntity.getElementoExibido();
-
-        if (elemento == Elementos.NAO_ELEMENTAL) {
-            return "textures/gui/status/nada.png";
+    private record StatusData(ServerPlayer player) implements ContainerData {
+        @Override
+        public int get(int index) {
+            MagicStatus status = player.getData(ModAttachmentType.MAGIC_STATS);
+            return switch (index) {
+                case 0 -> status.getMaxMana();
+                case 1 -> status.getRegeneracao();
+                case 2 -> status.getAfinidade();
+                default -> status.getRessonancia();
+            };
         }
 
-        String nomeElemento = switch (elemento) {
-            case TEMPESTADE -> "tempestade";
-            case SOMBRA -> "sombria";
-            case IGNEA -> "ignea";
-            case LUZ -> "luz";
-            case METAL -> "metal";
-            case VIDA -> "vida";
-            case NAO_ELEMENTAL -> throw new IllegalStateException("Non-elemental status handled earlier");
-        };
+        @Override
+        public void set(int index, int value) {
+        }
 
-        return "textures/gui/status/" + nomeElemento + (isElementoBloqueado() ? "_bloqueado" : "") + ".png";
-    }
-
-    public boolean isElementoBloqueado() {
-        var elemento = blockEntity.getElementoExibido();
-        return elemento != Elementos.NAO_ELEMENTAL
-                && !player.getData(ModAttachmentType.MAGIC_STATS).get(elemento).isUnlocked();
+        @Override
+        public int getCount() {
+            return STATUS_COUNT;
+        }
     }
 }

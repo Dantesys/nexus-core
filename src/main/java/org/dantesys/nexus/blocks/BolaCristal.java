@@ -19,16 +19,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.dantesys.nexus.blocks.blockentity.BolaCristalBE;
 import org.dantesys.nexus.advancement.ManaAdvancements;
 import org.dantesys.nexus.data.ModAttachmentType;
-import org.dantesys.nexus.magic.ElementalStatus;
 import org.dantesys.nexus.magic.MagicStatus;
-import org.dantesys.nexus.util.Elementos;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 
 public class BolaCristal extends BaseEntityBlock {
 
@@ -100,47 +93,22 @@ public class BolaCristal extends BaseEntityBlock {
         return InteractionResult.SUCCESS;
     }
 
+    /** Sorteia os 4 status de mana (1 a 1000) na primeira vez. Não faz nada se já foram criados. */
     public static void initializeMagicStatus(Player player, RandomSource random) {
         MagicStatus stats = player.getData(ModAttachmentType.MAGIC_STATS);
         if (stats.isCreated()) {
             return;
         }
         // Mínimo 1: com 0 o jogador ficava sem mana e sem regeneração para sempre.
-        stats.setMaxMana(random.nextInt(1, 1001));
-        stats.setRegeneracao(random.nextInt(1, 1001));
+        stats.setMaxMana(random.nextInt(1, MagicStatus.MAX_STATUS + 1));
+        stats.setRegeneracao(random.nextInt(1, MagicStatus.MAX_STATUS + 1));
+        stats.setAfinidade(random.nextInt(1, MagicStatus.MAX_STATUS + 1));
+        stats.setRessonancia(random.nextInt(1, MagicStatus.MAX_STATUS + 1));
         stats.setMana(stats.getMaxMana());
-        desbloquearAleatorios(stats, quantidadeAleatoria(random), random);
         stats.setCreated(true);
         player.syncData(ModAttachmentType.MAGIC_STATS);
         if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             ManaAdvancements.check(serverPlayer, stats);
-        }
-    }
-
-    private static int quantidadeAleatoria(RandomSource random) {
-        int roll = random.nextInt(100);
-        if (roll < 10) return 0;
-        if (roll < 30) return 1;
-        if (roll < 50) return 2;
-        if (roll < 80) return 3;
-        if (roll < 85) return 4;
-        if (roll < 90) return 5;
-        return Elementos.values().length - 1;
-    }
-
-    private static void desbloquearAleatorios(MagicStatus stats, int quantidade, RandomSource random) {
-        List<Elementos> elementos = new ArrayList<>(Arrays.asList(Elementos.values()));
-        elementos.remove(Elementos.NAO_ELEMENTAL);
-        Collections.shuffle(elementos, new Random(random.nextLong()));
-        ElementalStatus status = stats.get(Elementos.NAO_ELEMENTAL);
-        status.setUnlocked(true);
-        status.setAfinidade(1000);
-        status.setRessonancia(1000);
-        for (int i = 0; i < quantidade && i < elementos.size(); i++) {
-            status = stats.get(elementos.get(i));
-            status.setUnlocked(true);
-            status.setAfinidade(random.nextInt(1001));
-            status.setRessonancia(random.nextInt(1001));
         }
     }
 }

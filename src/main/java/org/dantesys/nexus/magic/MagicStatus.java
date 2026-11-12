@@ -5,11 +5,20 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
-import org.dantesys.nexus.util.Elementos;
 
-import java.util.EnumMap;
-
+/**
+ * Mana do jogador no Nexus Core: uma mana única (não elemental) com 4 status de 0 a 1000.
+ * <ul>
+ *     <li>capacidade: mana máxima;</li>
+ *     <li>regeneração: velocidade de recuperação;</li>
+ *     <li>afinidade: força das habilidades (dano/poder);</li>
+ *     <li>ressonância: eficiência (reduz custo e recarga).</li>
+ * </ul>
+ * Mana elemental fica para os addons (veja {@code org.dantesys.nexus.api.element}).
+ */
 public class MagicStatus implements ValueIOSerializable {
+    public static final int MAX_STATUS = 1000;
+
     public static final StreamCodec<RegistryFriendlyByteBuf, MagicStatus> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public MagicStatus decode(RegistryFriendlyByteBuf buf) {
@@ -18,16 +27,10 @@ public class MagicStatus implements ValueIOSerializable {
             status.mana = buf.readVarInt();
             status.maxMana = buf.readVarInt();
             status.regeneracao = buf.readVarInt();
+            status.afinidade = buf.readVarInt();
+            status.ressonancia = buf.readVarInt();
             status.regeneracaoAcumulada = buf.readVarInt();
-            status.nexusBiomeEventCooldown = buf.readVarInt();
-            status.nexusBiomeEventPending = buf.readBoolean();
             status.manaSkinActive = buf.readBoolean();
-            status.selectedMana = Elementos.byId(buf.readUtf(32));
-
-            for (Elementos elemento : Elementos.values()) {
-                status.elementos.get(elemento).copyFrom(ElementalStatus.decode(buf));
-            }
-
             return status;
         }
 
@@ -37,15 +40,10 @@ public class MagicStatus implements ValueIOSerializable {
             buf.writeVarInt(status.mana);
             buf.writeVarInt(status.maxMana);
             buf.writeVarInt(status.regeneracao);
+            buf.writeVarInt(status.afinidade);
+            buf.writeVarInt(status.ressonancia);
             buf.writeVarInt(status.regeneracaoAcumulada);
-            buf.writeVarInt(status.nexusBiomeEventCooldown);
-            buf.writeBoolean(status.nexusBiomeEventPending);
             buf.writeBoolean(status.manaSkinActive);
-            buf.writeUtf(status.selectedMana.getSerializedName(), 32);
-
-            for (Elementos elemento : Elementos.values()) {
-                status.elementos.get(elemento).encode(buf);
-            }
         }
     };
 
@@ -54,23 +52,12 @@ public class MagicStatus implements ValueIOSerializable {
     private int mana;
     private int maxMana;
     private int regeneracao;
+    private int afinidade;
+    private int ressonancia;
     private int regeneracaoAcumulada;
-    private int nexusBiomeEventCooldown;
-    private boolean nexusBiomeEventPending;
     private boolean manaSkinActive;
-    private Elementos selectedMana = Elementos.NAO_ELEMENTAL;
     private long lastManaUseTick = Long.MIN_VALUE;
-    private long nextSimpleSpellTick;
     private long nextManaBeamImpactTick;
-
-    private final EnumMap<Elementos, ElementalStatus> elementos =
-            new EnumMap<>(Elementos.class);
-
-    public MagicStatus() {
-        for (Elementos elemento : Elementos.values()) {
-            elementos.put(elemento, new ElementalStatus());
-        }
-    }
 
     public boolean isCreated() {
         return created;
@@ -85,15 +72,17 @@ public class MagicStatus implements ValueIOSerializable {
     }
 
     public void setMana(int mana) {
-        this.mana = mana;
+        this.mana = Math.max(0, Math.min(mana, maxMana));
     }
 
+    /** Capacidade: a mana máxima. */
     public int getMaxMana() {
         return maxMana;
     }
 
     public void setMaxMana(int maxMana) {
-        this.maxMana = maxMana;
+        this.maxMana = clamp(maxMana);
+        this.mana = Math.min(this.mana, this.maxMana);
     }
 
     public int getRegeneracao() {
@@ -101,39 +90,27 @@ public class MagicStatus implements ValueIOSerializable {
     }
 
     public void setRegeneracao(int regeneracao) {
-        this.regeneracao = regeneracao;
+        this.regeneracao = clamp(regeneracao);
     }
 
-    public ElementalStatus get(Elementos elemento) {
-        return elementos.get(elemento);
+    public int getAfinidade() {
+        return afinidade;
     }
 
-    public int getNexusBiomeEventCooldown() {
-        return nexusBiomeEventCooldown;
+    public void setAfinidade(int afinidade) {
+        this.afinidade = clamp(afinidade);
     }
 
-    public void setNexusBiomeEventCooldown(int nexusBiomeEventCooldown) {
-        this.nexusBiomeEventCooldown = Math.max(0, nexusBiomeEventCooldown);
+    public int getRessonancia() {
+        return ressonancia;
     }
 
-    public void tickNexusBiomeEventCooldown(int ticks) {
-        setNexusBiomeEventCooldown(nexusBiomeEventCooldown - ticks);
+    public void setRessonancia(int ressonancia) {
+        this.ressonancia = clamp(ressonancia);
     }
 
-    public boolean isNexusBiomeEventPending() {
-        return nexusBiomeEventPending;
-    }
-
-    public void setNexusBiomeEventPending(boolean nexusBiomeEventPending) {
-        this.nexusBiomeEventPending = nexusBiomeEventPending;
-    }
-
-    public Elementos getSelectedMana() {
-        return selectedMana;
-    }
-
-    public void setSelectedMana(Elementos selectedMana) {
-        this.selectedMana = selectedMana == null ? Elementos.NAO_ELEMENTAL : selectedMana;
+    private static int clamp(int valor) {
+        return Math.max(0, Math.min(MAX_STATUS, valor));
     }
 
     public boolean isManaSkinActive() {
@@ -165,14 +142,6 @@ public class MagicStatus implements ValueIOSerializable {
         return true;
     }
 
-    public boolean canCastSimpleSpell(long gameTime) {
-        return gameTime >= nextSimpleSpellTick;
-    }
-
-    public void setSimpleSpellCooldown(long gameTime, int cooldownTicks) {
-        nextSimpleSpellTick = gameTime + Math.max(1, cooldownTicks);
-    }
-
     public boolean startManaBeamImpact(long gameTime) {
         if (gameTime < nextManaBeamImpactTick) {
             return false;
@@ -202,44 +171,15 @@ public class MagicStatus implements ValueIOSerializable {
         return mana != manaAnterior;
     }
 
-    public void selectNextMana() {
-        selectMana(1);
-    }
-
-    public void selectPreviousMana() {
-        selectMana(-1);
-    }
-
-    private void selectMana(int step) {
-        Elementos[] values = Elementos.values();
-        int index = selectedMana.ordinal();
-
-        // Procura no máximo uma volta completa. Antes, sem nenhuma mana desbloqueada
-        // (status ainda não criado), o laço nunca terminava e travava o servidor.
-        for (int i = 0; i < values.length; i++) {
-            index = Math.floorMod(index + step, values.length);
-            if (this.elementos.get(values[index]).isUnlocked()) {
-                selectedMana = values[index];
-                return;
-            }
-        }
-    }
-
     public void copyFrom(MagicStatus other) {
         this.created = other.created;
         this.mana = other.mana;
         this.maxMana = other.maxMana;
         this.regeneracao = other.regeneracao;
+        this.afinidade = other.afinidade;
+        this.ressonancia = other.ressonancia;
         this.regeneracaoAcumulada = other.regeneracaoAcumulada;
-        this.nexusBiomeEventCooldown = other.nexusBiomeEventCooldown;
-        this.nexusBiomeEventPending = other.nexusBiomeEventPending;
         this.manaSkinActive = other.manaSkinActive;
-        this.selectedMana = other.selectedMana;
-        this.nextSimpleSpellTick = other.nextSimpleSpellTick;
-
-        for (Elementos elemento : Elementos.values()) {
-            this.elementos.get(elemento).copyFrom(other.elementos.get(elemento));
-        }
     }
 
     @Override
@@ -248,41 +188,21 @@ public class MagicStatus implements ValueIOSerializable {
         output.putInt("mana", mana);
         output.putInt("maxMana", maxMana);
         output.putInt("regeneracao", regeneracao);
+        output.putInt("afinidade", afinidade);
+        output.putInt("ressonancia", ressonancia);
         output.putInt("regeneracaoAcumulada", regeneracaoAcumulada);
-        output.putInt("nexusBiomeEventCooldown", nexusBiomeEventCooldown);
-        output.putBoolean("nexusBiomeEventPending", nexusBiomeEventPending);
         output.putBoolean("manaSkinActive", manaSkinActive);
-        output.putString("selectedMana", selectedMana.getSerializedName());
-        output.putLong("nextSimpleSpellTick", nextSimpleSpellTick);
-
-        ValueOutput elementosOutput = output.child("elementos");
-
-        for (Elementos elemento : Elementos.values()) {
-            elementosOutput.putChild(key(elemento), elementos.get(elemento));
-        }
     }
 
     @Override
     public void deserialize(ValueInput input) {
         created = input.getBooleanOr("created", false);
-        mana = input.getIntOr("mana", 0);
-        maxMana = input.getIntOr("maxMana", 0);
-        regeneracao = input.getIntOr("regeneracao", 0);
+        maxMana = clamp(input.getIntOr("maxMana", 0));
+        mana = Math.max(0, Math.min(maxMana, input.getIntOr("mana", 0)));
+        regeneracao = clamp(input.getIntOr("regeneracao", 0));
+        afinidade = clamp(input.getIntOr("afinidade", 0));
+        ressonancia = clamp(input.getIntOr("ressonancia", 0));
         regeneracaoAcumulada = input.getIntOr("regeneracaoAcumulada", 0);
-        nexusBiomeEventCooldown = input.getIntOr("nexusBiomeEventCooldown", 0);
-        nexusBiomeEventPending = input.getBooleanOr("nexusBiomeEventPending", false);
         manaSkinActive = input.getBooleanOr("manaSkinActive", false);
-        selectedMana = Elementos.byId(input.getStringOr("selectedMana", Elementos.NAO_ELEMENTAL.getSerializedName()));
-        nextSimpleSpellTick = input.getLongOr("nextSimpleSpellTick", 0L);
-
-        ValueInput elementosInput = input.childOrEmpty("elementos");
-
-        for (Elementos elemento : Elementos.values()) {
-            elementosInput.readChild(key(elemento), elementos.get(elemento));
-        }
-    }
-
-    private static String key(Elementos elemento) {
-        return elemento.getSerializedName();
     }
 }

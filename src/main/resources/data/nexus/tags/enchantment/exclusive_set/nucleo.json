@@ -1,7 +1,5 @@
 {
   "values": [
-    "nexus:disturbio_elemental",
-    "nexus:matriz_elemental",
     "nexus:disturbio_mana"
   ]
 }

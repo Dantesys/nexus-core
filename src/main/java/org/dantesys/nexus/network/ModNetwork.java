@@ -18,8 +18,6 @@ import org.dantesys.nexus.data.ModAttachmentType;
 import org.dantesys.nexus.magic.ManaItemReceiver;
 import org.dantesys.nexus.magic.ManaReceiver;
 import org.dantesys.nexus.magic.MagicStatus;
-import org.dantesys.nexus.magic.SimpleElementalSpells;
-import org.dantesys.nexus.util.Elementos;
 import org.dantesys.nexus.relic.RelicItem;
 
 public class ModNetwork {
@@ -27,10 +25,6 @@ public class ModNetwork {
     private static final double MANA_TRANSFER_RANGE = 10.0D;
     private static final int BASE_MANA_PER_SECOND = 50;
     private static final int MAX_RESONANCE = 1000;
-    private static final int BASE_SPELL_COST = 200;
-    private static final int MIN_SPELL_COST = 100;
-    private static final int BASE_SPELL_COOLDOWN_TICKS = 5 * 20;
-    private static final int MIN_SPELL_COOLDOWN_TICKS = 2 * 20;
 
     public static void register(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(VERSION);
@@ -40,12 +34,6 @@ public class ModNetwork {
                     ItemStack stack = RelicItem.controlledRelic(player);
                     if (stack.getItem() instanceof RelicItem relic) relic.selectSkill(player, stack, payload.next());
                 });
-
-        registrar.playToServer(
-                ChangeSelectedManaPayload.TYPE,
-                ChangeSelectedManaPayload.STREAM_CODEC,
-                ModNetwork::handleChangeSelectedMana
-        );
         registrar.playToServer(
                 ToggleManaSkinPayload.TYPE,
                 ToggleManaSkinPayload.STREAM_CODEC,
@@ -70,21 +58,6 @@ public class ModNetwork {
         if (stack.getItem() instanceof RelicItem relic) relic.activate(player, stack);
     }
 
-    private static void handleChangeSelectedMana(ChangeSelectedManaPayload payload, net.neoforged.neoforge.network.handling.IPayloadContext context) {
-        if (!(context.player() instanceof ServerPlayer player)) {
-            return;
-        }
-
-        MagicStatus status = player.getData(ModAttachmentType.MAGIC_STATS);
-        if (payload.next()) {
-            status.selectNextMana();
-        } else {
-            status.selectPreviousMana();
-        }
-
-        player.syncData(ModAttachmentType.MAGIC_STATS);
-    }
-
     private static void handleToggleManaSkin(ToggleManaSkinPayload payload, net.neoforged.neoforge.network.handling.IPayloadContext context) {
         if (!(context.player() instanceof ServerPlayer player)) {
             return;
@@ -107,14 +80,8 @@ public class ModNetwork {
             return;
         }
 
-        Elementos selectedMana = status.getSelectedMana();
-        int resonance = Mth.clamp(status.get(selectedMana).getRessonancia(), 0, MAX_RESONANCE);
-
-        if (selectedMana != Elementos.NAO_ELEMENTAL
-                && !(player.getMainHandItem().getItem() instanceof ManaItemReceiver)) {
-            castSimpleSpell(player, status, selectedMana, resonance, gameTime);
-            return;
-        }
+        int resonance = Mth.clamp(status.getRessonancia(), 0, MAX_RESONANCE);
+        boolean carregandoItem = player.getMainHandItem().getItem() instanceof ManaItemReceiver;
 
         int manaPerSecond = BASE_MANA_PER_SECOND
                 + BASE_MANA_PER_SECOND * resonance / MAX_RESONANCE;
@@ -123,9 +90,10 @@ public class ModNetwork {
                 - manaPerSecond * tickInSecond / 20;
         available = Math.min(available, transferLimit);
 
-        int accepted = selectedMana == Elementos.NAO_ELEMENTAL
-                ? transferNonElementalMana(player, status, available, gameTime)
-                : chargeHeldItem(player, selectedMana, available);
+        // Segurando um item que aceita mana, carrega o item; senão, transfere para o bloco mirado.
+        int accepted = carregandoItem
+                ? chargeHeldItem(player, available)
+                : transferNonElementalMana(player, status, available, gameTime);
 
         accepted = Math.clamp(accepted, 0, available);
         if (accepted > 0 && status.useMana(accepted)) {
@@ -191,8 +159,7 @@ public class ModNetwork {
             return;
         }
 
-        int affinity = Mth.clamp(
-                status.get(Elementos.NAO_ELEMENTAL).getAfinidade(),
+        int affinity = Mth.clamp(status.getAfinidade(),
                 0,
                 MAX_RESONANCE
         );
@@ -222,45 +189,15 @@ public class ModNetwork {
         }
     }
 
-    private static int chargeHeldItem(ServerPlayer player, Elementos elemento, int available) {
+    private static int chargeHeldItem(ServerPlayer player, int available) {
         ItemStack stack = player.getMainHandItem();
         if (!stack.isEmpty() && stack.getItem() instanceof ManaItemReceiver receiver) {
-            int accepted = receiver.receiveMana(stack, elemento, available);
+            int accepted = receiver.receiveMana(stack, null, available);
             if (accepted > 0) {
                 player.setItemInHand(InteractionHand.MAIN_HAND, stack);
             }
             return accepted;
         }
         return 0;
-    }
-
-    private static void castSimpleSpell(
-            ServerPlayer player,
-            MagicStatus status,
-            Elementos elemento,
-            int resonance,
-            long gameTime
-    ) {
-        int cost = Mth.clamp(
-                BASE_SPELL_COST - resonance * (BASE_SPELL_COST - MIN_SPELL_COST) / MAX_RESONANCE,
-                MIN_SPELL_COST,
-                BASE_SPELL_COST
-        );
-        int cooldown = Mth.clamp(
-                BASE_SPELL_COOLDOWN_TICKS
-                        - resonance * (BASE_SPELL_COOLDOWN_TICKS - MIN_SPELL_COOLDOWN_TICKS) / MAX_RESONANCE,
-                MIN_SPELL_COOLDOWN_TICKS,
-                BASE_SPELL_COOLDOWN_TICKS
-        );
-
-        if (!status.canCastSimpleSpell(gameTime) || !status.canUseMana(cost)) {
-            return;
-        }
-
-        int affinity = status.get(elemento).getAfinidade();
-        if (SimpleElementalSpells.cast(player, elemento, affinity) && status.useMana(cost)) {
-            status.setSimpleSpellCooldown(gameTime, cooldown);
-            player.syncData(ModAttachmentType.MAGIC_STATS);
-        }
     }
 }

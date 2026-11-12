@@ -141,7 +141,7 @@ dependencies {
 
     // Example project dependency using a sister or child project:
     // implementation project(":myproject")
-    implementation "com.github.glitchfiend:TerraBlender-neoforge:${minecraft_version}-26.3.0.0.9"
+
     // compile against the JEI API but do not include it at runtime
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     // at runtime, use the full JEI jar for NeoForge

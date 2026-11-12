@@ -1,7 +1,6 @@
 package org.dantesys.nexus;
 
 import com.mojang.logging.LogUtils;
-import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -19,13 +18,7 @@ import org.dantesys.nexus.items.ModItems;
 import org.dantesys.nexus.gui.ModMenus;
 import org.dantesys.nexus.network.ModNetwork;
 import org.dantesys.nexus.recipe.ModRecipes;
-import org.dantesys.nexus.worldgen.ModRegion;
-import org.dantesys.nexus.worldgen.ModSurfaceRule;
-import org.dantesys.nexus.worldgen.features.ModFeatures;
 import org.slf4j.Logger;
-import terrablender.api.RegionType;
-import terrablender.api.Regions;
-import terrablender.api.MaterialRuleManager;
 
 @Mod(Nexus.MODID)
 public class Nexus {
@@ -42,7 +35,6 @@ public class Nexus {
         ModBlocks.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModMenus.register(modEventBus);
-        ModFeatures.register(modEventBus);
         ModAttachmentType.register(modEventBus);
         ModEffects.register(modEventBus);
         ModRecipes.register(modEventBus);
@@ -53,8 +45,6 @@ public class Nexus {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        Regions.register(new ModRegion(Identifier.fromNamespaceAndPath(MODID,"overworld_1"), RegionType.OVERWORLD,1));
-        MaterialRuleManager.addRules(MaterialRuleManager.RuleCategory.OVERWORLD, MODID, ModSurfaceRule::registerAll);
     }
 
 }

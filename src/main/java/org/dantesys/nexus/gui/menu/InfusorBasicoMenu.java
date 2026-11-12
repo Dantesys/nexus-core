@@ -127,21 +127,6 @@ public class InfusorBasicoMenu extends AbstractContainerMenu {
     public Identifier getTextureFromSlot(int slot){
         ItemStack stack = this.getSlot(slot).getItem();
         Identifier rs = Identifier.fromNamespaceAndPath(Nexus.MODID,"textures/gui/infusor/padrao.png");
-        if(stack.is(ModTags.Items.ESMERALDAS)){
-            if(stack.is(ModItems.ESMERALDA_IGNEA.get())){
-                rs = Identifier.fromNamespaceAndPath(Nexus.MODID,"textures/gui/infusor/igneo.png");
-            }else if(stack.is(ModItems.ESMERALDA_LUZ.get())){
-                rs = Identifier.fromNamespaceAndPath(Nexus.MODID,"textures/gui/infusor/luz.png");
-            }else if(stack.is(ModItems.ESMERALDA_METAL.get())){
-                rs = Identifier.fromNamespaceAndPath(Nexus.MODID,"textures/gui/infusor/metal.png");
-            }else if(stack.is(ModItems.ESMERALDA_SOMBRIA.get())){
-                rs = Identifier.fromNamespaceAndPath(Nexus.MODID,"textures/gui/infusor/sombrio.png");
-            }else if(stack.is(ModItems.ESMERALDA_TEMPESTADE.get())){
-                rs = Identifier.fromNamespaceAndPath(Nexus.MODID,"textures/gui/infusor/tempestade.png");
-            }else if(stack.is(ModItems.ESMERALDA_VIDA.get())){
-                rs = Identifier.fromNamespaceAndPath(Nexus.MODID,"textures/gui/infusor/vida.png");
-            }
-        }
         return rs;
     }
 }

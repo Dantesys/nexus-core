@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/cube_column",
-  "textures": {
-    "end": "nexus:block/stripped_tempestade_log_top",
-    "side": "nexus:block/stripped_tempestade_log"
-  }
-}

@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "id": "nexus:nucleo"
+    },
+    "title": {
+      "text": "Despertar da Mana"
+    },
+    "description": {
+      "text": "Descubra seus status de mana na Bola de Cristal."
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "nexus:textures/gui/advancements/backgrounds/nexus.png"
+  },
+  "criteria": {
+    "conquistado": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

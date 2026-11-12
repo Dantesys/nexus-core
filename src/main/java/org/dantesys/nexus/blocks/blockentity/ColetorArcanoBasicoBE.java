@@ -17,7 +17,6 @@ import org.dantesys.nexus.data.ModAttachmentType;
 import org.dantesys.nexus.blocks.ColetorArcanoBasico;
 import org.dantesys.nexus.magic.MagicStatus;
 import org.dantesys.nexus.magic.ManaReceiver;
-import org.dantesys.nexus.worldgen.ModBiomes;
 
 import java.util.Comparator;
 
@@ -62,15 +61,7 @@ public class ColetorArcanoBasicoBE extends BlockEntity {
     }
 
     public static int collectionRate(Level level, BlockPos pos) {
-        var biome = level.getBiome(pos);
-        if (biome.is(ModBiomes.VIDA)) {
-            return MANA_SECOND*4;
-        }
-        if (biome.is(ModBiomes.IGNEO) || biome.is(ModBiomes.SOMBRIA)
-                || biome.is(ModBiomes.LUZ) || biome.is(ModBiomes.METAL)
-                || biome.is(ModBiomes.TEMPESTADE)) {
-            return MANA_SECOND*2;
-        }
+        // Sem biomas elementais no core: taxa fixa. Addons podem mudar isso depois.
         return MANA_SECOND;
     }
 

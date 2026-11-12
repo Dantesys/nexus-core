@@ -1,5 +1,5 @@
 {
-  "parent": "nexus:todas_as_faces_da_mana",
+  "parent": "nexus:despertar_da_mana",
   "display": {
     "icon": {
       "id": "nexus:matriz_primordial"
@@ -8,9 +8,9 @@
       "text": "Afinidade Absoluta"
     },
     "description": {
-      "text": "Alcance Afinidade S em todas as seis manas elementais."
+      "text": "Alcance Afinidade S."
     },
-    "frame": "challenge",
+    "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false

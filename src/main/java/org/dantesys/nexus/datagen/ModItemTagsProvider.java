@@ -26,14 +26,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider registries) {
-        tag(ModTags.Items.ESMERALDAS)
-                .add(k(ModItems.ESMERALDA_TEMPESTADE))
-                .add(k(ModItems.ESMERALDA_SOMBRIA))
-                .add(k(ModItems.ESMERALDA_VIDA))
-                .add(k(ModItems.ESMERALDA_METAL))
-                .add(k(ModItems.ESMERALDA_IGNEA))
-                .add(k(ModItems.ESMERALDA_LUZ));
+    protected void addTags(HolderLookup.Provider registries) {;
         tag(ModTags.Items.NUCLEO).add(k(ModItems.NUCLEO));
         tag(ModTags.Items.MATRIZ_RELIQUIA)
                 .add(k(ModItems.MATRIZ_PRIMORDIAL), k(ModItems.MATRIZ_SINTETICA));
@@ -128,49 +121,5 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 .add(k(ModItems.STEEL_CHESTPLATE))
                 .add(k(ModItems.STEEL_LEGGINGS))
                 .add(k(ModItems.STEEL_BOOTS));
-        tag(ItemTags.PLANKS)
-                .add(k(ModBlocks.IGNEA_PLANKS))
-                .add(k(ModBlocks.LUZ_PLANKS))
-                .add(k(ModBlocks.METAL_PLANKS))
-                .add(k(ModBlocks.SOMBRIA_PLANKS))
-                .add(k(ModBlocks.TEMPESTADE_PLANKS))
-                .add(k(ModBlocks.VIDA_PLANKS));
-        tag(ItemTags.LOGS)
-                .add(k(ModBlocks.IGNEA_LOG), k(ModBlocks.STRIPPED_IGNEA_LOG))
-                .add(k(ModBlocks.LUZ_LOG), k(ModBlocks.STRIPPED_LUZ_LOG))
-                .add(k(ModBlocks.METAL_LOG), k(ModBlocks.STRIPPED_METAL_LOG))
-                .add(k(ModBlocks.SOMBRIA_LOG), k(ModBlocks.STRIPPED_SOMBRIA_LOG))
-                .add(k(ModBlocks.TEMPESTADE_LOG), k(ModBlocks.STRIPPED_TEMPESTADE_LOG))
-                .add(k(ModBlocks.VIDA_LOG), k(ModBlocks.STRIPPED_VIDA_LOG));
-        tag(ItemTags.WOODEN_STAIRS)
-                .add(k(ModBlocks.IGNEA_STAIRS), k(ModBlocks.LUZ_STAIRS), k(ModBlocks.METAL_STAIRS))
-                .add(k(ModBlocks.SOMBRIA_STAIRS), k(ModBlocks.TEMPESTADE_STAIRS), k(ModBlocks.VIDA_STAIRS));
-        tag(ItemTags.WOODEN_SLABS)
-                .add(k(ModBlocks.IGNEA_SLAB), k(ModBlocks.LUZ_SLAB), k(ModBlocks.METAL_SLAB))
-                .add(k(ModBlocks.SOMBRIA_SLAB), k(ModBlocks.TEMPESTADE_SLAB), k(ModBlocks.VIDA_SLAB));
-        tag(ItemTags.WOODEN_BUTTONS)
-                .add(k(ModBlocks.IGNEA_BUTTON), k(ModBlocks.LUZ_BUTTON), k(ModBlocks.METAL_BUTTON))
-                .add(k(ModBlocks.SOMBRIA_BUTTON), k(ModBlocks.TEMPESTADE_BUTTON), k(ModBlocks.VIDA_BUTTON));
-        tag(ItemTags.WOODEN_PRESSURE_PLATES)
-                .add(k(ModBlocks.IGNEA_PRESSURE_PLATE), k(ModBlocks.LUZ_PRESSURE_PLATE), k(ModBlocks.METAL_PRESSURE_PLATE))
-                .add(k(ModBlocks.SOMBRIA_PRESSURE_PLATE), k(ModBlocks.TEMPESTADE_PRESSURE_PLATE), k(ModBlocks.VIDA_PRESSURE_PLATE));
-        tag(ItemTags.WOODEN_DOORS)
-                .add(k(ModBlocks.IGNEA_DOOR), k(ModBlocks.LUZ_DOOR), k(ModBlocks.METAL_DOOR))
-                .add(k(ModBlocks.SOMBRIA_DOOR), k(ModBlocks.TEMPESTADE_DOOR), k(ModBlocks.VIDA_DOOR));
-        tag(ItemTags.WOODEN_TRAPDOORS)
-                .add(k(ModBlocks.IGNEA_TRAPDOOR), k(ModBlocks.LUZ_TRAPDOOR), k(ModBlocks.METAL_TRAPDOOR))
-                .add(k(ModBlocks.SOMBRIA_TRAPDOOR), k(ModBlocks.TEMPESTADE_TRAPDOOR), k(ModBlocks.VIDA_TRAPDOOR));
-        tag(ItemTags.WOODEN_FENCES)
-                .add(k(ModBlocks.IGNEA_FENCE), k(ModBlocks.LUZ_FENCE), k(ModBlocks.METAL_FENCE))
-                .add(k(ModBlocks.SOMBRIA_FENCE), k(ModBlocks.TEMPESTADE_FENCE), k(ModBlocks.VIDA_FENCE));
-        tag(ItemTags.FENCE_GATES)
-                .add(k(ModBlocks.IGNEA_FENCE_GATE), k(ModBlocks.LUZ_FENCE_GATE), k(ModBlocks.METAL_FENCE_GATE))
-                .add(k(ModBlocks.SOMBRIA_FENCE_GATE), k(ModBlocks.TEMPESTADE_FENCE_GATE), k(ModBlocks.VIDA_FENCE_GATE));
-        tag(ItemTags.LEAVES)
-                .add(k(ModBlocks.IGNEA_LEAVES), k(ModBlocks.LUZ_LEAVES), k(ModBlocks.METAL_LEAVES))
-                .add(k(ModBlocks.SOMBRIA_LEAVES), k(ModBlocks.TEMPESTADE_LEAVES), k(ModBlocks.VIDA_LEAVES));
-        tag(ItemTags.SAPLINGS)
-                .add(k(ModBlocks.IGNEA_SAPLING), k(ModBlocks.LUZ_SAPLING), k(ModBlocks.METAL_SAPLING))
-                .add(k(ModBlocks.SOMBRIA_SAPLING), k(ModBlocks.TEMPESTADE_SAPLING), k(ModBlocks.VIDA_SAPLING));
     }
 }

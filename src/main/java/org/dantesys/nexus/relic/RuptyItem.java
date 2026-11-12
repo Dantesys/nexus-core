@@ -33,10 +33,6 @@ public final class RuptyItem extends RelicItem {
             default -> "";
         });
     }
-    @Override public Component skillDescription(ItemStack stack, int slot) {
-        String bonus = RuptyElements.description(getElement(stack), slot);
-        return bonus.isEmpty() ? skillDescription(slot) : skillDescription(slot).copy().append(" " + bonus);
-    }
     @Override public int getCooldownTicks(ItemStack stack, int slot) {
         int ticks = switch (slot) { case 0 -> 0; case 1 -> 40; case 2 -> 240; default -> 400; };
         return Math.max(0, (int) Math.round(modify(stack, RelicAttribute.COOLDOWN, ticks)));

@@ -1,16 +1,16 @@
 {
-  "parent": "nexus:todas_as_faces_da_mana",
+  "parent": "nexus:despertar_da_mana",
   "display": {
     "icon": {
       "id": "nexus:matriz_sintetica"
     },
     "title": {
-      "text": "Ressonância Perfeita"
+      "text": "Resson\u00e2ncia Perfeita"
     },
     "description": {
-      "text": "Alcance Ressonância S em todas as seis manas elementais."
+      "text": "Alcance Resson\u00e2ncia S."
     },
-    "frame": "challenge",
+    "frame": "goal",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false

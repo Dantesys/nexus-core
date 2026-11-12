@@ -4,9 +4,13 @@ import net.minecraft.world.item.ItemStack;
 
 /** Implemente em itens que alteram atributos de reliquias. */
 public interface RelicCatalyst {
-    /** Elemento de funcionamento. Por padrao preserva o elemento recebido (inicialmente nao elemental). */
-    default org.dantesys.nexus.util.Elementos modifyRelicElement(ItemStack catalyst, ItemStack relic,
-            org.dantesys.nexus.util.Elementos currentElement) {
+    /**
+     * Elemento de funcionamento. O core não tem elementos: recebe null (mana bruta) e,
+     * por padrão, preserva o que recebeu. Catalisadores de addons podem trocar.
+     */
+    default net.minecraft.core.@org.jspecify.annotations.Nullable Holder<org.dantesys.nexus.api.element.NexusElement> modifyRelicElement(
+            ItemStack catalyst, ItemStack relic,
+            net.minecraft.core.@org.jspecify.annotations.Nullable Holder<org.dantesys.nexus.api.element.NexusElement> currentElement) {
         return currentElement;
     }
 

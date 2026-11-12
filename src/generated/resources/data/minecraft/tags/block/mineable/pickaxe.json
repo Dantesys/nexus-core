@@ -4,6 +4,7 @@
     "nexus:tanque_forja",
     "nexus:controlador_forja",
     "nexus:coletor_basico",
-    "nexus:infusor_basico"
+    "nexus:infusor_basico",
+    "nexus:bola_cristal"
   ]
 }

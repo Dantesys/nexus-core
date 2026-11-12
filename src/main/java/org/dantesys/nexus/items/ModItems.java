@@ -16,18 +16,6 @@ public class ModItems {
     public static final DeferredItem<Item> STEEL = ITEMS.registerSimpleItem("steel");
     public static final DeferredItem<Item> NUCLEO = ITEMS.registerSimpleItem("nucleo");
     public static final DeferredItem<Item> NUCLEO_FORJA = ITEMS.registerSimpleItem("nucleo_forja");
-    public static final DeferredItem<Item> FRAGMENTO_IGNEA = ITEMS.registerSimpleItem("fragmento_ignea");
-    public static final DeferredItem<Item> FRAGMENTO_VIDA = ITEMS.registerSimpleItem("fragmento_vida");
-    public static final DeferredItem<Item> FRAGMENTO_TEMPESTADE = ITEMS.registerSimpleItem("fragmento_tempestade");
-    public static final DeferredItem<Item> FRAGMENTO_METAL = ITEMS.registerSimpleItem("fragmento_metal");
-    public static final DeferredItem<Item> FRAGMENTO_LUZ = ITEMS.registerSimpleItem("fragmento_luz");
-    public static final DeferredItem<Item> FRAGMENTO_SOMBRIA = ITEMS.registerSimpleItem("fragmento_sombria");
-    public static final DeferredItem<Item> ESMERALDA_IGNEA = ITEMS.registerSimpleItem("esmeralda_ignea");
-    public static final DeferredItem<Item> ESMERALDA_VIDA = ITEMS.registerSimpleItem("esmeralda_vida");
-    public static final DeferredItem<Item> ESMERALDA_TEMPESTADE = ITEMS.registerSimpleItem("esmeralda_tempestade");
-    public static final DeferredItem<Item> ESMERALDA_METAL = ITEMS.registerSimpleItem("esmeralda_metal");
-    public static final DeferredItem<Item> ESMERALDA_LUZ = ITEMS.registerSimpleItem("esmeralda_luz");
-    public static final DeferredItem<Item> ESMERALDA_SOMBRIA = ITEMS.registerSimpleItem("esmeralda_sombria");
 
     public static final DeferredItem<Item> CRISTAL_MANA_S = registerCrystal("cristal_mana_s", Ranks.S);
     public static final DeferredItem<Item> CRISTAL_MANA_A = registerCrystal("cristal_mana_a", Ranks.A);

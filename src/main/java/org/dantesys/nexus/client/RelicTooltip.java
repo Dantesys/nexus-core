@@ -33,7 +33,10 @@ public final class RelicTooltip {
         int level = mastery.level(relic.masteryId());
         var lines = event.getToolTip();
         lines.add(Component.literal("Maestria: " + level + "/100").withStyle(ChatFormatting.GOLD));
-        lines.add(Component.literal("Mana de funcionamento: ").append(relic.getElement(event.getItemStack()).getTooltip()));
+        var elemento = relic.getElement(event.getItemStack());
+            lines.add(Component.literal("Mana de funcionamento: ").append(elemento == null
+                    ? Component.translatable("element.nexus.nao_elemental")
+                    : org.dantesys.nexus.api.element.NexusElement.name(elemento.unwrapKey().orElseThrow().identifier())));
         if (!shiftDown() && !controlDown()) {
             lines.add(Component.literal("Segure Shift ou Ctrl para ver as habilidades").withStyle(ChatFormatting.DARK_GRAY));
             return;

@@ -34,7 +34,7 @@ public class BolaCristalScreen extends AbstractContainerScreen<BolaCristalMenu> 
                 256
         );
 
-        Identifier statusTexture = Identifier.fromNamespaceAndPath(Nexus.MODID, menu.getBgStats());
+        Identifier statusTexture = Identifier.fromNamespaceAndPath(Nexus.MODID, "textures/gui/status/nada.png");
         graphics.blit(
                 RenderPipelines.GUI_TEXTURED,
                 statusTexture,
@@ -51,9 +51,6 @@ public class BolaCristalScreen extends AbstractContainerScreen<BolaCristalMenu> 
 
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
-        if (menu.isElementoBloqueado()) {
-            return;
-        }
 
         int color = menu.getTextColor();
         drawCentered(graphics, 11, 50, menu.getStatus(0), color);

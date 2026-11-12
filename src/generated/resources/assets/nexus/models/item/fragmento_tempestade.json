@@ -1,6 +1,0 @@
-{
-  "parent": "nexus:item/fragmento_elemental",
-  "textures": {
-    "layer0": "nexus:item/fragmento_tempestade"
-  }
-}

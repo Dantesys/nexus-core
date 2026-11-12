@@ -33,12 +33,6 @@ public class ModCreativeTab {
                 var enchantments = itemDisplayParameters.holders()
                         .lookupOrThrow(Registries.ENCHANTMENT);
                 output.accept(createEnchantedBook(
-                        enchantments.getOrThrow(ModEnchantments.DISTURBIO_ELEMENTAL), 10
-                ));
-                output.accept(createEnchantedBook(
-                        enchantments.getOrThrow(ModEnchantments.MATRIZ_ELEMENTAL), 1
-                ));
-                output.accept(createEnchantedBook(
                         enchantments.getOrThrow(ModEnchantments.DISTURBIO_MANA), 10
                 ));
             }).build());

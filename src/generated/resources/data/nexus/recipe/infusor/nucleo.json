@@ -1,10 +1,10 @@
 {
   "type": "nexus:infusor",
   "ingredients": [
-    "#nexus:esmeraldas",
-    "#nexus:esmeraldas",
-    "#nexus:esmeraldas",
-    "#nexus:esmeraldas"
+    "minecraft:amethyst_shard",
+    "minecraft:diamond",
+    "minecraft:amethyst_shard",
+    "nexus:steel"
   ],
   "mana": 200,
   "result": {

@@ -5,10 +5,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
-import org.dantesys.nexus.magic.ElementalStatus;
 import org.dantesys.nexus.magic.MagicStatus;
 import org.dantesys.nexus.data.ModAttachmentType;
-import org.dantesys.nexus.util.Elementos;
 import org.dantesys.nexus.util.MatrizModos;
 
 /**
@@ -16,7 +14,6 @@ import org.dantesys.nexus.util.MatrizModos;
  * A recarga pertence ao ItemStack; o custo de mana e pago pelo jogador.
  */
 public class RelicItem extends Item {
-    private static final int MAX_ELEMENTAL_STATUS = 1000;
 
     public static final int MIN_CATALYST_CAPACITY = 2;
     public static final int MAX_CATALYST_CAPACITY = 10;
@@ -107,18 +104,16 @@ public class RelicItem extends Item {
 
     public MatrizModos getMode() { return mode; }
     public int getCatalystCapacity() { return catalystCapacity; }
-    /** Mana bruta por padrao; apenas catalisadores instalados podem alterar o elemento. */
-    public Elementos getElement(ItemStack stack) {
-        Elementos element = Elementos.NAO_ELEMENTAL;
+    /** Mana bruta (null) por padrão; apenas catalisadores instalados podem alterar o elemento. */
+    public net.minecraft.core.@org.jspecify.annotations.Nullable Holder<org.dantesys.nexus.api.element.NexusElement> getElement(ItemStack stack) {
+        net.minecraft.core.Holder<org.dantesys.nexus.api.element.NexusElement> element = null;
         for (ItemStack catalyst : RelicCatalysts.get(stack)) {
             if (catalyst.getItem() instanceof RelicCatalyst modifier) {
-                element = java.util.Objects.requireNonNull(modifier.modifyRelicElement(catalyst, stack, element),
-                        "Catalyst relic element cannot be null");
+                element = modifier.modifyRelicElement(catalyst, stack, element);
             }
         }
         return element;
-    }
-    public long getCooldownRemaining(ItemStack stack, long gameTime) {
+    }    public long getCooldownRemaining(ItemStack stack, long gameTime) {
         return getCooldownRemaining(stack, gameTime, selectedSkill(stack));
     }
 
@@ -187,17 +182,14 @@ public class RelicItem extends Item {
 
         MagicStatus magic = player.getData(ModAttachmentType.MAGIC_STATS);
         if (!magic.isCreated()) return false;
-        Elementos playerElement = getElement(stack);
-        if (playerElement != Elementos.NAO_ELEMENTAL && !magic.get(playerElement).isUnlocked()) return false;
-        Elementos relicElement = playerElement;
-        boolean combo = false;
-        int resonance = playerElement == Elementos.NAO_ELEMENTAL ? 0 : statusValue(magic, playerElement, true);
-        int affinity = playerElement == Elementos.NAO_ELEMENTAL ? 0 : statusAffinity(magic, playerElement);
+        // Ressonância reduz custo e recarga (até a metade); afinidade aumenta o poder.
+        int resonance = Math.clamp(magic.getRessonancia(), 0, MagicStatus.MAX_STATUS);
+        int affinity = Math.clamp(magic.getAfinidade(), 0, MagicStatus.MAX_STATUS);
         int cost = scaleDownToHalf(getManaCost(stack, slot), resonance);
         int cooldown = scaleDownToHalf(getCooldownTicks(stack, slot), resonance);
-        double power = 1.0D + affinity / (double) MAX_ELEMENTAL_STATUS;
+        double power = 1.0D + affinity / (double) MagicStatus.MAX_STATUS;
         RelicAbilityContext abilityContext = new RelicAbilityContext(
-                playerElement, relicElement, combo, resonance, affinity, cost, cooldown, power);
+                getElement(stack), resonance, affinity, cost, cooldown, power);
 
         RelicPayment payment = planSameElementPayment(magic, cost);
         if (payment == null || !skill.effect().activate(player, stack, abilityContext)) return false;
@@ -211,19 +203,8 @@ public class RelicItem extends Item {
         return true;
     }
 
-    private static int statusValue(MagicStatus magic, Elementos element, boolean resonance) {
-        ElementalStatus status = magic.get(element);
-        if (!status.isUnlocked()) return 1;
-        int value = resonance ? status.getRessonancia() : status.getAfinidade();
-        return Math.clamp(value, 1, MAX_ELEMENTAL_STATUS);
-    }
-
-    private static int statusAffinity(MagicStatus magic, Elementos element) {
-        return statusValue(magic, element, false);
-    }
-
     private static int scaleDownToHalf(int base, int resonance) {
-        return Math.max(0, (int) Math.ceil(base * (1.0D - 0.5D * resonance / MAX_ELEMENTAL_STATUS)));
+        return Math.max(0, (int) Math.ceil(base * (1.0D - 0.5D * resonance / MagicStatus.MAX_STATUS)));
     }
 
     private static RelicPayment planSameElementPayment(MagicStatus magic, int cost) {

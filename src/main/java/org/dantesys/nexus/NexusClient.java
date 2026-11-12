@@ -27,7 +27,6 @@ import org.dantesys.nexus.client.InfusorArcanoBasicoRenderer;
 import org.dantesys.nexus.client.ControladorForjaRenderer;
 import org.dantesys.nexus.blocks.blockentity.ModBlockEntities;
 import org.dantesys.nexus.gui.screen.InfusorBasicoScreen;
-import org.dantesys.nexus.network.ChangeSelectedManaPayload;
 import org.dantesys.nexus.gui.ModMenus;
 import org.dantesys.nexus.gui.screen.BolaCristalScreen;
 import org.dantesys.nexus.gui.screen.ForjaFullScreen;
@@ -43,18 +42,6 @@ import org.dantesys.nexus.items.ModItems;
 public class NexusClient {
     private static final KeyMapping.Category NEXUS_CATEGORY = new KeyMapping.Category(
             Identifier.fromNamespaceAndPath(Nexus.MODID, "nexus")
-    );
-    private static final KeyMapping PREVIOUS_MANA = new KeyMapping(
-            "key.nexus.previous_mana",
-            InputConstants.Type.KEYBOARD,
-            InputConstants.KEY_LEFT,
-            NEXUS_CATEGORY
-    );
-    private static final KeyMapping NEXT_MANA = new KeyMapping(
-            "key.nexus.next_mana",
-            InputConstants.Type.KEYBOARD,
-            InputConstants.KEY_RIGHT,
-            NEXUS_CATEGORY
     );
     private static final KeyMapping TOGGLE_MANA_SKIN = new KeyMapping(
             "key.nexus.toggle_mana_skin",
@@ -105,8 +92,6 @@ public class NexusClient {
     @SubscribeEvent
     static void registerKeyMappings(RegisterKeyMappingsEvent event) {
         event.registerCategory(NEXUS_CATEGORY);
-        event.register(PREVIOUS_MANA);
-        event.register(NEXT_MANA);
         event.register(TOGGLE_MANA_SKIN);
         event.register(USE_MANA);
         event.register(ACTIVATE_RELIC);
@@ -123,13 +108,6 @@ public class NexusClient {
 
     @SubscribeEvent
     static void onKeyInput(InputEvent.Key event) {
-        while (PREVIOUS_MANA.consumeClick()) {
-            ClientPacketDistributor.sendToServer(new ChangeSelectedManaPayload(false));
-        }
-
-        while (NEXT_MANA.consumeClick()) {
-            ClientPacketDistributor.sendToServer(new ChangeSelectedManaPayload(true));
-        }
 
         while (TOGGLE_MANA_SKIN.consumeClick()) {
             ClientPacketDistributor.sendToServer(new ToggleManaSkinPayload());
