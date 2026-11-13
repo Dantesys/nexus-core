@@ -76,5 +76,14 @@
   "item.nexus.planta": "Planta",
   "key.nexus.rotate_blueprint": "Girar planta da Krefty",
   "death.attack.krefty_tijolo": "%1$s levou uma tijolada da Krefty de %2$s",
-  "death.attack.krefty_escombros": "%1$s foi soterrado pelos escombros de %2$s"
+  "death.attack.krefty_escombros": "%1$s foi soterrado pelos escombros de %2$s",
+  "item.nexus.orix": "Orix",
+  "item.nexus.brekry": "Brekry",
+  "item.nexus.bastry": "Bastry",
+  "item.nexus.skopy": "Skopy",
+  "item.nexus.escordy": "Escordy",
+  "item.nexus.agrix": "Agrix",
+  "death.attack.bastry_counter": "%1$s levou o próprio golpe de volta da Bastry de %2$s",
+  "death.attack.skopy_ultrasonic": "%1$s foi atravessado pelo Ultrasonic de %2$s",
+  "death.attack.escordy_chumbo": "%1$s foi crivado de chumbo pela Escordy de %2$s"
 }

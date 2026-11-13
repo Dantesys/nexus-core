@@ -1,0 +1,150 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "fallback": {
+      "type": "minecraft:condition",
+      "property": "minecraft:using_item",
+      "on_false": {
+        "type": "minecraft:model",
+        "model": "nexus:item/skopy_dormente"
+      },
+      "on_true": {
+        "type": "minecraft:range_dispatch",
+        "property": "minecraft:use_duration",
+        "scale": 0.05,
+        "fallback": {
+          "type": "minecraft:model",
+          "model": "nexus:item/skopy_dormente_pulling_0"
+        },
+        "entries": [
+          {
+            "threshold": 0.65,
+            "model": {
+              "type": "minecraft:model",
+              "model": "nexus:item/skopy_dormente_pulling_1"
+            }
+          },
+          {
+            "threshold": 0.9,
+            "model": {
+              "type": "minecraft:model",
+              "model": "nexus:item/skopy_dormente_pulling_2"
+            }
+          }
+        ]
+      }
+    },
+    "entries": [
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:condition",
+          "property": "minecraft:using_item",
+          "on_false": {
+            "type": "minecraft:model",
+            "model": "nexus:item/skopy_desperta"
+          },
+          "on_true": {
+            "type": "minecraft:range_dispatch",
+            "property": "minecraft:use_duration",
+            "scale": 0.05,
+            "fallback": {
+              "type": "minecraft:model",
+              "model": "nexus:item/skopy_desperta_pulling_0"
+            },
+            "entries": [
+              {
+                "threshold": 0.65,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/skopy_desperta_pulling_1"
+                }
+              },
+              {
+                "threshold": 0.9,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/skopy_desperta_pulling_2"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "threshold": 2,
+        "model": {
+          "type": "minecraft:condition",
+          "property": "minecraft:using_item",
+          "on_false": {
+            "type": "minecraft:model",
+            "model": "nexus:item/skopy_ressonante"
+          },
+          "on_true": {
+            "type": "minecraft:range_dispatch",
+            "property": "minecraft:use_duration",
+            "scale": 0.05,
+            "fallback": {
+              "type": "minecraft:model",
+              "model": "nexus:item/skopy_ressonante_pulling_0"
+            },
+            "entries": [
+              {
+                "threshold": 0.65,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/skopy_ressonante_pulling_1"
+                }
+              },
+              {
+                "threshold": 0.9,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/skopy_ressonante_pulling_2"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "threshold": 3,
+        "model": {
+          "type": "minecraft:condition",
+          "property": "minecraft:using_item",
+          "on_false": {
+            "type": "minecraft:model",
+            "model": "nexus:item/skopy_final"
+          },
+          "on_true": {
+            "type": "minecraft:range_dispatch",
+            "property": "minecraft:use_duration",
+            "scale": 0.05,
+            "fallback": {
+              "type": "minecraft:model",
+              "model": "nexus:item/skopy_final_pulling_0"
+            },
+            "entries": [
+              {
+                "threshold": 0.65,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/skopy_final_pulling_1"
+                }
+              },
+              {
+                "threshold": 0.9,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/skopy_final_pulling_2"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

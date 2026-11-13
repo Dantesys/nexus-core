@@ -1,0 +1,206 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 0,
+    "fallback": {
+      "type": "minecraft:condition",
+      "property": "minecraft:using_item",
+      "on_true": {
+        "type": "minecraft:range_dispatch",
+        "property": "minecraft:use_duration",
+        "scale": 0.05,
+        "fallback": {
+          "type": "minecraft:model",
+          "model": "nexus:item/escordy_dormente_pulling_0"
+        },
+        "entries": [
+          {
+            "threshold": 0.58,
+            "model": {
+              "type": "minecraft:model",
+              "model": "nexus:item/escordy_dormente_pulling_1"
+            }
+          },
+          {
+            "threshold": 1.0,
+            "model": {
+              "type": "minecraft:model",
+              "model": "nexus:item/escordy_dormente_pulling_2"
+            }
+          }
+        ]
+      },
+      "on_false": {
+        "type": "minecraft:range_dispatch",
+        "property": "minecraft:custom_model_data",
+        "index": 1,
+        "fallback": {
+          "type": "minecraft:model",
+          "model": "nexus:item/escordy_dormente"
+        },
+        "entries": [
+          {
+            "threshold": 1,
+            "model": {
+              "type": "minecraft:model",
+              "model": "nexus:item/escordy_dormente_carregada"
+            }
+          }
+        ]
+      }
+    },
+    "entries": [
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:condition",
+          "property": "minecraft:using_item",
+          "on_true": {
+            "type": "minecraft:range_dispatch",
+            "property": "minecraft:use_duration",
+            "scale": 0.05,
+            "fallback": {
+              "type": "minecraft:model",
+              "model": "nexus:item/escordy_desperta_pulling_0"
+            },
+            "entries": [
+              {
+                "threshold": 0.58,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/escordy_desperta_pulling_1"
+                }
+              },
+              {
+                "threshold": 1.0,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/escordy_desperta_pulling_2"
+                }
+              }
+            ]
+          },
+          "on_false": {
+            "type": "minecraft:range_dispatch",
+            "property": "minecraft:custom_model_data",
+            "index": 1,
+            "fallback": {
+              "type": "minecraft:model",
+              "model": "nexus:item/escordy_desperta"
+            },
+            "entries": [
+              {
+                "threshold": 1,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/escordy_desperta_carregada"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "threshold": 2,
+        "model": {
+          "type": "minecraft:condition",
+          "property": "minecraft:using_item",
+          "on_true": {
+            "type": "minecraft:range_dispatch",
+            "property": "minecraft:use_duration",
+            "scale": 0.05,
+            "fallback": {
+              "type": "minecraft:model",
+              "model": "nexus:item/escordy_ressonante_pulling_0"
+            },
+            "entries": [
+              {
+                "threshold": 0.58,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/escordy_ressonante_pulling_1"
+                }
+              },
+              {
+                "threshold": 1.0,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/escordy_ressonante_pulling_2"
+                }
+              }
+            ]
+          },
+          "on_false": {
+            "type": "minecraft:range_dispatch",
+            "property": "minecraft:custom_model_data",
+            "index": 1,
+            "fallback": {
+              "type": "minecraft:model",
+              "model": "nexus:item/escordy_ressonante"
+            },
+            "entries": [
+              {
+                "threshold": 1,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/escordy_ressonante_carregada"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "threshold": 3,
+        "model": {
+          "type": "minecraft:condition",
+          "property": "minecraft:using_item",
+          "on_true": {
+            "type": "minecraft:range_dispatch",
+            "property": "minecraft:use_duration",
+            "scale": 0.05,
+            "fallback": {
+              "type": "minecraft:model",
+              "model": "nexus:item/escordy_final_pulling_0"
+            },
+            "entries": [
+              {
+                "threshold": 0.58,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/escordy_final_pulling_1"
+                }
+              },
+              {
+                "threshold": 1.0,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/escordy_final_pulling_2"
+                }
+              }
+            ]
+          },
+          "on_false": {
+            "type": "minecraft:range_dispatch",
+            "property": "minecraft:custom_model_data",
+            "index": 1,
+            "fallback": {
+              "type": "minecraft:model",
+              "model": "nexus:item/escordy_final"
+            },
+            "entries": [
+              {
+                "threshold": 1,
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "nexus:item/escordy_final_carregada"
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

@@ -123,6 +123,8 @@ public final class RuptyEffects {
 
     private static boolean addMark(ServerPlayer player, LivingEntity target) {
         if (blade(player) <= 0 || marksOn(target, player) >= perTarget(player)) return false;
+        // Campo Reflexivo da Bastry: os fragmentos voltam para a espada sem marcar.
+        if (BastryEffects.isProtected(target)) return false;
         state(player).marks.add(new Mark(target, player.level().getGameTime() + RuptyRules.MARK_DURATION));
         ServerLevel level = (ServerLevel) target.level();
         level.sendParticles(MANA, target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 8, 0.25, 0.3, 0.25, 0);
@@ -248,6 +250,10 @@ public final class RuptyEffects {
         int remaining = RuptyRules.STAB_FRAGMENTS;
         Vec3 floatEnd = lineEnd;
         LivingEntity first = targets.stream().filter(LivingEntity::isAlive).findFirst().orElse(null);
+        if (first != null && BastryEffects.isProtected(first)) {
+            remaining = 0;
+            first = null;
+        }
         if (first != null) {
             int marks = RuptyRules.stabMarks(Math.sqrt(first.distanceToSqr(start)));
             for (int i = 0; i < marks && addMark(player, first); i++) remaining--;
@@ -370,7 +376,10 @@ public final class RuptyEffects {
             if (now % 4 == 0) level.sendParticles(MANA, f.pos().x, f.pos().y, f.pos().z, 1, 0.08, 0.08, 0.08, 0);
             LivingEntity victim = level.getEntitiesOfClass(LivingEntity.class, new AABB(f.pos(), f.pos()).inflate(RuptyRules.FLOAT_RADIUS),
                     t -> canHit(player, t) && marksOn(t, player) < perTarget(player)).stream().findFirst().orElse(null);
-            if (victim != null) {
+            if (victim != null && BastryEffects.isProtected(victim)) {
+                floating.remove();
+                changed = true;
+            } else if (victim != null) {
                 floating.remove();
                 hit(player, victim, (float) (RuptyRules.FLOAT_DAMAGE * f.power()), false, null);
                 if (victim.isAlive()) addMark(player, victim);

@@ -73,5 +73,14 @@
   "item.nexus.planta": "Blueprint",
   "key.nexus.rotate_blueprint": "Rotate Krefty blueprint",
   "death.attack.krefty_tijolo": "%1$s was hit by a brick from %2$s's Krefty",
-  "death.attack.krefty_escombros": "%1$s was buried by %2$s's debris"
+  "death.attack.krefty_escombros": "%1$s was buried by %2$s's debris",
+  "item.nexus.orix": "Orix",
+  "item.nexus.brekry": "Brekry",
+  "item.nexus.bastry": "Bastry",
+  "item.nexus.skopy": "Skopy",
+  "item.nexus.escordy": "Escordy",
+  "item.nexus.agrix": "Agrix",
+  "death.attack.bastry_counter": "%1$s got their own hit back from %2$s's Bastry",
+  "death.attack.skopy_ultrasonic": "%1$s was pierced by %2$s's Ultrasonic",
+  "death.attack.escordy_chumbo": "%1$s was riddled with pellets by %2$s's Escordy"
 }

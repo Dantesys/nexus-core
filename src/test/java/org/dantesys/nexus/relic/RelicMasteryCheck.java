@@ -59,6 +59,11 @@ public final class RelicMasteryCheck {
         check(KreftyRules.parse("lixo") == null && KreftyRules.parse("a=b@c") == null && KreftyRules.parse("x=-1") == null, "Reject invalid rules");
         check(KreftyRules.areaCost(30, 1000) == 130, "Area cost by volume");
         check(KreftyRules.hasFinalRank(680) && !KreftyRules.hasFinalRank(679), "Instant build needs capacity A");
+
+        // Escordy
+        check(EscordyEffects.normalLimit(1) == 10 && EscordyEffects.normalLimit(20) == 20, "Charge limit 10 to 20");
+        check(EscordyEffects.falloff(2) == 1.0 && EscordyEffects.falloff(24) < 0.2 && EscordyEffects.falloff(10) < 1.0, "Pellet falloff");
+        check(EscordyEffects.spread(20) > EscordyEffects.spread(2) && EscordyEffects.spread(50) <= 25, "Cone widens with pellets");
         System.out.println("RelicMasteryCheck: OK");
     }
 

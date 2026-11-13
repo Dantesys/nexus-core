@@ -14,6 +14,18 @@ public class ModItems {
             ITEMS.registerItem("rupty", org.dantesys.nexus.relic.RuptyItem::new);
     public static final DeferredItem<org.dantesys.nexus.relic.KreftyItem> KREFTY =
             ITEMS.registerItem("krefty", org.dantesys.nexus.relic.KreftyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.OrixItem> ORIX =
+            ITEMS.registerItem("orix", org.dantesys.nexus.relic.OrixItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.BrekryItem> BREKRY =
+            ITEMS.registerItem("brekry", org.dantesys.nexus.relic.BrekryItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.BastryItem> BASTRY =
+            ITEMS.registerItem("bastry", org.dantesys.nexus.relic.BastryItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.SkopyItem> SKOPY =
+            ITEMS.registerItem("skopy", org.dantesys.nexus.relic.SkopyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.EscordyItem> ESCORDY =
+            ITEMS.registerItem("escordy", org.dantesys.nexus.relic.EscordyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.AgrixItem> AGRIX =
+            ITEMS.registerItem("agrix", org.dantesys.nexus.relic.AgrixItem::new);
     public static final DeferredItem<PlantaItem> PLANTA = ITEMS.registerItem("planta", PlantaItem::new);
 
     public static final DeferredItem<Item> STEEL = ITEMS.registerSimpleItem("steel");
