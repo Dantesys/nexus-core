@@ -12,6 +12,9 @@ public class ModItems {
     public static final DeferredRegister.Items  ITEMS = DeferredRegister.createItems(Nexus.MODID);
     public static final DeferredItem<org.dantesys.nexus.relic.RuptyItem> RUPTY =
             ITEMS.registerItem("rupty", org.dantesys.nexus.relic.RuptyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.KreftyItem> KREFTY =
+            ITEMS.registerItem("krefty", org.dantesys.nexus.relic.KreftyItem::new);
+    public static final DeferredItem<PlantaItem> PLANTA = ITEMS.registerItem("planta", PlantaItem::new);
 
     public static final DeferredItem<Item> STEEL = ITEMS.registerSimpleItem("steel");
     public static final DeferredItem<Item> NUCLEO = ITEMS.registerSimpleItem("nucleo");

@@ -149,6 +149,12 @@ public class RelicItem extends Item {
 
     // ---------- Ativacao ----------
 
+    /** Custo de mana do uso (ex.: pelo tamanho de uma area). Padrao: custo fixo da habilidade. */
+    protected int skillManaCost(ServerPlayer player, ItemStack stack, int slot) { return getManaCost(stack, slot); }
+
+    /** Usos preparatorios (ex.: marcar o primeiro ponto, copiar uma planta): sem custo, sem recarga. */
+    protected boolean isFreeUse(ServerPlayer player, ItemStack stack, int slot) { return false; }
+
     public boolean activate(ServerPlayer player, ItemStack stack) {
         return activate(player, stack, selectedSkill(stack));
     }
@@ -173,7 +179,8 @@ public class RelicItem extends Item {
             return false;
         }
         long gameTime = player.level().getGameTime();
-        long remaining = getCooldownRemaining(stack, gameTime, slot);
+        boolean free = isFreeUse(player, stack, slot);
+        long remaining = free ? 0 : getCooldownRemaining(stack, gameTime, slot);
         if (remaining > 0) {
             if (feedback) player.sendSystemMessage(skill.name().copy().append(" em recarga: " + (remaining + 19) / 20 + "s"), true);
             return false;
@@ -189,8 +196,8 @@ public class RelicItem extends Item {
         // Ressonancia reduz custo e recarga (ate a metade); afinidade aumenta o poder.
         int resonance = Math.clamp(magic.getRessonancia(), 0, MagicStatus.MAX_STATUS);
         int affinity = Math.clamp(magic.getAfinidade(), 0, MagicStatus.MAX_STATUS);
-        int cost = scaleDownToHalf(getManaCost(stack, slot), resonance);
-        int cooldown = scaleDownToHalf(getCooldownTicks(stack, slot), resonance);
+        int cost = free ? 0 : scaleDownToHalf(skillManaCost(player, stack, slot), resonance);
+        int cooldown = free ? 0 : scaleDownToHalf(getCooldownTicks(stack, slot), resonance);
         double power = 1.0D + affinity / (double) MagicStatus.MAX_STATUS;
         RelicAbilityContext context = new RelicAbilityContext(getElement(stack), resonance, affinity, cost, cooldown, power);
 
@@ -205,7 +212,7 @@ public class RelicItem extends Item {
             player.syncData(ModAttachmentType.MAGIC_STATS);
         }
         if (cooldown > 0) writeLong(stack, COOLDOWN_TAG + slot, gameTime + cooldown);
-        if (kind == RelicSkill.Kind.ACTIVE) addMasteryXp(player, RelicMastery.XP_PER_USE);
+        if (kind == RelicSkill.Kind.ACTIVE && !free) addMasteryXp(player, RelicMastery.XP_PER_USE);
         return true;
     }
 

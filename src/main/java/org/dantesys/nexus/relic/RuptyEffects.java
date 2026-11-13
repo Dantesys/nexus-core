@@ -16,11 +16,9 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
@@ -119,14 +117,7 @@ public final class RuptyEffects {
         if (!stack.isEmpty()) item().refreshModelData(player, stack);
     }
 
-    /** Aliados: o dono, os pets dele, o mesmo time; jogadores so com PvP permitido. */
-    static boolean canHit(ServerPlayer player, LivingEntity target) {
-        if (target == player || !target.isAlive() || target.isSpectator() || target instanceof ArmorStand) return false;
-        if (player.isAlliedTo(target)) return false;
-        if (target instanceof OwnableEntity pet && pet.getOwner() == player) return false;
-        if (target instanceof Player other) return !other.isCreative() && player.canHarmPlayer(other);
-        return true;
-    }
+    static boolean canHit(ServerPlayer player, LivingEntity target) { return RelicTargets.canHit(player, target); }
 
     // ---------- Marcas e fragmentos ----------
 

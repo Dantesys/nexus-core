@@ -68,5 +68,10 @@
   "item.nexus.cristal_mana_f": "Mana Crystal [F]",
   "message.nexus.crystal.mana_created": "Rank %1$s Mana Crystal created.",
   "death.attack.rupty_corte": "%1$s was shredded by %2$s's Rupty fragments",
-  "death.attack.rupty_magia": "%1$s was consumed by %2$s's Rupty mana"
+  "death.attack.rupty_magia": "%1$s was consumed by %2$s's Rupty mana",
+  "item.nexus.krefty": "Krefty",
+  "item.nexus.planta": "Blueprint",
+  "key.nexus.rotate_blueprint": "Rotate Krefty blueprint",
+  "death.attack.krefty_tijolo": "%1$s was hit by a brick from %2$s's Krefty",
+  "death.attack.krefty_escombros": "%1$s was buried by %2$s's debris"
 }

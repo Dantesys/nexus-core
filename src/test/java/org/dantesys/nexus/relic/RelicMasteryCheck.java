@@ -50,6 +50,15 @@ public final class RelicMasteryCheck {
         check(!RuptyRules.canUseFinal(680, 19, 20, 9, 20), "Final needs every fragment on the blade");
         check(!RuptyRules.canUseFinal(680, 10, 10, 9, 20), "Final needs 20 fragments");
         check(!RuptyRules.canUseFinal(680, 20, 20, 10, 20), "Final needs less than half health");
+
+        // Krefty
+        var e = KreftyRules.parse("minecraft:diamond_block=96@15");
+        check(e != null && !e.tag() && e.cost() == 96 && e.minLevel() == 15, "Parse block rule");
+        e = KreftyRules.parse("#c:ores=16");
+        check(e != null && e.tag() && e.key().equals("c:ores") && e.minLevel() == 1, "Parse tag rule without level");
+        check(KreftyRules.parse("lixo") == null && KreftyRules.parse("a=b@c") == null && KreftyRules.parse("x=-1") == null, "Reject invalid rules");
+        check(KreftyRules.areaCost(30, 1000) == 130, "Area cost by volume");
+        check(KreftyRules.hasFinalRank(680) && !KreftyRules.hasFinalRank(679), "Instant build needs capacity A");
         System.out.println("RelicMasteryCheck: OK");
     }
 

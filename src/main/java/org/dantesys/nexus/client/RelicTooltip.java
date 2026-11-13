@@ -28,6 +28,22 @@ public final class RelicTooltip {
 
     @SubscribeEvent
     public static void tooltip(ItemTooltipEvent event) {
+        if (event.getItemStack().getItem() instanceof org.dantesys.nexus.items.PlantaItem) {
+            var data = org.dantesys.nexus.items.PlantaItem.data(event.getItemStack());
+            var lines = event.getToolTip();
+            if (data.getStringOr(org.dantesys.nexus.items.PlantaItem.ID, "").isEmpty()) {
+                lines.add(Component.literal("Planta vazia").withStyle(ChatFormatting.GRAY));
+                return;
+            }
+            lines.add(Component.literal("Tamanho: " + data.getIntOr("Sx", 0) + "×" + data.getIntOr("Sy", 0) + "×" + data.getIntOr("Sz", 0))
+                    .withStyle(ChatFormatting.GRAY));
+            lines.add(Component.literal("Blocos: " + data.getIntOr("Blocos", 0)).withStyle(ChatFormatting.GRAY));
+            lines.add(Component.literal("Custo de mana: " + data.getIntOr("Custo", 0)).withStyle(ChatFormatting.AQUA));
+            lines.add(Component.literal("Rotação: " + Math.floorMod(data.getIntOr("Rotacao", 0), 4) * 90 + "°").withStyle(ChatFormatting.GRAY));
+            lines.add(Component.literal("Na outra mão, com a Krefty e a Construção Instantânea selecionada. Tecla H gira.")
+                    .withStyle(ChatFormatting.DARK_GRAY));
+            return;
+        }
         if (!(event.getItemStack().getItem() instanceof RelicItem relic) || event.getEntity() == null) return;
         RelicMastery mastery = event.getEntity().getData(ModAttachmentType.RELIC_MASTERY);
         int level = mastery.level(relic.masteryId());

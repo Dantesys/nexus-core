@@ -57,6 +57,8 @@ public class NexusClient {
     );
     private static final KeyMapping ACTIVATE_RELIC = new KeyMapping(
             "key.nexus.activate_relic", InputConstants.Type.KEYBOARD, InputConstants.KEY_V, NEXUS_CATEGORY);
+    private static final KeyMapping ROTATE_BLUEPRINT = new KeyMapping(
+            "key.nexus.rotate_blueprint", InputConstants.Type.KEYBOARD, InputConstants.KEY_H, NEXUS_CATEGORY);
 
     public NexusClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
@@ -95,6 +97,7 @@ public class NexusClient {
         event.register(TOGGLE_MANA_SKIN);
         event.register(USE_MANA);
         event.register(ACTIVATE_RELIC);
+        event.register(ROTATE_BLUEPRINT);
     }
 
     @SubscribeEvent
@@ -114,6 +117,9 @@ public class NexusClient {
         }
         while (ACTIVATE_RELIC.consumeClick()) {
             ClientPacketDistributor.sendToServer(new ActivateRelicPayload());
+        }
+        while (ROTATE_BLUEPRINT.consumeClick()) {
+            ClientPacketDistributor.sendToServer(new org.dantesys.nexus.network.RotateBlueprintPayload());
         }
 
     }
