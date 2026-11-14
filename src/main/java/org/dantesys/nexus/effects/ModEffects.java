@@ -18,6 +18,10 @@ public class ModEffects {
             0xffffff
     ));
 
+    /** Rifty: atravessa blocos como andaimes e fica imune a dano fisico. */
+    public static final Holder<MobEffect> SUBESPACO = EFFECTS.register("subespaco",
+            () -> new Subespaco(MobEffectCategory.BENEFICIAL, 0x6a2fbf));
+
     public static void register(IEventBus bus){
         EFFECTS.register(bus);
     }

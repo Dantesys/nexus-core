@@ -113,5 +113,41 @@ public class Config {
         BUILDER.pop();
     }
 
+    // ---------- Fisgy ----------
+    public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> FISGY_TABLES;
+    public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> FISGY_AQUATIC;
+    // ---------- Domix ----------
+    public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> DOMIX_PETS;
+    public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> DOMIX_POWERS;
+
+    static {
+        java.util.function.Predicate<Object> text = o -> o instanceof String;
+        BUILDER.push("fisgy");
+        FISGY_TABLES = BUILDER.comment("Pesca em Qualquer Lugar: \"lugar=item:peso,item:peso\". Lugares: terra, areia, neve, lava, nether, end.")
+                .defineListAllowEmpty("tabelas", java.util.List.of(
+                        "terra=minecraft:cod:30,minecraft:potato:15,minecraft:carrot:15,minecraft:bone:15,minecraft:rotten_flesh:10,minecraft:stick:10,minecraft:emerald:2",
+                        "areia=minecraft:cod:30,minecraft:sand:20,minecraft:cactus:10,minecraft:bone:15,minecraft:gold_nugget:10,minecraft:prismarine_shard:5",
+                        "neve=minecraft:salmon:30,minecraft:snowball:20,minecraft:ice:15,minecraft:packed_ice:5,minecraft:tropical_fish:5",
+                        "lava=minecraft:cooked_cod:30,minecraft:cooked_salmon:25,minecraft:magma_cream:15,minecraft:gold_nugget:15,minecraft:blaze_rod:5,minecraft:netherite_scrap:1",
+                        "nether=minecraft:cooked_cod:25,minecraft:quartz:20,minecraft:nether_wart:15,minecraft:glowstone_dust:15,minecraft:ghast_tear:3",
+                        "end=minecraft:chorus_fruit:30,minecraft:end_stone:20,minecraft:popped_chorus_fruit:10,minecraft:ender_pearl:10,minecraft:shulker_shell:2"),
+                        () -> "terra=minecraft:cod:1", text);
+        FISGY_AQUATIC = BUILDER.comment("Peixe da Vida: mobs aquaticos pacificos ou neutros sorteados.")
+                .defineListAllowEmpty("aquaticos", java.util.List.of("minecraft:cod", "minecraft:salmon", "minecraft:tropical_fish",
+                        "minecraft:pufferfish", "minecraft:squid", "minecraft:glow_squid", "minecraft:dolphin", "minecraft:axolotl"),
+                        () -> "minecraft:cod", text);
+        BUILDER.pop();
+        BUILDER.push("domix");
+        DOMIX_PETS = BUILDER.comment("Bicharada: tipos de pets sorteados.")
+                .defineListAllowEmpty("bicharada", java.util.List.of("minecraft:wolf", "minecraft:cat", "minecraft:parrot",
+                        "minecraft:llama", "minecraft:horse"), () -> "minecraft:wolf", text);
+        DOMIX_POWERS = BUILDER.comment("Poder Emprestado: \"mob=poder\". Poderes: lobo, gato, papagaio, cavalo, lhama, camelo, axolote, nautilo.")
+                .defineListAllowEmpty("poderes", java.util.List.of("minecraft:wolf=lobo", "minecraft:cat=gato", "minecraft:ocelot=gato",
+                        "minecraft:parrot=papagaio", "minecraft:horse=cavalo", "minecraft:donkey=cavalo", "minecraft:mule=cavalo",
+                        "minecraft:skeleton_horse=cavalo", "minecraft:llama=lhama", "minecraft:trader_llama=lhama", "minecraft:camel=camelo",
+                        "minecraft:axolotl=axolote", "minecraft:nautilus=nautilo"), () -> "a=b", text);
+        BUILDER.pop();
+    }
+
     static final ModConfigSpec SPEC = BUILDER.build();
 }

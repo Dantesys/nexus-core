@@ -1,0 +1,76 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "minecraft:custom_model_data",
+    "index": 1,
+    "fallback": {
+      "type": "minecraft:range_dispatch",
+      "property": "minecraft:custom_model_data",
+      "index": 0,
+      "fallback": {
+        "type": "minecraft:model",
+        "model": "nexus:item/dwarky_dormente"
+      },
+      "entries": [
+        {
+          "threshold": 1,
+          "model": {
+            "type": "minecraft:model",
+            "model": "nexus:item/dwarky_desperta"
+          }
+        },
+        {
+          "threshold": 2,
+          "model": {
+            "type": "minecraft:model",
+            "model": "nexus:item/dwarky_ressonante"
+          }
+        },
+        {
+          "threshold": 3,
+          "model": {
+            "type": "minecraft:model",
+            "model": "nexus:item/dwarky_final"
+          }
+        }
+      ]
+    },
+    "entries": [
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:range_dispatch",
+          "property": "minecraft:custom_model_data",
+          "index": 0,
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "nexus:item/dwarky_dormente_mangual"
+          },
+          "entries": [
+            {
+              "threshold": 1,
+              "model": {
+                "type": "minecraft:model",
+                "model": "nexus:item/dwarky_desperta_mangual"
+              }
+            },
+            {
+              "threshold": 2,
+              "model": {
+                "type": "minecraft:model",
+                "model": "nexus:item/dwarky_ressonante_mangual"
+              }
+            },
+            {
+              "threshold": 3,
+              "model": {
+                "type": "minecraft:model",
+                "model": "nexus:item/dwarky_final_mangual"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

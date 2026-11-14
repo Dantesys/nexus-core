@@ -26,6 +26,20 @@ public class ModItems {
             ITEMS.registerItem("escordy", org.dantesys.nexus.relic.EscordyItem::new);
     public static final DeferredItem<org.dantesys.nexus.relic.AgrixItem> AGRIX =
             ITEMS.registerItem("agrix", org.dantesys.nexus.relic.AgrixItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.FisgyItem> FISGY =
+            ITEMS.registerItem("fisgy", org.dantesys.nexus.relic.FisgyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.BrutixItem> BRUTIX =
+            ITEMS.registerItem("brutix", org.dantesys.nexus.relic.BrutixItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.DwarkyItem> DWARKY =
+            ITEMS.registerItem("dwarky", org.dantesys.nexus.relic.DwarkyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.OcultyItem> OCULTY =
+            ITEMS.registerItem("oculty", org.dantesys.nexus.relic.OcultyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.DomixItem> DOMIX =
+            ITEMS.registerItem("domix", org.dantesys.nexus.relic.DomixItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.RiftyItem> RIFTY =
+            ITEMS.registerItem("rifty", org.dantesys.nexus.relic.RiftyItem::new);
+    /** Visual da bomba de fumaca do Plano F (Oculty). Nao aparece na aba criativa. */
+    public static final DeferredItem<Item> BOMBA_FUMACA = ITEMS.registerSimpleItem("bomba_fumaca");
     public static final DeferredItem<PlantaItem> PLANTA = ITEMS.registerItem("planta", PlantaItem::new);
 
     public static final DeferredItem<Item> STEEL = ITEMS.registerSimpleItem("steel");

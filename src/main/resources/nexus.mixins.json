@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.dantesys.nexus.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "BlockStateBaseMixin",
+    "LivingEntityMixin",
+    "ServerGamePacketListenerImplMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

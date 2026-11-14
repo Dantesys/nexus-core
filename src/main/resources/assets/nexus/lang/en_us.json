@@ -82,5 +82,19 @@
   "item.nexus.agrix": "Agrix",
   "death.attack.bastry_counter": "%1$s got their own hit back from %2$s's Bastry",
   "death.attack.skopy_ultrasonic": "%1$s was pierced by %2$s's Ultrasonic",
-  "death.attack.escordy_chumbo": "%1$s was riddled with pellets by %2$s's Escordy"
+  "death.attack.escordy_chumbo": "%1$s was riddled with pellets by %2$s's Escordy",
+  "item.nexus.fisgy": "Fisgy",
+  "item.nexus.brutix": "Brutix",
+  "item.nexus.dwarky": "Dwarky",
+  "item.nexus.oculty": "Oculty",
+  "item.nexus.domix": "Domix",
+  "item.nexus.rifty": "Rifty",
+  "effect.nexus.subespaco": "Subspace",
+  "death.attack.rifty_magia": "%1$s was torn apart by the dimension %2$s ripped open",
+  "death.attack.rifty_vazio": "%1$s was swallowed by the void of %2$s's Rifty",
+  "item.nexus.bomba_fumaca": "Smoke Bomb",
+  "entity.nexus.boca_tubarao": "Shark Mouth",
+  "entity.nexus.buraco_negro": "Black Hole",
+  "entity.nexus.fenda_dimensional": "Dimensional Rift",
+  "entity.nexus.lobo_espectral": "Spectral Wolf"
 }

@@ -18,6 +18,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.TeamColor;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -36,7 +40,10 @@ public final class PrivateVisuals {
     private PrivateVisuals() {}
 
     private record Outline(UUID viewer, int[] ids, long until) {}
-    private record Glow(UUID viewer, Entity target, long until) {}
+    private record Glow(UUID viewer, Entity target, long until, TeamColor color, boolean force) {}
+    /** Entidades que brilhos comuns nao revelam (ex.: Modo Furtivo da Oculty). O X-Ray ignora isso. */
+    public static java.util.function.Predicate<Entity> HIDDEN = e -> false;
+    private static final Map<UUID, Set<TeamColor>> TEAMS_SENT = new HashMap<>();
     private static final List<Outline> OUTLINES = new ArrayList<>();
     private static final List<Glow> GLOWS = new ArrayList<>();
 
@@ -66,8 +73,33 @@ public final class PrivateVisuals {
 
     /** Faz a entidade brilhar so para o viewer. */
     public static void glow(ServerPlayer viewer, Entity target, int ticks) {
+        glow(viewer, target, ticks, null, false);
+    }
+
+    /** Brilho colorido so para o viewer (time falso enviado so para ele). force ignora HIDDEN. */
+    public static void glow(ServerPlayer viewer, Entity target, int ticks, TeamColor color, boolean force) {
         GLOWS.removeIf(g -> g.viewer().equals(viewer.getUUID()) && g.target() == target);
-        GLOWS.add(new Glow(viewer.getUUID(), target, viewer.level().getGameTime() + ticks));
+        if (color != null) {
+            PlayerTeam team = team(color);
+            if (TEAMS_SENT.computeIfAbsent(viewer.getUUID(), id -> new HashSet<>()).add(color)) {
+                viewer.connection.send(ClientboundSetPlayerTeamPacket.createAddOrModifyPacket(team, true));
+            }
+            viewer.connection.send(ClientboundSetPlayerTeamPacket.createPlayerPacket(team, target.getScoreboardName(),
+                    ClientboundSetPlayerTeamPacket.Action.ADD));
+        }
+        GLOWS.add(new Glow(viewer.getUUID(), target, viewer.level().getGameTime() + ticks, color, force));
+    }
+
+    private static PlayerTeam team(TeamColor color) {
+        PlayerTeam team = new PlayerTeam(new Scoreboard(), "nx_brilho_" + color.getSerializedName());
+        team.setColor(Optional.of(color));
+        return team;
+    }
+
+    private static void endGlow(ServerPlayer viewer, Glow g) {
+        if (g.target().isAlive()) sendFlags(viewer, g.target(), false);
+        if (g.color() != null) viewer.connection.send(ClientboundSetPlayerTeamPacket.createPlayerPacket(team(g.color()),
+                g.target().getScoreboardName(), ClientboundSetPlayerTeamPacket.Action.REMOVE));
     }
 
     /** Remove todos os brilhos privados sobre a entidade (ex.: Camuflagem). */
@@ -78,7 +110,7 @@ public final class PrivateVisuals {
             if (g.target() == target) {
                 it.remove();
                 ServerPlayer viewer = target.level().getServer().getPlayerList().getPlayer(g.viewer());
-                if (viewer != null) sendFlags(viewer, target, false);
+                if (viewer != null) endGlow(viewer, g);
             }
         }
     }
@@ -120,10 +152,10 @@ public final class PrivateVisuals {
             ServerPlayer viewer = server.getPlayerList().getPlayer(g.viewer());
             boolean alive = g.target().isAlive() && viewer != null && g.target().level() == viewer.level();
             if (!alive || now >= g.until()) {
-                if (viewer != null && g.target().isAlive()) sendFlags(viewer, g.target(), false);
+                if (viewer != null) endGlow(viewer, g);
                 glows.remove();
             } else if (now % 2 == 0) {
-                sendFlags(viewer, g.target(), true);
+                sendFlags(viewer, g.target(), g.force() || !HIDDEN.test(g.target()));
             }
         }
     }
@@ -132,11 +164,13 @@ public final class PrivateVisuals {
     public static void logout(PlayerEvent.PlayerLoggedOutEvent event) {
         OUTLINES.removeIf(o -> o.viewer().equals(event.getEntity().getUUID()));
         GLOWS.removeIf(g -> g.viewer().equals(event.getEntity().getUUID()));
+        TEAMS_SENT.remove(event.getEntity().getUUID());
     }
 
     @SubscribeEvent
     public static void stopped(ServerStoppedEvent event) {
         OUTLINES.clear();
         GLOWS.clear();
+        TEAMS_SENT.clear();
     }
 }

@@ -89,6 +89,22 @@ public class NexusClient {
                 ModBlockEntities.INFUSOR_ARCANO_BASICO_BE.get(), InfusorArcanoBasicoRenderer::new);
         event.registerBlockEntityRenderer(
                 ModBlockEntities.CONTROLADOR_FORJA_BE.get(), ControladorForjaRenderer::new);
+        event.registerEntityRenderer(org.dantesys.nexus.entity.ModEntities.BOCA_TUBARAO.get(),
+                org.dantesys.nexus.client.entity.BocaTubaraoRenderer::new);
+        event.registerEntityRenderer(org.dantesys.nexus.entity.ModEntities.BURACO_NEGRO.get(),
+                org.dantesys.nexus.client.entity.BuracoNegroRenderer::new);
+        event.registerEntityRenderer(org.dantesys.nexus.entity.ModEntities.FENDA.get(),
+                org.dantesys.nexus.client.entity.FendaRenderer::new);
+        event.registerEntityRenderer(org.dantesys.nexus.entity.ModEntities.LOBO_ESPECTRAL.get(),
+                net.minecraft.client.renderer.entity.WolfRenderer::new);
+    }
+
+    @SubscribeEvent
+    static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(org.dantesys.nexus.client.entity.BocaTubaraoModel.LAYER,
+                org.dantesys.nexus.client.entity.BocaTubaraoModel::createBodyLayer);
+        event.registerLayerDefinition(org.dantesys.nexus.client.entity.BuracoNegroModel.LAYER,
+                org.dantesys.nexus.client.entity.BuracoNegroModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -124,19 +140,21 @@ public class NexusClient {
 
     }
 
+    /** Passo Dimensional da Rifty: atacar sem nenhum alvo na mira. */
+    @SubscribeEvent
+    static void onRiftyAttack(InputEvent.InteractionKeyMappingTriggered event) {
+        var minecraft = Minecraft.getInstance();
+        if (!event.isAttack() || minecraft.player == null) return;
+        if (!(minecraft.player.getMainHandItem().getItem() instanceof org.dantesys.nexus.relic.RiftyItem)) return;
+        if (minecraft.hitResult != null && minecraft.hitResult.getType() != net.minecraft.world.phys.HitResult.Type.MISS) return;
+        ClientPacketDistributor.sendToServer(new org.dantesys.nexus.network.RiftyStepPayload());
+    }
+
     @SubscribeEvent
     static void onRelicScroll(InputEvent.MouseScrollingEvent event) {
         if (!canSelectRelic() || event.getScrollDeltaY() == 0) return;
         event.setCanceled(true);
         ClientPacketDistributor.sendToServer(new org.dantesys.nexus.network.SelectRelicSkillPayload(event.getScrollDeltaY() < 0));
-    }
-
-    @SubscribeEvent
-    static void onRelicClick(InputEvent.MouseButton.Pre event) {
-        if (event.getButton() != InputConstants.MOUSE_BUTTON_RIGHT
-                || event.getAction() != InputConstants.PRESS || !canSelectRelic()) return;
-        event.setCanceled(true);
-        ClientPacketDistributor.sendToServer(new org.dantesys.nexus.network.SelectRelicSkillPayload(true));
     }
 
     private static boolean canSelectRelic() {

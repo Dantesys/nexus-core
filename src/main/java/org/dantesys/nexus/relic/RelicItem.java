@@ -42,7 +42,7 @@ public class RelicItem extends Item {
 
     public RelicItem(Properties properties, MatrizModos mode, int manaCost, int cooldownTicks,
                      int catalystCapacity, RelicSkill... skills) {
-        super(properties.stacksTo(1));
+        super(properties.stacksTo(1).component(DataComponents.UNBREAKABLE, net.minecraft.util.Unit.INSTANCE));
         if (mode == null) throw new IllegalArgumentException("Relic mode cannot be null");
         if (manaCost < 0 || cooldownTicks < 0) {
             throw new IllegalArgumentException("Relic mana and cooldown values cannot be negative");

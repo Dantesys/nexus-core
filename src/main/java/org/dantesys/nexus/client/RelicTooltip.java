@@ -85,7 +85,7 @@ public final class RelicTooltip {
                 lines.add(Component.literal("Requisitos: ").append(skill.conditionDescription()).withStyle(ChatFormatting.LIGHT_PURPLE));
             }
         }
-        lines.add(Component.literal("Selecionar: Shift + clique direito ou Shift + rolagem")
+        lines.add(Component.literal("Trocar habilidade: Shift + rolagem do mouse")
                 .withStyle(ChatFormatting.DARK_GRAY));
         lines.add(Component.literal("Tecla da relíquia: usar a habilidade ativa selecionada")
                 .withStyle(ChatFormatting.DARK_GRAY));

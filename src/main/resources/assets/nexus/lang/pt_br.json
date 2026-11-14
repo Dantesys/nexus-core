@@ -85,5 +85,19 @@
   "item.nexus.agrix": "Agrix",
   "death.attack.bastry_counter": "%1$s levou o próprio golpe de volta da Bastry de %2$s",
   "death.attack.skopy_ultrasonic": "%1$s foi atravessado pelo Ultrasonic de %2$s",
-  "death.attack.escordy_chumbo": "%1$s foi crivado de chumbo pela Escordy de %2$s"
+  "death.attack.escordy_chumbo": "%1$s foi crivado de chumbo pela Escordy de %2$s",
+  "item.nexus.fisgy": "Fisgy",
+  "item.nexus.brutix": "Brutix",
+  "item.nexus.dwarky": "Dwarky",
+  "item.nexus.oculty": "Oculty",
+  "item.nexus.domix": "Domix",
+  "item.nexus.rifty": "Rifty",
+  "effect.nexus.subespaco": "Subespaço",
+  "death.attack.rifty_magia": "%1$s foi despedaçado pela dimensão rasgada por %2$s",
+  "death.attack.rifty_vazio": "%1$s foi engolido pelo vazio da Rifty de %2$s",
+  "item.nexus.bomba_fumaca": "Bomba de Fumaça",
+  "entity.nexus.boca_tubarao": "Boca de Tubarão",
+  "entity.nexus.buraco_negro": "Buraco Negro",
+  "entity.nexus.fenda_dimensional": "Fenda Dimensional",
+  "entity.nexus.lobo_espectral": "Lobo Espectral"
 }

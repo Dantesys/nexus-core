@@ -37,6 +37,7 @@ public class Nexus {
         ModMenus.register(modEventBus);
         ModAttachmentType.register(modEventBus);
         ModEffects.register(modEventBus);
+        org.dantesys.nexus.entity.ModEntities.register(modEventBus);
         ModRecipes.register(modEventBus);
         NeoForge.EVENT_BUS.register(NexusPlayerEvents.class);
         NeoForge.EVENT_BUS.register(NexusServerEvents.class);

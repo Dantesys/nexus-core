@@ -21,7 +21,7 @@ import org.dantesys.nexus.magic.MagicStatus;
 import org.dantesys.nexus.relic.RelicItem;
 
 public class ModNetwork {
-    private static final String VERSION = "5";
+    private static final String VERSION = "6";
     private static final double MANA_TRANSFER_RANGE = 10.0D;
     private static final int BASE_MANA_PER_SECOND = 50;
     private static final int MAX_RESONANCE = 1000;
@@ -52,6 +52,12 @@ public class ModNetwork {
                     org.dantesys.nexus.items.PlantaItem.rotate(off);
                     int degrees = org.dantesys.nexus.items.PlantaItem.rotation(off).ordinal() * 90;
                     player.sendSystemMessage(net.minecraft.network.chat.Component.literal("Planta girada: " + degrees + "°"), true);
+                });
+        registrar.playToServer(RiftyStepPayload.TYPE, RiftyStepPayload.STREAM_CODEC,
+                (payload, context) -> {
+                    if (!(context.player() instanceof ServerPlayer player)) return;
+                    ItemStack stack = player.getMainHandItem();
+                    if (stack.getItem() instanceof org.dantesys.nexus.relic.RiftyItem relic) relic.triggerPassive(player, stack, 0);
                 });
         registrar.playToServer(
                 ActivateRelicPayload.TYPE,

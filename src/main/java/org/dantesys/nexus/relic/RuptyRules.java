@@ -54,6 +54,11 @@ public final class RuptyRules {
         return Math.min(1.0, Math.max(0, marks) * DEFENSE_PER_MARK);
     }
     /** Multiplicador de dano e alcance da lamina conforme os fragmentos fora dela. */
+    /** Alcance perde menos que o dano: 2% por fragmento fora (com 20 fora, fica em 60%). */
+    public static final double REACH_PER_FRAGMENT = 0.02;
+    public static double reachScale(int out) {
+        return Math.max(0.0, 1.0 - Math.max(0, out) * REACH_PER_FRAGMENT);
+    }
     public static double bladeScale(int out) {
         return Math.max(0.0, 1.0 - Math.max(0, out) * SIZE_PER_FRAGMENT);
     }

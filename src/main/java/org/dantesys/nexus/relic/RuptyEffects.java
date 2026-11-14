@@ -429,7 +429,7 @@ public final class RuptyEffects {
         var reach = player.getAttribute(Attributes.ENTITY_INTERACTION_RANGE);
         if (reach == null) return;
         int out = player.getMainHandItem().getItem() instanceof RuptyItem ? out(player) : 0;
-        double amount = out > 0 ? RuptyRules.bladeScale(out) - 1.0 : 0;
+        double amount = out > 0 ? RuptyRules.reachScale(out) - 1.0 : 0;
         AttributeModifier current = reach.getModifier(REACH_ID);
         if (amount == 0) {
             if (current != null) reach.removeModifier(REACH_ID);

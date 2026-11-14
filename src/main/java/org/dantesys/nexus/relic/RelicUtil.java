@@ -127,6 +127,56 @@ public final class RelicUtil {
         return ItemStack.EMPTY;
     }
 
+    /** Esconde armadura e itens nas maos do jogador para os outros (invisibilidade verdadeira). */
+    public static void hideEquipment(ServerPlayer player) {
+        java.util.List<com.mojang.datafixers.util.Pair<net.minecraft.world.entity.EquipmentSlot, ItemStack>> empty = new java.util.ArrayList<>();
+        for (var slot : net.minecraft.world.entity.EquipmentSlot.values()) {
+            if (slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.HAND
+                    || slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.HUMANOID_ARMOR) empty.add(com.mojang.datafixers.util.Pair.of(slot, ItemStack.EMPTY));
+        }
+        ((ServerLevel) player.level()).getChunkSource().sendToTrackingPlayers(player,
+                new net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket(player.getId(), empty));
+    }
+
+    public static void showEquipment(ServerPlayer player) {
+        java.util.List<com.mojang.datafixers.util.Pair<net.minecraft.world.entity.EquipmentSlot, ItemStack>> items = new java.util.ArrayList<>();
+        for (var slot : net.minecraft.world.entity.EquipmentSlot.values()) {
+            if (slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.HAND
+                    || slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.HUMANOID_ARMOR) items.add(com.mojang.datafixers.util.Pair.of(slot, player.getItemBySlot(slot).copy()));
+        }
+        ((ServerLevel) player.level()).getChunkSource().sendToTrackingPlayers(player,
+                new net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket(player.getId(), items));
+    }
+
+    /** Se a entidade estiver presa em blocos, leva para o espaco livre mais proximo (ate 8 blocos). */
+    public static void pushToFreeSpace(Entity entity) {
+        if (entity.level().noCollision(entity)) return;
+        Vec3 origin = entity.position();
+        for (int r = 1; r <= 8; r++) {
+            for (int dy = 0; dy <= r; dy++) for (int dx = -r; dx <= r; dx++) for (int dz = -r; dz <= r; dz++) {
+                for (int sign : new int[]{1, -1}) {
+                    Vec3 candidate = origin.add(dx, dy * sign, dz);
+                    AABB box = entity.getBoundingBox().move(candidate.subtract(origin));
+                    if (entity.level().noCollision(entity, box)) {
+                        entity.teleportTo(candidate.x, candidate.y, candidate.z);
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    /** Envia a velocidade nova para o cliente do jogador (empurroes no servidor). */
+    public static void syncMotion(Entity entity) {
+        entity.needsSync = true;
+        if (entity instanceof ServerPlayer sp) sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket(sp));
+    }
+
+    /** Jogadores e bosses recebem dano reduzido em varias reliquias. */
+    public static float reduced(LivingEntity target, float amount) {
+        return target instanceof Player || isBoss(target) ? amount * 0.5f : amount;
+    }
+
     /**
      * Quebra um bloco disparando o evento normal de quebra (protecao de terreno) e entrega os drops ao sink.
      * Retorna false se o evento cancelar. Nao verifica dureza: quem chama decide o que pode quebrar.
