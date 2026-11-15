@@ -1,40 +1,55 @@
-### Gradle ###
-.gradle
+# ===== Gradle =====
+.gradle/
 build/
+out/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/**/build/
 
-### IntelliJ IDEA ###
+# ===== NeoForge / ModDevGradle =====
+run/
+runs/
+run-data/
+repo/
+logs/
+crash-reports/
+
+# Dados gerados (datagen) - remova esta linha se você commita os arquivos gerados
+# src/generated/resources/.cache/
+
+# ===== IntelliJ IDEA =====
 .idea/
-*.iws
 *.iml
 *.ipr
-out/
-!**/src/**/out/
+*.iws
+classes/
 
-.run/
-
-### Eclipse ###
-.apt_generated
+# ===== Eclipse =====
 .classpath
-.eclipse/
-.factorypath
 .project
-.settings
-.springBeans
-.sts4-cache
+.settings/
 bin/
-!**/src/**/bin/
 
-### VS Code ###
+# ===== VS Code =====
 .vscode/
 
-### Mac OS ###
-.DS_Store
+# ===== Java =====
+*.class
+*.log
+hs_err_pid*
 
-### Minecraft Modding ###
-run/
-!**/src/**/run/
-**/src/generated/**/.cache/
-repo/
-!**/src/**/repo/
+# ===== Blockbench / arte (arquivos de trabalho) =====
+# Descomente se não quiser versionar os .bbmodel
+# *.bbmodel
+
+# ===== Sistema operacional =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== Outros =====
+*.tmp
+*.bak
+*.swp
+.env
+# ===== Depois ====
+blockbench/
+_elementos_para_addons/
