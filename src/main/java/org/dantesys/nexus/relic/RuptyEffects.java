@@ -1,30 +1,33 @@
 package org.dantesys.nexus.relic;
 
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
@@ -34,128 +37,147 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.dantesys.nexus.Nexus;
-import org.dantesys.nexus.data.ModAttachmentType;
-import org.dantesys.nexus.effects.ModEffects;
+import org.dantesys.nexus.particle.ModParticles;
 
 import java.util.*;
 
 /**
- * Fragmentos da Rupty (estado so no servidor, por jogador). Um fragmento esta na lamina,
- * num alvo (marca) ou flutuando no chao; no Sem Defesa todos orbitam o jogador.
+ * Rupty, a katana da ruptura. Estado so no servidor.
+ * <ul>
+ *   <li>Marcas de Ruptura Magica: por portador, cada uma com contador proprio.</li>
+ *   <li>Marca Mortal: por alvo, permanente ate a morte (o totem da imortalidade nao a remove).</li>
+ * </ul>
  */
 @EventBusSubscriber(modid = Nexus.MODID)
 public final class RuptyEffects {
     private RuptyEffects() {}
 
-    private static final DustParticleOptions MANA = new DustParticleOptions(0x8000FF, 1.0f);
-    private static final DustParticleOptions MANA_SMALL = new DustParticleOptions(0xB060FF, 0.6f);
-    private static final Identifier REACH_ID = Identifier.fromNamespaceAndPath(Nexus.MODID, "rupty_fragments");
-    private static final ResourceKey<DamageType> CUT = key("rupty_corte");
-    private static final ResourceKey<DamageType> MAGIC = key("rupty_magia");
+    private static final ResourceKey<DamageType> CUT = ResourceKey.create(Registries.DAMAGE_TYPE,
+            Identifier.fromNamespaceAndPath(Nexus.MODID, "rupty_corte"));
 
+    /** Marcas de cada portador. */
     private static final Map<UUID, State> STATES = new HashMap<>();
-    /** Golpes das habilidades: dono e se ignoram toda a defesa. */
+    /** Marca Mortal preparada: espada consumida, aguardando o proximo golpe. */
+    private static final Map<UUID, ItemStack> PENDING_MORTAL = new HashMap<>();
+    /** Marcas Mortais ativas, por UUID do alvo. */
+    private static final Map<UUID, Mortal> MORTALS = new HashMap<>();
+    /** Golpes das habilidades (dono e se o dano e fixo, sem reducao nem bonus). */
     private static final Map<DamageSource, Hit> HITS = new IdentityHashMap<>();
-    /** Golpes corpo a corpo com a Rupty, marcados no dano recebido para a passiva no pos-dano. */
+    /** Golpes corpo a corpo com a Rupty, para a passiva no pos-dano. */
     private static final Map<DamageSource, ServerPlayer> MELEE = new WeakHashMap<>();
     private static LivingEntity passiveTarget;
 
-    private record Hit(ServerPlayer player, boolean ignoreDefense) {}
-    private record Mark(LivingEntity target, long expires) {}
-    private record Floating(ServerLevel level, Vec3 pos, long expires, double power) {}
+    private record Hit(ServerPlayer player, boolean fixed) {}
+    private static final class Mark {
+        final LivingEntity target;
+        final long created;
+        long expires;
+        boolean open;
+        Mark(LivingEntity target, long created) {
+            this.target = target;
+            this.created = created;
+            this.expires = created + RuptyRules.MARK_DURATION;
+        }
+    }
+    private record Mortal(UUID owner, ItemStack sword, float swordDamage) {}
     private static final class State {
         final List<Mark> marks = new ArrayList<>();
-        final List<Floating> floating = new ArrayList<>();
-        long orbitUntil = -1;
-        ServerLevel orbitLevel;
-        double orbitPower = 1;
-        boolean empty() { return marks.isEmpty() && floating.isEmpty() && orbitUntil < 0; }
-    }
-
-    private static ResourceKey<DamageType> key(String name) {
-        return ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(Nexus.MODID, name));
     }
 
     // ---------- Consultas ----------
 
     private static RuptyItem item() { return org.dantesys.nexus.items.ModItems.RUPTY.get(); }
-    private static int level(Player player) { return item().masteryLevel(player); }
-    public static int total(Player player) { return RuptyRules.totalFragments(level(player)); }
-    private static int perTarget(Player player) { return RuptyRules.marksPerTarget(level(player)); }
 
-    /** Fragmentos fora da lamina. */
-    public static int out(ServerPlayer player) {
+    static boolean canHit(ServerPlayer player, LivingEntity target) { return RelicTargets.canHit(player, target); }
+
+    private static int[] marksOn(LivingEntity target, ServerPlayer player) {
         State state = STATES.get(player.getUUID());
-        if (state == null) return 0;
-        if (state.orbitUntil >= 0) return total(player);
-        return Math.min(total(player), state.marks.size() + state.floating.size());
-    }
-    public static int blade(ServerPlayer player) { return Math.max(0, total(player) - out(player)); }
-
-    public static int marksOn(LivingEntity target, ServerPlayer player) {
-        State state = STATES.get(player.getUUID());
-        if (state == null) return 0;
-        int count = 0;
-        for (Mark mark : state.marks) if (mark.target() == target) count++;
-        return count;
-    }
-
-    private static State state(ServerPlayer player) { return STATES.computeIfAbsent(player.getUUID(), id -> new State()); }
-
-    private static ItemStack findRupty(ServerPlayer player) {
-        var inventory = player.getInventory();
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
-            ItemStack stack = inventory.getItem(i);
-            if (stack.getItem() instanceof RuptyItem) return stack;
+        int normal = 0, open = 0;
+        if (state != null) {
+            for (Mark mark : state.marks) {
+                if (mark.target != target) continue;
+                if (mark.open) open++; else normal++;
+            }
         }
-        return ItemStack.EMPTY;
+        return new int[]{normal, open};
     }
 
-    private static void changed(ServerPlayer player) {
+    public static int marksCount(LivingEntity target, ServerPlayer player) {
+        int[] m = marksOn(target, player);
+        return m[0] + m[1];
+    }
+
+    private static boolean mortalBy(ServerPlayer player, LivingEntity target) {
+        Mortal mortal = MORTALS.get(target.getUUID());
+        return mortal != null && mortal.owner().equals(player.getUUID());
+    }
+
+    public static boolean mortalPending(ServerPlayer player) { return PENDING_MORTAL.containsKey(player.getUUID()); }
+
+    private static ItemStack findRupty(ServerPlayer player) { return item().findIn(player); }
+
+    private static void refresh(ServerPlayer player) {
         ItemStack stack = findRupty(player);
         if (!stack.isEmpty()) item().refreshModelData(player, stack);
     }
 
-    static boolean canHit(ServerPlayer player, LivingEntity target) { return RelicTargets.canHit(player, target); }
-
-    // ---------- Marcas e fragmentos ----------
-
-    private static boolean addMark(ServerPlayer player, LivingEntity target) {
-        if (blade(player) <= 0 || marksOn(target, player) >= perTarget(player)) return false;
-        // Campo Reflexivo da Bastry: os fragmentos voltam para a espada sem marcar.
-        if (BastryEffects.isProtected(target)) return false;
-        state(player).marks.add(new Mark(target, player.level().getGameTime() + RuptyRules.MARK_DURATION));
-        ServerLevel level = (ServerLevel) target.level();
-        level.sendParticles(MANA, target.getX(), target.getY() + target.getBbHeight() * 0.6, target.getZ(), 8, 0.25, 0.3, 0.25, 0);
-        item().addMasteryXp(player, RuptyRules.XP_PER_MARK);
-        return true;
+    /** Dano de um golpe normal da espada (base do jogador + modificadores de dano de ataque do item). */
+    static float swordDamage(ItemStack sword) {
+        double damage = 1.0;
+        ItemAttributeModifiers modifiers = sword.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
+        for (var entry : modifiers.modifiers()) {
+            if (entry.attribute().equals(Attributes.ATTACK_DAMAGE)
+                    && entry.modifier().operation() == AttributeModifier.Operation.ADD_VALUE) {
+                damage += entry.modifier().amount();
+            }
+        }
+        return (float) Math.max(0, damage);
     }
 
-    /** Devolve fragmentos a lamina (flutuantes primeiro, depois marcas mais antigas). */
-    private static int recall(ServerPlayer player, int amount) {
-        State state = STATES.get(player.getUUID());
-        if (state == null) return 0;
-        int returned = 0;
-        while (returned < amount && !state.floating.isEmpty()) { state.floating.removeFirst(); returned++; }
-        while (returned < amount && !state.marks.isEmpty()) { state.marks.removeFirst(); returned++; }
-        if (returned > 0) item().addMasteryXp(player, returned * RuptyRules.XP_PER_RECALL);
-        return returned;
+    /** Dano de um golpe normal da Rupty: atributo do jogador se ela estiver na mao principal. */
+    private static float normalHit(ServerPlayer player, ItemStack rupty) {
+        if (player.getMainHandItem().getItem() instanceof RuptyItem) {
+            return (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        }
+        return swordDamage(rupty);
     }
 
-    private static void clear(ServerPlayer player) {
-        if (STATES.remove(player.getUUID()) != null) changed(player);
+    // ---------- Marcas ----------
+
+    /** Aplica ate {@code amount} marcas de Ruptura Magica (limite de 10 por entidade). */
+    private static int addMarks(ServerPlayer player, LivingEntity target, int amount) {
+        if (amount <= 0 || !target.isAlive()) return 0;
+        // Campo Reflexivo da Bastry: os cortes nao marcam quem esta protegido.
+        if (BastryEffects.isProtected(target)) return 0;
+        State state = STATES.computeIfAbsent(player.getUUID(), id -> new State());
+        long now = player.level().getGameTime();
+        int added = 0;
+        while (added < amount && marksCount(target, player) < RuptyRules.MAX_MARKS) {
+            state.marks.add(new Mark(target, now));
+            added++;
+        }
+        if (added > 0) {
+            ServerLevel level = (ServerLevel) target.level();
+            level.sendParticles(particle(ModParticles.RUPTY_FRAGMENTO), target.getX(), target.getY() + target.getBbHeight() * 0.6,
+                    target.getZ(), 4 + added * 2, target.getBbWidth() * 0.4, target.getBbHeight() * 0.3, target.getBbWidth() * 0.4, 0.02);
+            item().addMasteryXp(player, added * RuptyRules.XP_PER_MARK);
+        }
+        return added;
+    }
+
+    private static SimpleParticleType particle(java.util.function.Supplier<SimpleParticleType> holder) {
+        return holder.get();
     }
 
     // ---------- Dano ----------
 
-    private static void hit(ServerPlayer player, LivingEntity target, float amount, boolean ignoreDefense,
-                            ResourceKey<DamageType> type) {
+    private static void hit(ServerPlayer player, LivingEntity target, float amount, boolean fixed) {
         if (amount <= 0 || !canHit(player, target)) return;
         ServerLevel level = (ServerLevel) player.level();
-        DamageSource source = type == null ? player.damageSources().playerAttack(player)
-                : new DamageSource(level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(type), player);
-        HITS.put(source, new Hit(player, ignoreDefense));
+        DamageSource source = new DamageSource(level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(CUT), player);
+        HITS.put(source, new Hit(player, fixed));
         try {
             target.setInvulnerableTime(0);
             if (target instanceof EnderDragon dragon) dragon.head.hurtServer(level, source, amount);
@@ -170,6 +192,7 @@ public final class RuptyEffects {
                 && player.getMainHandItem().getItem() instanceof RuptyItem;
     }
 
+    /** Reduz a defesa do alvo contra a Rupty; o que passa de 100% vira dano extra. */
     @SubscribeEvent
     public static void incoming(LivingIncomingDamageEvent event) {
         DamageSource source = event.getSource();
@@ -178,22 +201,22 @@ public final class RuptyEffects {
         Hit hit = HITS.get(source);
         boolean melee = hit == null && isRuptyMelee(source, player);
         if (hit == null && !melee) return;
+        if (melee) MELEE.put(source, player);
 
-        // Dano magico do Sem Defesa: a Pele de Mana bloqueia; o corte fisico continua.
-        if (source.is(MAGIC) && target.hasEffect(ModEffects.PELE_MANA)) {
-            event.setCanceled(true);
+        if (hit != null && hit.fixed()) {
+            // Sangramento da Marca Aberta: perda fixa de vida.
+            event.addReductionModifier(DamageContainer.Reduction.ARMOR, (container, reduction) -> 0);
+            event.addReductionModifier(DamageContainer.Reduction.ENCHANTMENTS, (container, reduction) -> 0);
             return;
         }
-        if (melee) {
-            // Lamina menor = menos dano.
-            event.setAmount((float) (event.getAmount() * RuptyRules.bladeScale(out(player))));
-            MELEE.put(source, player);
-        }
-        double ignored = hit != null && hit.ignoreDefense() ? 1.0 : RuptyRules.defenseIgnored(marksOn(target, player));
-        if (ignored <= 0) return;
-        float keep = (float) (1.0 - ignored);
-        event.addReductionModifier(DamageContainer.Reduction.ARMOR, (container, reduction) -> reduction * keep);
-        event.addReductionModifier(DamageContainer.Reduction.ENCHANTMENTS, (container, reduction) -> reduction * keep);
+        int[] marks = marksOn(target, player);
+        double reduction = RuptyRules.defenseReduction(marks[0], marks[1], mortalBy(player, target));
+        if (reduction <= 0) return;
+        float keep = (float) (1.0 - RuptyRules.defenseIgnored(reduction));
+        event.addReductionModifier(DamageContainer.Reduction.ARMOR, (container, r) -> r * keep);
+        event.addReductionModifier(DamageContainer.Reduction.ENCHANTMENTS, (container, r) -> r * keep);
+        double multiplier = RuptyRules.damageMultiplier(reduction);
+        if (multiplier > 1.0) event.setAmount((float) (event.getAmount() * multiplier));
     }
 
     @SubscribeEvent
@@ -202,135 +225,158 @@ public final class RuptyEffects {
         if (player == null || event.getHealthDamage() <= 0) return;
         ItemStack stack = player.getMainHandItem();
         if (!(stack.getItem() instanceof RuptyItem rupty)) return;
+        LivingEntity target = event.getEntity();
+
+        // Marca Mortal preparada: o proximo golpe aplica a marca.
+        ItemStack sword = PENDING_MORTAL.remove(player.getUUID());
+        if (sword != null) applyMortal(player, target, sword);
+
         LivingEntity previous = passiveTarget;
-        passiveTarget = event.getEntity();
+        passiveTarget = target;
         try { rupty.triggerPassive(player, stack, 0); }
         finally { passiveTarget = previous; }
     }
 
     // ---------- Habilidades ----------
 
-    /** Nv 1 — Marca de Ruptura (passiva). */
+    /** Nv 1 — Ruptura Magica (passiva): cada golpe cria uma marca de corte. */
     public static boolean markPassive(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         if (passiveTarget == null || !passiveTarget.isAlive()) return false;
-        if (!addMark(player, passiveTarget)) return false;
-        changed(player);
-        return true;
+        return addMarks(player, passiveTarget, 1) > 0;
     }
 
-    private static boolean orbiting(ServerPlayer player) {
-        State state = STATES.get(player.getUUID());
-        if (state != null && state.orbitUntil >= 0) {
-            player.sendSystemMessage(Component.literal("Os fragmentos estão em Sem Defesa."), true);
-            return true;
-        }
-        return false;
-    }
-
-    /** Nv 5 — Estocada Fragmentada. */
-    public static boolean stab(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
-        if (orbiting(player)) return false;
-        int missing = RuptyRules.STAB_FRAGMENTS - blade(player);
-        if (missing > 0) recall(player, missing);
-        if (blade(player) < RuptyRules.STAB_FRAGMENTS) return false;
-
+    /** Nv 5 — Corte Vertical: corte em linha reta de ate 5 blocos, atingindo todos na linha. */
+    public static boolean verticalCut(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         ServerLevel level = (ServerLevel) player.level();
         Vec3 start = player.getEyePosition(), dir = player.getLookAngle();
-        Vec3 end = start.add(dir.scale(RuptyRules.STAB_RANGE));
+        Vec3 end = start.add(dir.scale(RuptyRules.VERTICAL_RANGE));
         var block = level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
         if (block.getType() != HitResult.Type.MISS) end = block.getLocation();
         final Vec3 lineEnd = end;
 
-        List<LivingEntity> targets = new ArrayList<>(level.getEntitiesOfClass(LivingEntity.class,
-                new AABB(start, lineEnd).inflate(1), t -> canHit(player, t)
-                        && (t.getBoundingBox().inflate(0.3).contains(start) || t.getBoundingBox().inflate(0.3).clip(start, lineEnd).isPresent())));
-        targets.sort(Comparator.comparingDouble(t -> t.distanceToSqr(start)));
-        for (LivingEntity target : targets) hit(player, target, (float) (RuptyRules.STAB_DAMAGE * context.powerMultiplier()), false, null);
+        List<LivingEntity> targets = level.getEntitiesOfClass(LivingEntity.class, new AABB(start, lineEnd).inflate(1.2),
+                t -> canHit(player, t) && (t.getBoundingBox().inflate(0.6).contains(start)
+                        || t.getBoundingBox().inflate(0.6).clip(start, lineEnd).isPresent()));
+        float damage = normalHit(player, stack);
+        for (LivingEntity target : targets) {
+            hit(player, target, damage, false);
+            if (target.isAlive()) addMarks(player, target, RuptyRules.VERTICAL_MARKS);
+        }
 
-        int remaining = RuptyRules.STAB_FRAGMENTS;
-        Vec3 floatEnd = lineEnd;
-        LivingEntity first = targets.stream().filter(LivingEntity::isAlive).findFirst().orElse(null);
-        if (first != null && BastryEffects.isProtected(first)) {
-            remaining = 0;
-            first = null;
+        // Visual: uma lamina vertical avancando pela linha.
+        double length = start.distanceTo(lineEnd);
+        SimpleParticleType slash = particle(ModParticles.RUPTY_CORTE);
+        SimpleParticleType shard = particle(ModParticles.RUPTY_FRAGMENTO);
+        for (double d = 0.6; d <= length; d += 0.6) {
+            Vec3 p = start.add(dir.scale(d)).add(0, -0.3, 0);
+            level.sendParticles(slash, p.x, p.y, p.z, 0, -0.4, 0, 0, 1.0);
+            for (double y = -0.9; y <= 0.9; y += 0.45) {
+                level.sendParticles(shard, p.x, p.y + y, p.z, 1, 0.03, 0.03, 0.03, 0.0);
+            }
         }
-        if (first != null) {
-            int marks = RuptyRules.stabMarks(Math.sqrt(first.distanceToSqr(start)));
-            for (int i = 0; i < marks && addMark(player, first); i++) remaining--;
-            floatEnd = first.position().add(0, first.getBbHeight() * 0.5, 0);
-        }
-        // Os que nao marcaram ficam flutuando na linha por 20 s.
-        State state = state(player);
-        long expires = level.getGameTime() + RuptyRules.FLOAT_DURATION;
-        Vec3 ground = start.add(0, -0.6, 0);
-        Vec3 groundEnd = floatEnd.add(0, -0.6, 0);
-        for (int i = 0; i < remaining; i++) {
-            double t = (i + 1.0) / (remaining + 1.0);
-            state.floating.add(new Floating(level, ground.lerp(groundEnd, t), expires, context.powerMultiplier()));
-        }
-        for (double d = 0.3; d <= start.distanceTo(lineEnd); d += 0.3) {
-            Vec3 p = start.add(dir.scale(d));
-            level.sendParticles(MANA, p.x, p.y, p.z, 2, 0.05, 0.05, 0.05, 0);
-            level.sendParticles(ParticleTypes.CRIT, p.x, p.y, p.z, 1, 0, 0, 0, 0.02);
-        }
-        level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0f, 1.4f);
-        changed(player);
+        level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.0f, 0.7f);
+        level.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_THROW.value(), SoundSource.PLAYERS, 0.7f, 1.6f);
         return true;
     }
 
-    /** Nv 10 — Uniao: chama todos os fragmentos de volta, cortando quem estiver no caminho. */
-    public static boolean union(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
-        if (orbiting(player)) return false;
+    /** Nv 10 — Rotacao: golpe em 360 graus com 3 blocos de raio, marca e depois empurra. */
+    public static boolean rotation(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
+        ServerLevel level = (ServerLevel) player.level();
+        double radius = RuptyRules.ROTATION_RADIUS;
+        float damage = (float) (normalHit(player, stack) * RuptyRules.ROTATION_DAMAGE);
+        List<LivingEntity> targets = level.getEntitiesOfClass(LivingEntity.class,
+                player.getBoundingBox().inflate(radius, 1.5, radius),
+                t -> canHit(player, t) && horizontalDistance(t, player) <= radius + t.getBbWidth() * 0.5);
+        for (LivingEntity target : targets) {
+            double distance = Math.max(0, horizontalDistance(target, player) - target.getBbWidth() * 0.5);
+            hit(player, target, damage, false);
+            if (!target.isAlive()) continue;
+            addMarks(player, target, RuptyRules.rotationMarks(distance));
+            // Depois das marcas, empurra.
+            target.knockback(RuptyRules.ROTATION_KNOCKBACK, player.getX() - target.getX(), player.getZ() - target.getZ());
+            target.hurtMarked = true;
+        }
+
+        // Visual: dois aneis de cortes em volta do portador.
+        SimpleParticleType slash = particle(ModParticles.RUPTY_CORTE);
+        SimpleParticleType shard = particle(ModParticles.RUPTY_FRAGMENTO);
+        double y = player.getY() + player.getBbHeight() * 0.5;
+        for (int i = 0; i < 16; i++) {
+            double a = Math.PI * 2 * i / 16;
+            double r = i % 2 == 0 ? RuptyRules.ROTATION_INNER_RADIUS : radius - 0.4;
+            level.sendParticles(slash, player.getX() + Math.cos(a) * r, y, player.getZ() + Math.sin(a) * r, 0, -0.6, 0, 0, 1.0);
+            level.sendParticles(shard, player.getX() + Math.cos(a) * radius, y, player.getZ() + Math.sin(a) * radius,
+                    2, 0.1, 0.2, 0.1, 0.02);
+        }
+        level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 1.2f, 0.6f);
+        level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_ATTACK_STRONG, SoundSource.PLAYERS, 0.8f, 0.8f);
+        return true;
+    }
+
+    /** Nv 15 — Marca Aberta: as marcas existentes dobram de efeito e de duracao e fazem sangrar. */
+    public static boolean openMark(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         State state = STATES.get(player.getUUID());
-        if (state == null || state.marks.isEmpty() && state.floating.isEmpty()) {
-            player.sendSystemMessage(Component.literal("Nenhum fragmento fora da lâmina."), true);
+        if (state == null || state.marks.stream().noneMatch(m -> !m.open)) {
+            player.sendSystemMessage(Component.literal("Nenhuma marca de Ruptura Mágica ativa."), true);
             return false;
         }
-        ServerLevel level = (ServerLevel) player.level();
-        Vec3 dest = player.position().add(0, player.getBbHeight() * 0.6, 0);
-        List<Vec3> origins = new ArrayList<>();
+        Set<LivingEntity> opened = new HashSet<>();
         for (Mark mark : state.marks) {
-            if (mark.target().level() == level) origins.add(mark.target().position().add(0, mark.target().getBbHeight() * 0.5, 0));
+            if (mark.open) continue;
+            mark.open = true;
+            mark.expires = mark.created + RuptyRules.OPEN_MARK_DURATION;
+            opened.add(mark.target);
         }
-        for (Floating f : state.floating) if (f.level() == level) origins.add(f.pos());
-
-        Map<LivingEntity, Integer> cuts = new LinkedHashMap<>();
-        for (Vec3 origin : origins) {
-            for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, new AABB(origin, dest).inflate(1),
-                    t -> canHit(player, t) && (t.getBoundingBox().inflate(0.4).contains(origin)
-                            || t.getBoundingBox().inflate(0.4).clip(origin, dest).isPresent()))) {
-                cuts.merge(target, 1, Integer::sum);
-            }
-            double length = origin.distanceTo(dest);
-            for (double d = 0; d <= length; d += 0.5) {
-                Vec3 p = origin.lerp(dest, d / Math.max(0.01, length));
-                level.sendParticles(MANA_SMALL, p.x, p.y, p.z, 1, 0.03, 0.03, 0.03, 0);
-            }
+        SimpleParticleType slash = particle(ModParticles.RUPTY_CORTE);
+        for (LivingEntity target : opened) {
+            if (!(target.level() instanceof ServerLevel level)) continue;
+            level.sendParticles(slash, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), 0, -0.2, 0, 0, 1.0);
+            level.playSound(null, target.blockPosition(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 0.8f, 0.6f);
         }
-        // O corte acontece com as marcas ainda no alvo (a defesa reduzida vale).
-        cuts.forEach((target, count) -> hit(player, target,
-                (float) (RuptyRules.UNION_DAMAGE_PER_FRAGMENT * count * context.powerMultiplier()), false, null));
-
-        int returned = recall(player, state.marks.size() + state.floating.size());
-        player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, RuptyRules.UNION_STRENGTH_TICKS,
-                RuptyRules.strengthAmplifier(returned)));
-        level.playSound(null, player.blockPosition(), SoundEvents.TRIDENT_RETURN, SoundSource.PLAYERS, 1.0f, 1.2f);
-        player.sendSystemMessage(Component.literal("União: " + returned + " fragmentos voltaram."), true);
-        changed(player);
+        player.sendSystemMessage(Component.literal("Marca Aberta: " + opened.size() + " alvo(s)."), true);
         return true;
     }
 
-    /** Nv 20 — Sem Defesa (final): os 20 fragmentos orbitam o jogador por cerca de 2 minutos. */
-    public static boolean noDefense(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
-        if (orbiting(player)) return false;
-        State state = state(player);
-        state.orbitUntil = player.level().getGameTime() + RuptyRules.FINAL_DURATION;
-        state.orbitLevel = (ServerLevel) player.level();
-        state.orbitPower = context.powerMultiplier();
-        state.orbitLevel.playSound(null, player.blockPosition(), SoundEvents.WITHER_SHOOT, SoundSource.PLAYERS, 0.8f, 1.6f);
-        player.sendSystemMessage(Component.literal("Sem Defesa!"), true);
-        changed(player);
+    /** Condicao da Marca Mortal: uma espada (que nao seja relíquia) no inventario e nenhuma marca ja preparada. */
+    static boolean canUseMortal(ServerPlayer player, ItemStack stack) {
+        return !mortalPending(player) && findSword(player) >= 0;
+    }
+
+    private static int findSword(ServerPlayer player) {
+        var inventory = player.getInventory();
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack s = inventory.getItem(i);
+            if (!s.isEmpty() && s.is(ItemTags.SWORDS) && !(s.getItem() instanceof RelicItem)) return i;
+        }
+        return -1;
+    }
+
+    /** Nv 20 — Marca Mortal (final): consome uma espada; o proximo golpe aplica a marca permanente. */
+    public static boolean mortalMark(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
+        int slot = findSword(player);
+        if (slot < 0 || mortalPending(player)) return false;
+        ItemStack sword = player.getInventory().getItem(slot).split(1);
+        player.getInventory().setChanged();
+        PENDING_MORTAL.put(player.getUUID(), sword);
+
+        ServerLevel level = (ServerLevel) player.level();
+        level.sendParticles(particle(ModParticles.RUPTY_MARCA_MORTAL), player.getX(), player.getY() + 1.0, player.getZ(),
+                16, 0.4, 0.5, 0.4, 0.02);
+        level.playSound(null, player.blockPosition(), SoundEvents.ITEM_BREAK.value(), SoundSource.PLAYERS, 0.8f, 0.6f);
+        level.playSound(null, player.blockPosition(), SoundEvents.WITHER_SHOOT, SoundSource.PLAYERS, 0.5f, 1.4f);
+        player.sendSystemMessage(Component.literal("Marca Mortal preparada: o próximo golpe marca o alvo."), true);
+        refresh(player);
         return true;
+    }
+
+    private static void applyMortal(ServerPlayer player, LivingEntity target, ItemStack sword) {
+        MORTALS.put(target.getUUID(), new Mortal(player.getUUID(), sword, swordDamage(sword)));
+        ServerLevel level = (ServerLevel) target.level();
+        level.sendParticles(particle(ModParticles.RUPTY_MARCA_MORTAL), target.getX(), target.getY() + target.getBbHeight() * 0.6,
+                target.getZ(), 24, target.getBbWidth() * 0.4, target.getBbHeight() * 0.3, target.getBbWidth() * 0.4, 0.04);
+        level.playSound(null, target.blockPosition(), SoundEvents.WITHER_HURT, SoundSource.PLAYERS, 0.7f, 0.5f);
+        player.sendSystemMessage(Component.literal("Marca Mortal aplicada!"), true);
+        refresh(player);
     }
 
     // ---------- Tick ----------
@@ -338,111 +384,81 @@ public final class RuptyEffects {
     @SubscribeEvent
     public static void tick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        updateReach(player);
         State state = STATES.get(player.getUUID());
         if (state == null) return;
-        if (!player.isAlive() || findRupty(player).isEmpty()) { clear(player); return; }
+        if (!player.isAlive() || findRupty(player).isEmpty()) { STATES.remove(player.getUUID()); return; }
 
         ServerLevel level = (ServerLevel) player.level();
         long now = level.getGameTime();
-        boolean changed = false;
+        // Contador proprio por marca; somem se o alvo morrer, sumir ou mudar de dimensao.
+        state.marks.removeIf(m -> now >= m.expires || !m.target.isAlive() || m.target.isRemoved() || m.target.level() != level);
+        if (state.marks.isEmpty()) { STATES.remove(player.getUUID()); return; }
 
-        // Marcas: timer proprio; voltam se o alvo morrer, sumir ou mudar de dimensao.
-        Iterator<Mark> marks = state.marks.iterator();
-        while (marks.hasNext()) {
-            Mark mark = marks.next();
-            LivingEntity target = mark.target();
-            if (now >= mark.expires() || !target.isAlive() || target.isRemoved() || target.level() != level) {
-                marks.remove();
-                changed = true;
-            }
-        }
-        if (now % 10 == 0) {
-            Map<LivingEntity, Integer> perTarget = new HashMap<>();
-            for (Mark mark : state.marks) perTarget.merge(mark.target(), 1, Integer::sum);
-            perTarget.forEach((target, count) -> level.sendParticles(MANA, target.getX(),
-                    target.getY() + target.getBbHeight() * 0.6, target.getZ(), count, 0.3, 0.4, 0.3, 0));
-        }
+        Map<LivingEntity, int[]> perTarget = new HashMap<>();
+        for (Mark mark : state.marks) perTarget.computeIfAbsent(mark.target, t -> new int[2])[mark.open ? 1 : 0]++;
 
-        // Fragmentos flutuando: qualquer mob nao aliado que passar leva dano e vira marca.
-        Iterator<Floating> floating = state.floating.iterator();
-        while (floating.hasNext()) {
-            Floating f = floating.next();
-            if (now >= f.expires() || f.level() != level) {
-                floating.remove();
-                changed = true;
-                continue;
-            }
-            if (now % 4 == 0) level.sendParticles(MANA, f.pos().x, f.pos().y, f.pos().z, 1, 0.08, 0.08, 0.08, 0);
-            LivingEntity victim = level.getEntitiesOfClass(LivingEntity.class, new AABB(f.pos(), f.pos()).inflate(RuptyRules.FLOAT_RADIUS),
-                    t -> canHit(player, t) && marksOn(t, player) < perTarget(player)).stream().findFirst().orElse(null);
-            if (victim != null && BastryEffects.isProtected(victim)) {
-                floating.remove();
-                changed = true;
-            } else if (victim != null) {
-                floating.remove();
-                hit(player, victim, (float) (RuptyRules.FLOAT_DAMAGE * f.power()), false, null);
-                if (victim.isAlive()) addMark(player, victim);
-                changed = true;
-            }
+        // Marca Aberta: meio coracao a cada 2 s por alvo (nao por marca).
+        if (now % RuptyRules.OPEN_BLEED_INTERVAL == 0) {
+            perTarget.forEach((target, counts) -> {
+                if (counts[1] > 0) hit(player, target, RuptyRules.OPEN_BLEED_DAMAGE, true);
+            });
         }
-
-        // Sem Defesa: orbita, ignora defesa e atravessa blocos.
-        if (state.orbitUntil >= 0) {
-            if (now >= state.orbitUntil || state.orbitLevel != level) {
-                state.orbitUntil = -1;
-                player.sendSystemMessage(Component.literal("Os fragmentos voltaram para a lâmina."), true);
-                changed = true;
-            } else {
-                int total = total(player);
-                double radius = RuptyRules.FINAL_RADIUS;
-                if (now % 2 == 0) {
-                    for (int i = 0; i < total; i++) {
-                        double angle = Math.PI * 2 * i / total + now * 0.15;
-                        double y = player.getY() + 0.4 + (i % 3) * 0.6;
-                        level.sendParticles(MANA, player.getX() + Math.cos(angle) * radius, y,
-                                player.getZ() + Math.sin(angle) * radius, 1, 0, 0, 0, 0);
-                    }
-                }
-                if (now % RuptyRules.FINAL_INTERVAL == 0) {
-                    for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class,
-                            player.getBoundingBox().inflate(radius + 1, 2, radius + 1), t -> canHit(player, t)
-                                    && horizontalDistance(t, player) <= radius + 0.75)) {
-                        hit(player, target, (float) (RuptyRules.FINAL_MAGIC_DAMAGE * state.orbitPower), true, MAGIC);
-                        hit(player, target, (float) (RuptyRules.FINAL_CUT_DAMAGE * state.orbitPower), true, CUT);
-                    }
-                }
-            }
+        if (now % 20 == 0) {
+            SimpleParticleType shard = particle(ModParticles.RUPTY_FRAGMENTO);
+            perTarget.forEach((target, counts) -> level.sendParticles(shard, target.getX(),
+                    target.getY() + target.getBbHeight() * 0.6, target.getZ(), Math.min(6, counts[0] + counts[1] * 2),
+                    target.getBbWidth() * 0.45, target.getBbHeight() * 0.35, target.getBbWidth() * 0.45, 0.01));
         }
-
-        if (changed) changed(player);
-        if (state.empty()) STATES.remove(player.getUUID());
     }
 
-    private static double horizontalDistance(LivingEntity a, LivingEntity b) {
+    /** Marca Mortal: dano periodico de metade do dano da espada consumida, ate o alvo morrer. */
+    @SubscribeEvent
+    public static void serverTick(ServerTickEvent.Post event) {
+        if (MORTALS.isEmpty()) return;
+        MinecraftServer server = event.getServer();
+        long now = server.overworld().getGameTime();
+        boolean damageTick = now % RuptyRules.MORTAL_INTERVAL == 0;
+        if (!damageTick && now % 20 != 0) return;
+        for (var entry : new ArrayList<>(MORTALS.entrySet())) {
+            LivingEntity target = findLiving(server, entry.getKey());
+            if (target == null || !target.isAlive()) continue;
+            Mortal mortal = entry.getValue();
+            ServerLevel level = (ServerLevel) target.level();
+            level.sendParticles(particle(ModParticles.RUPTY_MARCA_MORTAL), target.getX(), target.getY() + target.getBbHeight() + 0.3,
+                    target.getZ(), 2, 0.2, 0.1, 0.2, 0.0);
+            if (!damageTick) continue;
+            ServerPlayer owner = server.getPlayerList().getPlayer(mortal.owner());
+            if (owner == null || owner.level() != level) continue;
+            DamageSource source = new DamageSource(level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(CUT), owner);
+            // Encantamentos de dano da espada consumida (Afiacao, Julgamento...) tambem contam.
+            float base = EnchantmentHelper.modifyDamage(level, mortal.sword(), target, source, mortal.swordDamage());
+            hit(owner, target, RuptyRules.mortalTickDamage(base), false);
+        }
+    }
+
+    private static LivingEntity findLiving(MinecraftServer server, UUID id) {
+        ServerPlayer player = server.getPlayerList().getPlayer(id);
+        if (player != null) return player;
+        for (ServerLevel level : server.getAllLevels()) {
+            Entity entity = level.getEntity(id);
+            if (entity instanceof LivingEntity living) return living;
+        }
+        return null;
+    }
+
+    private static double horizontalDistance(Entity a, Entity b) {
         double dx = a.getX() - b.getX(), dz = a.getZ() - b.getZ();
         return Math.sqrt(dx * dx + dz * dz);
     }
 
-    /** Lamina menor = menos alcance (5% por fragmento fora). */
-    private static void updateReach(ServerPlayer player) {
-        var reach = player.getAttribute(Attributes.ENTITY_INTERACTION_RANGE);
-        if (reach == null) return;
-        int out = player.getMainHandItem().getItem() instanceof RuptyItem ? out(player) : 0;
-        double amount = out > 0 ? RuptyRules.reachScale(out) - 1.0 : 0;
-        AttributeModifier current = reach.getModifier(REACH_ID);
-        if (amount == 0) {
-            if (current != null) reach.removeModifier(REACH_ID);
-        } else if (current == null || current.amount() != amount) {
-            reach.addOrUpdateTransientModifier(new AttributeModifier(REACH_ID, amount, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-        }
-    }
-
     // ---------- Limpeza ----------
 
-    @SubscribeEvent
+    /** So a morte de verdade remove a Marca Mortal (o totem da imortalidade cancela a morte antes disto). */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void death(LivingDeathEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player) clear(player);
+        LivingEntity entity = event.getEntity();
+        MORTALS.remove(entity.getUUID());
+        if (entity instanceof ServerPlayer player) STATES.remove(player.getUUID());
     }
 
     @SubscribeEvent
@@ -453,6 +469,8 @@ public final class RuptyEffects {
     @SubscribeEvent
     public static void stopped(ServerStoppedEvent event) {
         STATES.clear();
+        PENDING_MORTAL.clear();
+        MORTALS.clear();
         HITS.clear();
         MELEE.clear();
     }

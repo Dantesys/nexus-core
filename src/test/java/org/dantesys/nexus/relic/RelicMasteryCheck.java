@@ -37,19 +37,15 @@ public final class RelicMasteryCheck {
                 && RelicSkill.visualStage(15) == 2 && RelicSkill.visualStage(20) == 3, "Visual stage");
 
         // Rupty
-        check(RuptyRules.totalFragments(14) == 10 && RuptyRules.totalFragments(15) == 20, "Fragmentar unlocks 20 fragments");
-        check(RuptyRules.marksPerTarget(1) == 5 && RuptyRules.marksPerTarget(15) == 10, "Per-target cap doubles");
-        check(Math.abs(RuptyRules.defenseIgnored(5) - 0.5) < 1e-9 && RuptyRules.defenseIgnored(10) == 1.0
-                && RuptyRules.defenseIgnored(30) == 1.0, "10% defense per mark, up to 100%");
-        check(Math.abs(RuptyRules.bladeScale(10) - 0.5) < 1e-9 && RuptyRules.bladeScale(20) == 0, "Blade shrinks 5% per fragment");
-        check(RuptyRules.hiddenPieces(0) == 0 && RuptyRules.hiddenPieces(20) == 5, "Blade pieces");
-        check(RuptyRules.stabMarks(1) == 5 && RuptyRules.stabMarks(5) < 5 && RuptyRules.stabMarks(5) >= 2, "Stab marks by distance");
-        check(RuptyRules.strengthAmplifier(1) == 0 && RuptyRules.strengthAmplifier(20) == 4, "Union strength scales");
-        check(RuptyRules.canUseFinal(680, 20, 20, 9, 20), "Final accepted");
-        check(!RuptyRules.canUseFinal(679, 20, 20, 9, 20), "Final needs affinity A");
-        check(!RuptyRules.canUseFinal(680, 19, 20, 9, 20), "Final needs every fragment on the blade");
-        check(!RuptyRules.canUseFinal(680, 10, 10, 9, 20), "Final needs 20 fragments");
-        check(!RuptyRules.canUseFinal(680, 20, 20, 10, 20), "Final needs less than half health");
+        check(Math.abs(RuptyRules.defenseReduction(10, 0, false) - 0.5) < 1e-9, "10 marks reduce 50% of defense");
+        check(Math.abs(RuptyRules.defenseReduction(0, 10, true) - 1.5) < 1e-9, "Open marks (10% each) + Mortal (50%)");
+        check(RuptyRules.defenseIgnored(1.5) == 1.0 && Math.abs(RuptyRules.damageMultiplier(1.5) - 1.5) < 1e-9,
+                "Reduction above 100% becomes extra damage");
+        check(RuptyRules.damageMultiplier(0.5) == 1.0, "No extra damage below 100%");
+        check(RuptyRules.rotationMarks(1.0) == 5 && RuptyRules.rotationMarks(2.5) == 3 && RuptyRules.rotationMarks(3.5) == 0,
+                "Rotation marks by distance");
+        check(RuptyRules.OPEN_MARK_DURATION == 2 * RuptyRules.MARK_DURATION, "Open Mark doubles duration");
+        check(RuptyRules.mortalTickDamage(8f) == 4f, "Mortal Mark deals half the sword damage");
 
         // Krefty
         var e = KreftyRules.parse("minecraft:diamond_block=96@15");

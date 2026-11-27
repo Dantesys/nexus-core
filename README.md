@@ -54,7 +54,7 @@ Cada relíquia é **única no mundo**, fica presa ao inventário do portador e t
 
 | Relíquia | Tipo | Identidade |
 | --- | --- | --- |
-| **Rupty** | Espada (katana) | Fragmentos que marcam e ignoram a defesa do alvo |
+| **Rupty** | Espada (katana) | Marcas de corte que rompem a defesa do alvo até a Marca Mortal |
 | **Krefty** | Martelo | Construção com mana, áreas de obra e cópia de estruturas |
 | **Orix** | Picareta | Mineração: gerar, encontrar e colher minérios |
 | **Brekry** | Picareta | Escavação: túneis, dinamite e limpeza de área |

@@ -17,5 +17,12 @@ public final class ModParticles {
     /** Cultry — Palma da Lotus. */
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> PETALA_LOTUS = PARTICLES.register("petala_lotus", () -> new SimpleParticleType(false));
 
+    /** Rupty — corte (lamina carmesim, animado como o golpe de varredura). */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RUPTY_CORTE = PARTICLES.register("rupty_corte", () -> new SimpleParticleType(true));
+    /** Rupty — fragmentos de aco e mana carmesim das marcas de Ruptura Magica. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RUPTY_FRAGMENTO = PARTICLES.register("rupty_fragmento", () -> new SimpleParticleType(false));
+    /** Rupty — runa da Marca Mortal. */
+    public static final DeferredHolder<ParticleType<?>, SimpleParticleType> RUPTY_MARCA_MORTAL = PARTICLES.register("rupty_marca_mortal", () -> new SimpleParticleType(false));
+
     public static void register(IEventBus bus) { PARTICLES.register(bus); }
 }
