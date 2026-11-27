@@ -12,7 +12,19 @@ public final class RelicTargets {
 
     public static boolean isAlly(ServerPlayer owner, LivingEntity target) {
         if (target == owner || owner.isAlliedTo(target)) return true;
-        return target instanceof OwnableEntity pet && pet.getOwner() == owner;
+        if (target instanceof OwnableEntity pet && pet.getOwner() == owner) return true;
+        return isMinionOf(owner, target);
+    }
+
+    /** Lacaios das reliquias (esqueletos da Necrix, golem da Steely...) guardam o dono nesta tag. */
+    public static final String MINION_TAG = "NexusDono";
+
+    public static boolean isMinionOf(Player owner, net.minecraft.world.entity.Entity e) {
+        return owner.getUUID().toString().equals(e.getPersistentData().getStringOr(MINION_TAG, ""));
+    }
+
+    public static void setMinion(net.minecraft.world.entity.Entity e, Player owner) {
+        e.getPersistentData().putString(MINION_TAG, owner.getUUID().toString());
     }
 
     public static boolean canHit(ServerPlayer owner, LivingEntity target) {

@@ -1,5 +1,7 @@
 package org.dantesys.nexus.entity;
 
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,6 +23,7 @@ import org.jspecify.annotations.Nullable;
 /** Boca de tubarao da Fisgy: sobe do chao, morde e afunda (animacao "morder", 1,2s). */
 public class BocaTubarao extends Entity implements TraceableEntity {
     public static final int LIFE = 24, BITE_TICK = 12;
+    private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(BocaTubarao.class, EntityDataSerializers.FLOAT);
     private @Nullable EntityReference<LivingEntity> owner;
     private float damage = 9.0F;
 
@@ -31,7 +34,13 @@ public class BocaTubarao extends Entity implements TraceableEntity {
     }
 
     public static BocaTubarao spawn(ServerLevel level, LivingEntity owner, double x, double y, double z, float yRot, float damage) {
+        return spawn(level, owner, x, y, z, yRot, damage, 1.5F);
+    }
+
+    /** size: escala do modelo (1,5 = normal; a Mega Tempest da Trindy usa uma boca gigante). Dano 0 = so visual. */
+    public static BocaTubarao spawn(ServerLevel level, LivingEntity owner, double x, double y, double z, float yRot, float damage, float size) {
         BocaTubarao mouth = new BocaTubarao(ModEntities.BOCA_TUBARAO.get(), level);
+        mouth.entityData.set(SIZE, size);
         mouth.owner = EntityReference.of(owner);
         mouth.damage = damage;
         mouth.setYRot(yRot);
@@ -46,7 +55,8 @@ public class BocaTubarao extends Entity implements TraceableEntity {
     public void tick() {
         super.tick();
         if (level().isClientSide() || !(level() instanceof ServerLevel level)) return;
-        if (tickCount == BITE_TICK) bite(level);
+        if (tickCount == BITE_TICK && damage > 0) bite(level);
+        else if (tickCount == BITE_TICK) level.playSound(null, blockPosition(), SoundEvents.EVOKER_FANGS_ATTACK, SoundSource.PLAYERS, 3.0f, 0.4f);
         if (tickCount >= LIFE) discard();
     }
 
@@ -68,7 +78,9 @@ public class BocaTubarao extends Entity implements TraceableEntity {
     /** Tempo da animacao em segundos. */
     public float animationTime(float partialTicks) { return (tickCount + partialTicks) / 20.0F; }
 
-    @Override protected void defineSynchedData(SynchedEntityData.Builder builder) {}
+    public float size() { return entityData.get(SIZE); }
+
+    @Override protected void defineSynchedData(SynchedEntityData.Builder builder) { builder.define(SIZE, 1.5F); }
     @Override protected void readAdditionalSaveData(ValueInput input) {}
     @Override protected void addAdditionalSaveData(ValueOutput output) {}
     @Override public boolean hurtServer(ServerLevel level, DamageSource source, float amount) { return false; }

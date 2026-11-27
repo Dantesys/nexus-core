@@ -69,6 +69,9 @@ public class RelicItem extends Item {
     public MatrizModos getMode() { return mode; }
     public int getCatalystCapacity() { return catalystCapacity; }
 
+    /** Jogador local (so no cliente; definido pelo NexusClient) para o hudInfo. */
+    public static java.util.function.Supplier<Player> CLIENT_PLAYER = () -> null;
+
     public static boolean isUnlocked(int level, int slot) { return level >= RelicSkill.requiredLevel(slot); }
     public int masteryLevel(Player player) { return player.getData(ModAttachmentType.RELIC_MASTERY).level(masteryId()); }
     public boolean isUnlocked(Player player, int slot) {
@@ -161,6 +164,14 @@ public class RelicItem extends Item {
 
     public boolean activate(ServerPlayer player, ItemStack stack, int slot) {
         if (!stack.is(this) || slot < 0 || slot >= skills.size()) return false;
+        if (!(this instanceof MorpixItem) && MorpixEffects.transformed(player)) {
+            player.sendSystemMessage(Component.literal("Transformado: só os ataques da forma."), true);
+            return false;
+        }
+        if (!allowWhileParalyzed(slot) && player.hasEffect(org.dantesys.nexus.effects.ModEffects.PARALISIA)) {
+            player.sendSystemMessage(Component.literal("Paralisado!"), true);
+            return false;
+        }
         if (skills.get(slot).kind() == RelicSkill.Kind.PASSIVE) return false;
         return executeSkill(player, stack, slot, RelicSkill.Kind.ACTIVE, true);
     }
@@ -176,6 +187,10 @@ public class RelicItem extends Item {
         if (skill.kind() != kind) return false;
         if (!isUnlocked(player, slot)) {
             if (feedback) player.sendSystemMessage(Component.literal("Liberada na maestria " + RelicSkill.requiredLevel(slot) + "."), true);
+            return false;
+        }
+        if (!skillsAvailable(player, stack, slot)) {
+            if (feedback) player.sendSystemMessage(Component.literal("Habilidades indisponíveis no momento."), true);
             return false;
         }
         long gameTime = player.level().getGameTime();
@@ -216,6 +231,37 @@ public class RelicItem extends Item {
         return true;
     }
 
+    /** Pode usar a habilidade agora? (ex.: Phoenixy no primeiro minuto depois de renascer). */
+    protected boolean skillsAvailable(ServerPlayer player, ItemStack stack, int slot) { return true; }
+    /** Habilidades que funcionam mesmo paralisado (ex.: Sangue Toxico da Venossy). */
+    protected boolean allowWhileParalyzed(int slot) { return false; }
+
+    /** Recarga escalada pela Ressonancia, iniciada fora do fluxo normal (ex.: recarga que conta da morte do golem). */
+    public void startCooldown(ServerPlayer player, ItemStack stack, int slot, int baseTicks) {
+        MagicStatus magic = player.getData(ModAttachmentType.MAGIC_STATS);
+        int resonance = Math.clamp(magic.getRessonancia(), 0, MagicStatus.MAX_STATUS);
+        int ticks = scaleDownToHalf((int) Math.round(modify(stack, RelicAttribute.COOLDOWN, baseTicks)), resonance);
+        writeLong(stack, COOLDOWN_TAG + slot, player.level().getGameTime() + ticks);
+    }
+    /** Recarga fixa (sem reducao da Ressonancia). */
+    public void setCooldownTicks(ServerPlayer player, ItemStack stack, int slot, int ticks) {
+        writeLong(stack, COOLDOWN_TAG + slot, player.level().getGameTime() + ticks);
+    }
+    public void clearCooldown(ItemStack stack, int slot) { writeLong(stack, COOLDOWN_TAG + slot, 0); }
+    public boolean ready(ItemStack stack, long gameTime, int slot) { return getCooldownRemaining(stack, gameTime, slot) <= 0; }
+
+    /** Primeira copia desta reliquia no inventario (maos, armadura e mochila incluidas). */
+    public ItemStack findIn(Player player) {
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            ItemStack stack = player.getItemBySlot(slot);
+            if (stack.is(this)) return stack;
+        }
+        var inventory = player.getInventory();
+        for (int i = 0; i < inventory.getContainerSize(); i++) if (inventory.getItem(i).is(this)) return inventory.getItem(i);
+        return ItemStack.EMPTY;
+    }
+    public boolean heldBy(Player player) { return player.getMainHandItem().is(this) || player.getOffhandItem().is(this); }
+
     /** XP de maestria por acao tematica de cada reliquia. */
     public void addMasteryXp(ServerPlayer player, int amount) {
         if (amount <= 0) return;
@@ -247,9 +293,25 @@ public class RelicItem extends Item {
         List<Float> floats = new ArrayList<>();
         floats.add((float) visualStage(masteryLevel(player)));
         floats.addAll(extraModelData(player, stack));
+        applyStageComponents(player, stack, visualStage(masteryLevel(player)));
         CustomModelData current = stack.get(DataComponents.CUSTOM_MODEL_DATA);
         if (current != null && current.floats().equals(floats)) return;
         stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(floats, List.of(), List.of(), List.of()));
+    }
+
+    /** Componentes que mudam com o estagio (ex.: textura da armadura, asas da Phoenixy). */
+    protected void applyStageComponents(ServerPlayer player, ItemStack stack, int stage) {}
+
+    protected static final String[] STAGE_NAMES = {"dormente", "desperta", "ressonante", "final"};
+
+    /** Troca a textura de armadura (equipment/<reliquia>_<estagio>) no slot dado. */
+    protected static void setArmorAsset(ItemStack stack, net.minecraft.world.entity.EquipmentSlot slot, String relic, int stage, boolean glider) {
+        var asset = net.minecraft.resources.ResourceKey.create(net.minecraft.world.item.equipment.EquipmentAssets.ROOT_ID,
+                net.minecraft.resources.Identifier.fromNamespaceAndPath(org.dantesys.nexus.Nexus.MODID, relic + "_" + STAGE_NAMES[Math.clamp(stage, 0, 3)]));
+        var current = stack.get(DataComponents.EQUIPPABLE);
+        if (current != null && current.slot() == slot && current.assetId().isPresent() && current.assetId().get().equals(asset)) return;
+        stack.set(DataComponents.EQUIPPABLE, net.minecraft.world.item.equipment.Equippable.builder(slot).setAsset(asset).build());
+        if (glider) stack.set(DataComponents.GLIDER, net.minecraft.util.Unit.INSTANCE);
     }
 
     public static float modelValue(ItemStack stack, int index, float fallback) {

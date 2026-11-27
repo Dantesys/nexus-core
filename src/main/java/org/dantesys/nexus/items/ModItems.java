@@ -38,6 +38,48 @@ public class ModItems {
             ITEMS.registerItem("domix", org.dantesys.nexus.relic.DomixItem::new);
     public static final DeferredItem<org.dantesys.nexus.relic.RiftyItem> RIFTY =
             ITEMS.registerItem("rifty", org.dantesys.nexus.relic.RiftyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.EternyItem> ETERNY =
+            ITEMS.registerItem("eterny", org.dantesys.nexus.relic.EternyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.SoulyItem> SOULY =
+            ITEMS.registerItem("souly", org.dantesys.nexus.relic.SoulyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.PhoenixyItem> PHOENIXY =
+            ITEMS.registerItem("phoenixy", org.dantesys.nexus.relic.PhoenixyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.ElixyItem> ELIXY =
+            ITEMS.registerItem("elixy", org.dantesys.nexus.relic.ElixyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.TrindyItem> TRINDY =
+            ITEMS.registerItem("trindy", org.dantesys.nexus.relic.TrindyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.SteelyItem> STEELY =
+            ITEMS.registerItem("steely", org.dantesys.nexus.relic.SteelyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.ColossyItem> COLOSSY =
+            ITEMS.registerItem("colossy", org.dantesys.nexus.relic.ColossyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.GravixItem> GRAVIX =
+            ITEMS.registerItem("gravix", org.dantesys.nexus.relic.GravixItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.ChiefyItem> CHIEFY =
+            ITEMS.registerItem("chiefy", org.dantesys.nexus.relic.ChiefyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.ExploryItem> EXPLORY =
+            ITEMS.registerItem("explory", org.dantesys.nexus.relic.ExploryItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.ThiefyItem> THIEFY =
+            ITEMS.registerItem("thiefy", org.dantesys.nexus.relic.ThiefyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.NecrixItem> NECRIX =
+            ITEMS.registerItem("necrix", org.dantesys.nexus.relic.NecrixItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.SculkyItem> SCULKY =
+            ITEMS.registerItem("sculky", org.dantesys.nexus.relic.SculkyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.MorpixItem> MORPIX =
+            ITEMS.registerItem("morpix", org.dantesys.nexus.relic.MorpixItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.CultryItem> CULTRY =
+            ITEMS.registerItem("cultry", org.dantesys.nexus.relic.CultryItem::new);
+    /** Pilula do Caldeirao do Refino (Cultry). */
+    public static final DeferredItem<PilulaItem> PILULA = ITEMS.registerItem("pilula", PilulaItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.DraconixItem> DRACONIX =
+            ITEMS.registerItem("draconix", org.dantesys.nexus.relic.DraconixItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.CryoniItem> CRYONI =
+            ITEMS.registerItem("cryoni", org.dantesys.nexus.relic.CryoniItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.VenossyItem> VENOSSY =
+            ITEMS.registerItem("venossy", org.dantesys.nexus.relic.VenossyItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.VoltrixItem> VOLTRIX =
+            ITEMS.registerItem("voltrix", org.dantesys.nexus.relic.VoltrixItem::new);
+    public static final DeferredItem<org.dantesys.nexus.relic.GrimyItem> GRIMY =
+            ITEMS.registerItem("grimy", org.dantesys.nexus.relic.GrimyItem::new);
     /** Visual da bomba de fumaca do Plano F (Oculty). Nao aparece na aba criativa. */
     public static final DeferredItem<Item> BOMBA_FUMACA = ITEMS.registerSimpleItem("bomba_fumaca");
     public static final DeferredItem<PlantaItem> PLANTA = ITEMS.registerItem("planta", PlantaItem::new);

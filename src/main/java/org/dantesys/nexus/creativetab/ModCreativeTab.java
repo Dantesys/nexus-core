@@ -26,7 +26,7 @@ public class ModCreativeTab {
             .title(Component.translatable("creativetab.nexus.items"))
             .displayItems((itemDisplayParameters, output) -> {
                 ModItems.ITEMS.getEntries().forEach(item -> {
-                            if(item != ModItems.BOMBA_FUMACA && ModBlocks.BLOCKS.getEntries().stream().noneMatch(block -> item.getId().equals(block.getId()))) {
+                            if(item != ModItems.BOMBA_FUMACA && item != ModItems.PILULA && ModBlocks.BLOCKS.getEntries().stream().noneMatch(block -> item.getId().equals(block.getId()))) {
                                 output.accept(item.get());
                             }});
 

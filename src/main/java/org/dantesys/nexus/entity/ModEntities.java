@@ -35,6 +35,16 @@ public final class ModEntities {
             "lobo_espectral", LoboEspectral::new, MobCategory.CREATURE,
             b -> b.sized(0.6F, 0.85F).eyeHeight(0.68F).clientTrackingRange(10).noSave().noSummon());
 
+    /** Cultry — Palma da Lotus. */
+    public static final DeferredHolder<EntityType<?>, EntityType<PalmaLotus>> PALMA_LOTUS = ENTITIES.registerEntityType(
+            "palma_lotus", PalmaLotus::new, MobCategory.MISC,
+            b -> b.sized(2.0F, 0.5F).clientTrackingRange(10).updateInterval(20).noSave().noSummon());
+
+    /** Draconix — O Verdadeiro Dragao (montaria). */
+    public static final DeferredHolder<EntityType<?>, EntityType<DragaoDraconix>> DRAGAO_DRACONIX = ENTITIES.registerEntityType(
+            "dragao_draconix", DragaoDraconix::new, MobCategory.CREATURE,
+            b -> b.sized(1.6F, 1.4F).eyeHeight(1.2F).fireImmune().clientTrackingRange(10).noSave().noSummon());
+
     public static void register(IEventBus bus) {
         ENTITIES.register(bus);
         bus.addListener(ModEntities::attributes);
@@ -42,5 +52,6 @@ public final class ModEntities {
 
     private static void attributes(EntityAttributeCreationEvent event) {
         event.put(LOBO_ESPECTRAL.get(), Wolf.createAttributes().build());
+        event.put(DRAGAO_DRACONIX.get(), DragaoDraconix.createAttributes().build());
     }
 }

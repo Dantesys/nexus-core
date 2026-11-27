@@ -33,10 +33,12 @@ public class Nexus {
         ModCreativeTab.register(modEventBus);
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
+        org.dantesys.nexus.blocks.ModFluids.register(modEventBus);
         ModBlockEntities.register(modEventBus);
         ModMenus.register(modEventBus);
         ModAttachmentType.register(modEventBus);
         ModEffects.register(modEventBus);
+        org.dantesys.nexus.particle.ModParticles.register(modEventBus);
         org.dantesys.nexus.entity.ModEntities.register(modEventBus);
         ModRecipes.register(modEventBus);
         NeoForge.EVENT_BUS.register(NexusPlayerEvents.class);

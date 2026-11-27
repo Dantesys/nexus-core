@@ -14,7 +14,14 @@ public abstract class LivingEntityMixin {
     @Inject(method = "onClimbable", at = @At("HEAD"), cancellable = true)
     private void nexus$subespaco(CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
-        if (self.isSpectator() || !Subespaco.active(self)) return;
+        if (self.isSpectator()) return;
+        // Morpix: DNA de aranha escala paredes.
+        if (self instanceof net.minecraft.world.entity.player.Player player && self.horizontalCollision
+                && player.getData(org.dantesys.nexus.data.ModAttachmentType.MORPH_POWERS).contains("minecraft:spider")) {
+            cir.setReturnValue(true);
+            return;
+        }
+        if (!Subespaco.active(self)) return;
         if (self.isShiftKeyDown()) {
             cir.setReturnValue(false);
             return;

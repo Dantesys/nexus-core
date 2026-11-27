@@ -54,6 +54,12 @@ public class ModBlocks {
                     .requiresCorrectToolForDrops().sound(SoundType.IRON)));
 
 
+    /** Draconix: lava roxa (sem item). */
+    public static final DeferredBlock<LiquidBlock> LAVA_ROXA = BLOCKS.registerBlock("lava_roxa",
+            properties -> new LiquidBlock(ModFluids.LAVA_ROXA.get(), properties.mapColor(net.minecraft.world.level.material.MapColor.COLOR_PURPLE)
+                    .replaceable().noCollision().strength(100.0F).lightLevel(state -> 12)
+                    .pushReaction(net.minecraft.world.level.material.PushReaction.POPPED).noLootTable().liquid().sound(SoundType.EMPTY)));
+
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Function<BlockBehaviour.Properties, T> function) {
         DeferredBlock<T> toReturn = BLOCKS.registerBlock(name, function);
         registerBlockItem(name, toReturn);

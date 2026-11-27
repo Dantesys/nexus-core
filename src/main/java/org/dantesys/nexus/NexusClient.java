@@ -81,6 +81,10 @@ public class NexusClient {
         event.register(ModMenus.FORJA_FULL_MENU.get(), ForjaFullScreen::new);
     }
 
+    static {
+        org.dantesys.nexus.relic.RelicItem.CLIENT_PLAYER = () -> Minecraft.getInstance().player;
+    }
+
     @SubscribeEvent
     static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(
@@ -95,6 +99,10 @@ public class NexusClient {
                 org.dantesys.nexus.client.entity.BuracoNegroRenderer::new);
         event.registerEntityRenderer(org.dantesys.nexus.entity.ModEntities.FENDA.get(),
                 org.dantesys.nexus.client.entity.FendaRenderer::new);
+        event.registerEntityRenderer(org.dantesys.nexus.entity.ModEntities.DRAGAO_DRACONIX.get(),
+                org.dantesys.nexus.client.entity.DragaoDraconixRenderer::new);
+        event.registerEntityRenderer(org.dantesys.nexus.entity.ModEntities.PALMA_LOTUS.get(),
+                org.dantesys.nexus.client.entity.PalmaLotusRenderer::new);
         event.registerEntityRenderer(org.dantesys.nexus.entity.ModEntities.LOBO_ESPECTRAL.get(),
                 net.minecraft.client.renderer.entity.WolfRenderer::new);
     }
@@ -103,8 +111,26 @@ public class NexusClient {
     static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(org.dantesys.nexus.client.entity.BocaTubaraoModel.LAYER,
                 org.dantesys.nexus.client.entity.BocaTubaraoModel::createBodyLayer);
+        event.registerLayerDefinition(org.dantesys.nexus.client.entity.DragaoDraconixModel.LAYER,
+                org.dantesys.nexus.client.entity.DragaoDraconixModel::createBodyLayer);
+        event.registerLayerDefinition(org.dantesys.nexus.client.entity.PalmaLotusModel.LAYER,
+                org.dantesys.nexus.client.entity.PalmaLotusModel::createBodyLayer);
         event.registerLayerDefinition(org.dantesys.nexus.client.entity.BuracoNegroModel.LAYER,
                 org.dantesys.nexus.client.entity.BuracoNegroModel::createBodyLayer);
+    }
+
+    @SubscribeEvent
+    static void registerFluidModels(net.neoforged.neoforge.client.event.RegisterFluidModelsEvent event) {
+        event.register(new net.minecraft.client.renderer.block.FluidModel.Unbaked(
+                new net.minecraft.client.resources.model.sprite.Material(net.minecraft.resources.Identifier.fromNamespaceAndPath(Nexus.MODID, "block/lava_roxa_still")),
+                new net.minecraft.client.resources.model.sprite.Material(net.minecraft.resources.Identifier.fromNamespaceAndPath(Nexus.MODID, "block/lava_roxa_flow")),
+                null, (net.neoforged.neoforge.client.fluid.FluidTintSource) null),
+                org.dantesys.nexus.blocks.ModFluids.LAVA_ROXA, org.dantesys.nexus.blocks.ModFluids.LAVA_ROXA_FLOWING);
+    }
+
+    @SubscribeEvent
+    static void registerParticles(net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(org.dantesys.nexus.particle.ModParticles.PETALA_LOTUS.get(), net.minecraft.client.particle.FallingLeavesParticle.CherryProvider::new);
     }
 
     @SubscribeEvent

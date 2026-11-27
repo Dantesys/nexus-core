@@ -1,0 +1,14 @@
+Reusing configuration cache.
+> Task :createMinecraftArtifacts UP-TO-DATE
+
+> Task :compileJava
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Note: D:\hotui\OneDrive\Documentos\Nexus\src\main\java\org\dantesys\nexus\datagen\ModItemTagsProvider.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+[Incubating] Problems report is available at: file:///D:/hotui/OneDrive/Documentos/Nexus/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 30s
+2 actionable tasks: 1 executed, 1 up-to-date
+Configuration cache entry reused.

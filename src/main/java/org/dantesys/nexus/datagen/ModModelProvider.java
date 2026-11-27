@@ -128,6 +128,11 @@ public class ModModelProvider extends ModelProvider {
         blockModels.createTrivialCube(ModBlocks.TANQUE_FORJA.get());
         generateForgeController(blockModels);
         blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(
+                ModBlocks.LAVA_ROXA.get(),
+                BlockModelGenerators.variant(new Variant(
+                        Identifier.fromNamespaceAndPath(Nexus.MODID, "block/lava_roxa")))
+        ));
+        blockModels.blockStateOutput.accept(MultiVariantGenerator.dispatch(
                 ModBlocks.FORJA_COLLISION.get(),
                 BlockModelGenerators.variant(new Variant(
                         Identifier.fromNamespaceAndPath("minecraft", "block/air")))

@@ -26,6 +26,19 @@ public class ModAttachmentType {
                     .copyOnDeath()
                     .build()
     );
+    /** Morpix: poderes de DNA em uso (ids de entidade separados por virgula). Sincronizado (escalar parede no cliente). */
+    public static final Supplier<AttachmentType<String>> MORPH_POWERS = ATTACHMENT_TYPES.register(
+            "morph_powers", () -> AttachmentType.builder(() -> "")
+                    .serialize(com.mojang.serialization.Codec.STRING.fieldOf("powers"))
+                    .sync(net.minecraft.network.codec.ByteBufCodecs.STRING_UTF8)
+                    .build()
+    );
+    /** Forma visual do jogador (ex.: "steely_golem"). Vazio = forma normal. Sincronizado para o render. */
+    public static final Supplier<AttachmentType<String>> FORMA = ATTACHMENT_TYPES.register(
+            "forma", () -> AttachmentType.builder(() -> "")
+                    .sync(net.minecraft.network.codec.ByteBufCodecs.STRING_UTF8)
+                    .build()
+    );
     public static void register(IEventBus bus) {
         ATTACHMENT_TYPES.register(bus);
     }

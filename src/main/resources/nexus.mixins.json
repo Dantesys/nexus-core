@@ -6,7 +6,9 @@
   "mixins": [
     "BlockStateBaseMixin",
     "LivingEntityMixin",
-    "ServerGamePacketListenerImplMixin"
+    "ServerGamePacketListenerImplMixin",
+    "WitherBossMixin",
+    "WardenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

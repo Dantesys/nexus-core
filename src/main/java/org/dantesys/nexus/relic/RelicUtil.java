@@ -195,4 +195,62 @@ public final class RelicUtil {
         drops.forEach(sink);
         return true;
     }
+
+    // ---------- Comuns do lote Eterny..Voltrix ----------
+
+    /** Morte garantida: ignora totens, Infinidade, Vida Extra e o Renascimento da Fenix. */
+    public static final ResourceKey<DamageType> MORTE_GARANTIDA = damageType("morte_garantida");
+
+    public static void guaranteedKill(ServerLevel level, LivingEntity target, @org.jspecify.annotations.Nullable Entity killer) {
+        target.setInvulnerableTime(0);
+        target.hurtServer(level, source(level, MORTE_GARANTIDA, killer), Float.MAX_VALUE / 4);
+    }
+
+    /** Efeitos e animacao do totem da imortalidade (vida 1, Regeneracao II, Absorcao, Resistencia ao Fogo). */
+    public static void totemSave(LivingEntity entity) {
+        RelicEffectRules.allowRemoval(() -> entity.removeAllEffects());
+        entity.setHealth(1.0F);
+        entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.REGENERATION, 900, 1));
+        entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.ABSORPTION, 100, 1));
+        entity.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE, 800, 0));
+        entity.level().broadcastEntityEvent(entity, (byte) 35);
+    }
+
+    /** Raio so visual (nao incendeia nem transforma mobs). O dano e aplicado por quem chama. */
+    public static void visualLightning(ServerLevel level, net.minecraft.world.phys.Vec3 pos) {
+        var bolt = net.minecraft.world.entity.EntityTypes.LIGHTNING_BOLT.create(level, net.minecraft.world.entity.EntitySpawnReason.TRIGGERED);
+        if (bolt == null) return;
+        bolt.setVisualOnly(true);
+        bolt.snapTo(pos.x, pos.y, pos.z);
+        level.addFreshEntity(bolt);
+    }
+
+    /** Dano de raio (padrao vanilla: 5) sem fogo nem transformacoes. */
+    public static void lightningStrike(ServerLevel level, LivingEntity target, @org.jspecify.annotations.Nullable Entity owner, float damage) {
+        visualLightning(level, target.position());
+        target.setInvulnerableTime(0);
+        target.hurtServer(level, level.damageSources().lightningBolt(), damage);
+    }
+
+    public static void push(Entity entity, net.minecraft.world.phys.Vec3 velocity) {
+        entity.setDeltaMovement(velocity);
+        syncMotion(entity);
+    }
+
+    public static boolean isPassiveAnimal(Entity e) {
+        return e instanceof net.minecraft.world.entity.animal.Animal && !(e instanceof net.minecraft.world.entity.OwnableEntity own && own.getOwnerReference() != null);
+    }
+
+    public static boolean isUndeadMinion(Entity e) {
+        return e.getType().builtInRegistryHolder().is(net.minecraft.tags.EntityTypeTags.ZOMBIES) || e.getType().builtInRegistryHolder().is(net.minecraft.tags.EntityTypeTags.SKELETONS);
+    }
+
+    /** Papel deixado no lugar de um item roubado. */
+    public static ItemStack note(String text) {
+        ItemStack paper = new ItemStack(net.minecraft.world.item.Items.PAPER);
+        paper.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal(text));
+        return paper;
+    }
+
+    public static boolean isRelic(ItemStack stack) { return stack.getItem() instanceof RelicItem; }
 }

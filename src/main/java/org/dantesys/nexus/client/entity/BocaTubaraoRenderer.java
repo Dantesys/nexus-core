@@ -29,13 +29,14 @@ public class BocaTubaraoRenderer extends EntityRenderer<BocaTubarao, BocaTubarao
         super.extractRenderState(entity, state, partialTicks);
         state.time = entity.animationTime(partialTicks);
         state.yRot = entity.getYRot();
+        state.size = entity.size();
     }
 
     @Override
     public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         poseStack.pushPose();
         poseStack.rotateDegrees(Axis.YP, 180.0F - state.yRot);
-        poseStack.scale(-SCALE, -SCALE, SCALE);
+        poseStack.scale(-state.size, -state.size, state.size);
         poseStack.translate(0.0F, -1.501F, 0.0F);
         collector.submitModel(model, state, poseStack, TEXTURE, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
         poseStack.popPose();
@@ -45,5 +46,6 @@ public class BocaTubaraoRenderer extends EntityRenderer<BocaTubarao, BocaTubarao
     public static class State extends EntityRenderState {
         public float time;
         public float yRot;
+        public float size = SCALE;
     }
 }
