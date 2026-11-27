@@ -131,6 +131,9 @@ public class NexusClient {
     @SubscribeEvent
     static void registerParticles(net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(org.dantesys.nexus.particle.ModParticles.PETALA_LOTUS.get(), net.minecraft.client.particle.FallingLeavesParticle.CherryProvider::new);
+        event.registerSpriteSet(org.dantesys.nexus.particle.ModParticles.RUPTY_CORTE.get(), net.minecraft.client.particle.SweepAttackParticle.Provider::new);
+        event.registerSpriteSet(org.dantesys.nexus.particle.ModParticles.RUPTY_FRAGMENTO.get(), net.minecraft.client.particle.EndRodParticle.Provider::new);
+        event.registerSpriteSet(org.dantesys.nexus.particle.ModParticles.RUPTY_MARCA_MORTAL.get(), net.minecraft.client.particle.EndRodParticle.Provider::new);
     }
 
     @SubscribeEvent
