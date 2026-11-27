@@ -269,7 +269,7 @@ public final class RuptyEffects {
         SimpleParticleType shard = particle(ModParticles.RUPTY_FRAGMENTO);
         for (double d = 0.6; d <= length; d += 0.6) {
             Vec3 p = start.add(dir.scale(d)).add(0, -0.3, 0);
-            level.sendParticles(slash, p.x, p.y, p.z, 0, -0.4, 0, 0, 1.0);
+            level.sendParticles(slash, p.x, p.y, p.z, 1, 0, 0, 0, 0);
             for (double y = -0.9; y <= 0.9; y += 0.45) {
                 level.sendParticles(shard, p.x, p.y + y, p.z, 1, 0.03, 0.03, 0.03, 0.0);
             }
@@ -293,8 +293,10 @@ public final class RuptyEffects {
             if (!target.isAlive()) continue;
             addMarks(player, target, RuptyRules.rotationMarks(distance));
             // Depois das marcas, empurra.
-            target.knockback(RuptyRules.ROTATION_KNOCKBACK, player.getX() - target.getX(), player.getZ() - target.getZ());
-            target.hurtMarked = true;
+            Vec3 away = new Vec3(target.getX() - player.getX(), 0, target.getZ() - player.getZ());
+            away = away.lengthSqr() < 1.0E-4 ? player.getLookAngle().multiply(1, 0, 1) : away;
+            away = away.normalize().scale(RuptyRules.ROTATION_KNOCKBACK);
+            RelicUtil.push(target, target.getDeltaMovement().add(away.x, 0.3, away.z));
         }
 
         // Visual: dois aneis de cortes em volta do portador.
@@ -304,7 +306,7 @@ public final class RuptyEffects {
         for (int i = 0; i < 16; i++) {
             double a = Math.PI * 2 * i / 16;
             double r = i % 2 == 0 ? RuptyRules.ROTATION_INNER_RADIUS : radius - 0.4;
-            level.sendParticles(slash, player.getX() + Math.cos(a) * r, y, player.getZ() + Math.sin(a) * r, 0, -0.6, 0, 0, 1.0);
+            level.sendParticles(slash, player.getX() + Math.cos(a) * r, y, player.getZ() + Math.sin(a) * r, 1, 0, 0, 0, 0);
             level.sendParticles(shard, player.getX() + Math.cos(a) * radius, y, player.getZ() + Math.sin(a) * radius,
                     2, 0.1, 0.2, 0.1, 0.02);
         }
@@ -330,7 +332,7 @@ public final class RuptyEffects {
         SimpleParticleType slash = particle(ModParticles.RUPTY_CORTE);
         for (LivingEntity target : opened) {
             if (!(target.level() instanceof ServerLevel level)) continue;
-            level.sendParticles(slash, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), 0, -0.2, 0, 0, 1.0);
+            level.sendParticles(slash, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), 1, 0, 0, 0, 0);
             level.playSound(null, target.blockPosition(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 0.8f, 0.6f);
         }
         player.sendSystemMessage(Component.literal("Marca Aberta: " + opened.size() + " alvo(s)."), true);
