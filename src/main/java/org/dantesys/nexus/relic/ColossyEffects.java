@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -175,7 +176,7 @@ public final class ColossyEffects {
     public static boolean armHook(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.putBoolean(HOOK_TAG, true));
         HOOKS.put(player.getUUID(), player.level().getGameTime() + HOOK_LIMIT);
-        RelicUtil.say(player, "Gancho pronto: acerte alguém!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.colossy.gancho_pronto_acerte_alguem"));
         return true;
     }
 

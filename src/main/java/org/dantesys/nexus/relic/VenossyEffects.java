@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -67,7 +68,7 @@ public final class VenossyEffects {
             boolean boss = RelicUtil.isBoss(target);
             target.addEffect(new MobEffectInstance(ModEffects.TOXINA_AMPLIFICADA, boss ? 2400 : MobEffectInstance.INFINITE_DURATION, 0), player);
             target.addEffect(new MobEffectInstance(ModEffects.PARALISIA, boss ? 140 : 300, 0), player);
-            RelicUtil.say(player, "Sangue Tóxico!");
+            RelicUtil.say(player, Component.translatable("relic.nexus.venossy.sangue_toxico"));
         }
     }
 
@@ -162,7 +163,7 @@ public final class VenossyEffects {
         RelicEffectRules.allowRemoval(() -> { player.removeEffect(ModEffects.TOXINA); player.removeEffect(ModEffects.PARALISIA); });
         BLOOD_ARMED.add(player.getUUID());
         player.level().playSound(null, player.blockPosition(), SoundEvents.WITCH_DRINK, SoundSource.PLAYERS, 1.0f, 0.5f);
-        RelicUtil.say(player, "Sangue Tóxico pronto: acerte alguém.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.venossy.sangue_toxico_pronto_acerte_alguem"));
         return true;
     }
 

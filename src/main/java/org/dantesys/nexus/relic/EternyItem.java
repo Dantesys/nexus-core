@@ -8,24 +8,17 @@ import org.dantesys.nexus.util.MatrizModos;
 public final class EternyItem extends RelicItem {
     public EternyItem(Properties properties) {
         super(properties, MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Infinidade"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Campo de Vida"), EternyEffects.FIELD_MANA, EternyEffects::lifeField),
-                RelicSkill.active(Component.literal("!Dano"), EternyEffects.NODAMAGE_MANA, EternyEffects::noDamage),
-                RelicSkill.active(Component.literal("Vida Extra"), EternyEffects.EXTRA_MANA, EternyEffects::extraLifeCast),
-                new RelicSkill(Component.literal("Explosão Vital"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("A Infinidade precisa estar em recarga."),
+                RelicSkill.passive(Component.translatable("relic.nexus.eterny.infinidade"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.eterny.campo_de_vida"), EternyEffects.FIELD_MANA, EternyEffects::lifeField),
+                RelicSkill.active(Component.translatable("relic.nexus.eterny.dano"), EternyEffects.NODAMAGE_MANA, EternyEffects::noDamage),
+                RelicSkill.active(Component.translatable("relic.nexus.eterny.vida_extra"), EternyEffects.EXTRA_MANA, EternyEffects::extraLifeCast),
+                new RelicSkill(Component.translatable("relic.nexus.eterny.explosao_vital"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.eterny.a_infinidade_precisa_estar_em"),
                         EternyEffects::canBurst, EternyEffects::burst, EternyEffects.BURST_MANA));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Na mão, funciona como um totem da imortalidade ilimitado, com recarga fixa de 2 minutos.";
-            case 1 -> "Área de 5 blocos que te acompanha por 10s e cura você, seus pets e seu time. Vida cheia vira absorção.";
-            case 2 -> "Área de 3 blocos por 5–10s: dano de mobs e jogadores nos aliados vira absorção (com teto).";
-            case 3 -> "Vida Extra (10 min) em você, aliados e pets num raio de 10: sobrevivem a uma morte.";
-            case 4 -> "Explode empurrando os inimigos; por 1 min fica com metade do tamanho, velocidade e regeneração, mas metade da vida máxima.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.eterny.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

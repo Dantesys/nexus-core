@@ -8,25 +8,18 @@ import org.dantesys.nexus.util.MatrizModos;
 /** Brekry: picareta focada em quebrar blocos e abrir caminho. */
 public final class BrekryItem extends RelicItem {
     public BrekryItem(Properties properties) {
-        super(properties.pickaxe(ModToolMaterial.STEEL_MATERIA, 1.0F, -2.8F), MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.active(Component.literal("Dinamite"), BrekryEffects.DYNAMITE_MANA, BrekryEffects::dynamite),
-                RelicSkill.active(Component.literal("Túnel"), BrekryEffects.TUNNEL_MANA, BrekryEffects::tunnel),
-                RelicSkill.active(Component.literal("Frenesi"), BrekryEffects.FRENZY_MANA, BrekryEffects::frenzy),
-                RelicSkill.active(Component.literal("Limpeza"), BrekryEffects.CLEANUP_MANA, BrekryEffects::cleanup),
-                new RelicSkill(Component.literal("Breakable"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Afinidade rank A ou maior e 64 TNT no inventário (consumidas)."),
+        super(properties.pickaxe(ModToolMaterial.RELIC, 1.0F, -2.8F), MatrizModos.MARTELO, 0, 0, 2,
+                RelicSkill.active(Component.translatable("relic.nexus.brekry.dinamite"), BrekryEffects.DYNAMITE_MANA, BrekryEffects::dynamite),
+                RelicSkill.active(Component.translatable("relic.nexus.brekry.tunel"), BrekryEffects.TUNNEL_MANA, BrekryEffects::tunnel),
+                RelicSkill.active(Component.translatable("relic.nexus.brekry.frenesi"), BrekryEffects.FRENZY_MANA, BrekryEffects::frenzy),
+                RelicSkill.active(Component.translatable("relic.nexus.brekry.limpeza"), BrekryEffects.CLEANUP_MANA, BrekryEffects::cleanup),
+                new RelicSkill(Component.translatable("relic.nexus.brekry.breakable"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.brekry.afinidade_rank_a_ou_maior"),
                         BrekryEffects::canBreakable, BrekryEffects::breakable, BrekryEffects.BREAKABLE_MANA));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Planta uma bomba que explode em 5s, quebrando blocos. Não causa dano a entidades.";
-            case 1 -> "Abre um túnel horizontal à frente (1×2×5, cresce com a Afinidade). Não quebra blocos com inventário.";
-            case 2 -> "Velocidade de mineração por alguns segundos.";
-            case 3 -> "Limpa 10×10×10 à frente (menos minérios, baús e blocos perto de líquidos) e guarda tudo num baú duplo.";
-            case 4 -> "Por 10s, qualquer bloco quebra na hora e dropa ele mesmo, até os inquebráveis naturais.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.brekry.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

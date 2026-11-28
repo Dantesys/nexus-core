@@ -10,25 +10,18 @@ import org.dantesys.nexus.util.MatrizModos;
 public final class ThiefyItem extends RelicItem {
     public ThiefyItem(Properties properties) {
         super(properties, MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Roubo"), 0, (p, s, c) -> false),
-                new RelicSkill(Component.literal("Na Surdina"), RelicSkill.Kind.ACTIVE, Component.literal("Olhe para um jogador a até 3 blocos."),
+                RelicSkill.passive(Component.translatable("relic.nexus.thiefy.roubo"), 0, (p, s, c) -> false),
+                new RelicSkill(Component.translatable("relic.nexus.thiefy.na_surdina"), RelicSkill.Kind.ACTIVE, Component.translatable("relic.nexus.thiefy.olhe_para_um_jogador_a"),
                         ThiefyEffects::canSneakSteal, ThiefyEffects::sneakSteal, ThiefyEffects.SNEAK_MANA),
-                RelicSkill.active(Component.literal("Clone"), ThiefyEffects.CLONE_MANA, ThiefyEffects::clone),
-                RelicSkill.active(Component.literal("Silêncio"), ThiefyEffects.SILENCE_MANA, ThiefyEffects::silence),
-                new RelicSkill(Component.literal("O Grande Roubo"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Inventário vazio, incluindo a armadura (relíquias não contam)."),
+                RelicSkill.active(Component.translatable("relic.nexus.thiefy.clone"), ThiefyEffects.CLONE_MANA, ThiefyEffects::clone),
+                RelicSkill.active(Component.translatable("relic.nexus.thiefy.silencio"), ThiefyEffects.SILENCE_MANA, ThiefyEffects::silence),
+                new RelicSkill(Component.translatable("relic.nexus.thiefy.o_grande_roubo"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.thiefy.inventario_vazio_incluindo_a_armadura"),
                         ThiefyEffects::canHeist, ThiefyEffects::heist, ThiefyEffects.HEIST_MANA));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Ao bater, chance (10% a 30%) de roubar um stack do alvo; fica um papel no lugar. Sem armadura, você fica invisível.";
-            case 1 -> "Abre o inventário de um jogador a até 3 blocos por 5s, sem ele ver, e você rouba 1 item.";
-            case 2 -> "Cria um clone seu que atrai os inimigos; você fica totalmente invisível por 10s ou até atacar.";
-            case 3 -> "Por 5 min, você não faz som nem vibração (passa despercebido pelo Warden e pelo sculk).";
-            case 4 -> "Lista jogadores e baús numa área de 20 blocos; escolha um e roube tudo dele (exceto relíquias).";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.thiefy.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

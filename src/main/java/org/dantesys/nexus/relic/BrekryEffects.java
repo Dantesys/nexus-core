@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -111,7 +112,7 @@ public final class BrekryEffects {
             }
         }
         if (broken == 0) {
-            RelicUtil.say(player, "Nada para abrir nessa direção.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.brekry.nada_para_abrir_nessa_direcao"));
             return false;
         }
         item().addMasteryXp(player, Math.max(1, broken / 10));
@@ -161,7 +162,7 @@ public final class BrekryEffects {
             }
         }
         if (queue.isEmpty()) {
-            RelicUtil.say(player, "Nada para limpar à frente.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.brekry.nada_para_limpar_a_frente"));
             return false;
         }
         CLEANUPS.add(new Cleanup(player.getUUID(), level, queue, base.relative(facing), facing, stack.copy()));
@@ -219,7 +220,7 @@ public final class BrekryEffects {
         RelicUtil.consume(player, s -> s.is(Items.TNT), BREAKABLE_TNT);
         BREAKABLE.put(player.getUUID(), player.level().getGameTime() + BREAKABLE_TICKS);
         player.level().playSound(null, player.blockPosition(), SoundEvents.WITHER_SPAWN, SoundSource.PLAYERS, 0.5f, 1.8f);
-        RelicUtil.say(player, "Breakable: 10s para quebrar qualquer coisa.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.brekry.breakable_10s_para_quebrar_qualquer"));
         return true;
     }
 
@@ -266,7 +267,7 @@ public final class BrekryEffects {
                 finish(job, player);
                 if (player != null) {
                     item().addMasteryXp(player, Math.max(1, job.drops.size() / 20));
-                    RelicUtil.say(player, "Limpeza concluída.");
+                    RelicUtil.say(player, Component.translatable("relic.nexus.brekry.limpeza_concluida"));
                 }
                 it.remove();
             }

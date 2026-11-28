@@ -5,10 +5,10 @@
       "id": "nexus:nucleo_forja"
     },
     "title": {
-      "text": "Um com o Nexus"
+      "translate": "advancements.nexus.um_com_o_nexus.title"
     },
     "description": {
-      "text": "Alcance rank S em Capacidade, Regenera\u00e7\u00e3o, Afinidade e Resson\u00e2ncia."
+      "translate": "advancements.nexus.um_com_o_nexus.description"
     },
     "frame": "challenge",
     "show_toast": true,

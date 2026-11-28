@@ -4,7 +4,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.ItemStack;
 import org.dantesys.nexus.util.MatrizModos;
 
@@ -13,15 +12,15 @@ import java.util.List;
 /** Gravix: bota gravitacional. So vale calcada. */
 public final class GravixItem extends RelicItem {
     public GravixItem(Properties properties) {
-        super(properties.attributes(SteelyItem.armor("gravix", EquipmentSlotGroup.FEET, 3, 3, 0.1))
+        super(properties.humanoidArmor(org.dantesys.nexus.items.ModArmorMaterial.RELIC_ARMOR_MATERIAL, net.minecraft.world.item.equipment.ArmorType.BOOTS)
                         .component(DataComponents.EQUIPPABLE, SteelyItem.equip(EquipmentSlot.FEET, "gravix")),
                 MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Gravidade Zero"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Campo Gravitacional"), GravixEffects.FIELD_MANA, GravixEffects::heavyField),
-                RelicSkill.active(Component.literal("Zona 0"), GravixEffects.ZONE_MANA, GravixEffects::zeroZone),
-                RelicSkill.active(Component.literal("Gravidade Manipulada"), GravixEffects.SHIFT_MANA, GravixEffects::armShift),
-                new RelicSkill(Component.literal("Gravity Max"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Em deriva (Gravidade Zero ligada) e com a Zona 0 em recarga."),
+                RelicSkill.passive(Component.translatable("relic.nexus.gravix.gravidade_zero"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.gravix.campo_gravitacional"), GravixEffects.FIELD_MANA, GravixEffects::heavyField),
+                RelicSkill.active(Component.translatable("relic.nexus.gravix.zona_0"), GravixEffects.ZONE_MANA, GravixEffects::zeroZone),
+                RelicSkill.active(Component.translatable("relic.nexus.gravix.gravidade_manipulada"), GravixEffects.SHIFT_MANA, GravixEffects::armShift),
+                new RelicSkill(Component.translatable("relic.nexus.gravix.gravity_max"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.gravix.em_deriva_gravidade_zero_ligada"),
                         GravixEffects::canMax, GravixEffects::gravityMax, GravixEffects.MAX_MANA));
     }
 
@@ -34,18 +33,11 @@ public final class GravixItem extends RelicItem {
     }
 
     @Override public Component hudInfo(ItemStack stack) {
-        return modelValue(stack, 1, 0) > 0 ? Component.literal("Gravidade Zero") : null;
+        return modelValue(stack, 1, 0) > 0 ? Component.translatable("relic.nexus.gravix.gravidade_zero") : null;
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Agachar + pular desliga a gravidade (deriva, gastando mana); repetir religa. Imune a dano de queda.";
-            case 1 -> "Por 15s, gravidade pesada num raio de 5: Lentidão, sem pulo alto nem élitro, projéteis inimigos caem.";
-            case 2 -> "Por 15s, gravidade zero num raio de 5: inimigos flutuam e derivam; ao acabar, quem estiver alto cai.";
-            case 3 -> "O próximo golpe muda a gravidade do alvo para onde você olha, por 5s (3s para cima).";
-            case 4 -> "Por 10s, pulsos gravitacionais num raio de 30: dano, lentidão, prende e encolhe (mais forte perto de você).";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.gravix.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

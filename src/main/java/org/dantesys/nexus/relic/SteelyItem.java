@@ -13,7 +13,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.equipment.EquipmentAssets;
 import net.minecraft.world.item.equipment.Equippable;
+import net.minecraft.world.item.equipment.ArmorType;
 import org.dantesys.nexus.Nexus;
+import org.dantesys.nexus.items.ModArmorMaterial;
 import org.dantesys.nexus.util.MatrizModos;
 
 /** Steely: peitoral acima do netherite. */
@@ -27,19 +29,21 @@ public final class SteelyItem extends RelicItem {
     }
 
     static Equippable equip(EquipmentSlot slot, String relic) {
-        return Equippable.builder(slot).setAsset(ResourceKey.create(EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(Nexus.MODID, relic + "_dormente"))).build();
+        return Equippable.builder(slot).setEquipSound(ModArmorMaterial.RELIC_ARMOR_MATERIAL.equipSound()).setAsset(ResourceKey.create(EquipmentAssets.ROOT_ID, Identifier.fromNamespaceAndPath(Nexus.MODID, relic + "_dormente"))).build();
     }
 
     public SteelyItem(Properties properties) {
-        super(properties.attributes(armor("steely", EquipmentSlotGroup.CHEST, 9, 4, 0.15)).component(DataComponents.EQUIPPABLE, equip(EquipmentSlot.CHEST, "steely")),
+        super(properties.humanoidArmor(ModArmorMaterial.RELIC_ARMOR_MATERIAL, ArmorType.CHESTPLATE)
+                        .attributes(armor("steely", EquipmentSlotGroup.CHEST, 9, 4, 0.15))
+                        .component(DataComponents.EQUIPPABLE, equip(EquipmentSlot.CHEST, "steely")),
                 MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Aço Arcano"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Corpo de Aço"), SteelyEffects.BODY_MANA, SteelyEffects::steelBody),
-                RelicSkill.passive(Component.literal("Aço Duro"), 0, (p, s, c) -> false),
-                new RelicSkill(Component.literal("Guarda-Costas"), RelicSkill.Kind.ACTIVE, Component.literal("Só um golem por vez."),
+                RelicSkill.passive(Component.translatable("relic.nexus.steely.aco_arcano"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.steely.corpo_de_aco"), SteelyEffects.BODY_MANA, SteelyEffects::steelBody),
+                RelicSkill.passive(Component.translatable("relic.nexus.steely.aco_duro"), 0, (p, s, c) -> false),
+                new RelicSkill(Component.translatable("relic.nexus.steely.guarda_costas"), RelicSkill.Kind.ACTIVE, Component.translatable("relic.nexus.steely.so_um_golem_por_vez"),
                         SteelyEffects::canGuard, SteelyEffects::guard, SteelyEffects.GUARD_MANA),
-                new RelicSkill(Component.literal("Eu Sou o Iron Golem"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("O Guarda-Costas precisa estar pronto para uso."),
+                new RelicSkill(Component.translatable("relic.nexus.steely.eu_sou_o_iron_golem_2"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.steely.o_guarda_costas_precisa_estar"),
                         SteelyEffects::canTransform, SteelyEffects::transform, SteelyEffects.GOLEM_MANA));
     }
 
@@ -52,14 +56,7 @@ public final class SteelyItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Vestido: reduz todo dano recebido (20% no nível 1 até 50% no 20), até 85% somando armadura e Resistência.";
-            case 1 -> "Por 20s: Resistência II e imunidade a ataques mágicos (inclusive de relíquias). Finais e mortes garantidas ignoram.";
-            case 2 -> "Devolve 15% do dano recebido (antes das reduções) a quem atacou, inclusive à distância.";
-            case 3 -> "Invoca um golem de meio tamanho que causa o dobro de dano e te protege. Recarga conta da morte dele.";
-            case 4 -> "Vira o Guarda-Costas por 3 min: ~50 corações de absorção, dano dobrado e socos que arremessam. Só soca.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.steely.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

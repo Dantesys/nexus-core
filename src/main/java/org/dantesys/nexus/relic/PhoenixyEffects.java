@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -77,7 +78,7 @@ public final class PhoenixyEffects {
         }
         player.addEffect(new MobEffectInstance(ModEffects.FOGO_DA_VIDA, PROTECT_TICKS, 0, false, true, true));
         player.level().playSound(null, player.blockPosition(), SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 0.7f, 1.4f);
-        RelicUtil.say(player, "Proteção da Fênix: " + count + (count == 1 ? " aliado." : " aliados."));
+        RelicUtil.say(player, Component.translatable(count == 1 ? "relic.nexus.phoenixy.protecao_aliado" : "relic.nexus.phoenixy.protecao_aliados", count));
         return true;
     }
 
@@ -101,7 +102,7 @@ public final class PhoenixyEffects {
         var magic = player.getData(ModAttachmentType.MAGIC_STATS);
         int cost = Math.max(1, magic.getMaxMana() / 20);
         if (!player.hasInfiniteMaterials()) {
-            if (magic.getMana() < cost) { RelicUtil.say(player, "Mana insuficiente (" + cost + ")."); return true; }
+            if (magic.getMana() < cost) { RelicUtil.say(player, Component.translatable("relic.nexus.phoenixy.mana_insuficiente", cost)); return true; }
             magic.useMana(cost);
             player.syncData(ModAttachmentType.MAGIC_STATS);
         }
@@ -141,7 +142,7 @@ public final class PhoenixyEffects {
         item().setCooldownTicks(player, stack, 4, REBIRTH_COOLDOWN);
         REBORN.put(player.getUUID(), level.getGameTime() + REBIRTH_LOCK);
         SMALL_UNTIL.put(player.getUUID(), level.getGameTime() + REBIRTH_COOLDOWN);
-        RelicUtil.say(player, "Renascimento da Fênix!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.phoenixy.renascimento_da_fenix"));
         return true;
     }
 

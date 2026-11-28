@@ -8,30 +8,19 @@ import org.dantesys.nexus.util.MatrizModos;
 /** Rifty: lanca espacial. */
 public final class RiftyItem extends RelicItem {
     public RiftyItem(Properties properties) {
-        super(properties.spear(ModToolMaterial.STEEL_MATERIA, 0.85F, 0.82F, 0.65F, 4.0F, 9.0F, 8.25F, 5.1F, 12.5F, 4.6F),
+        super(properties.spear(ModToolMaterial.RELIC, 1.15F, 1.25F, 0.4F, 2.5F, 9.0F, 5.5F, 5.1F, 8.75F, 4.6F),
                 MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Passo Dimensional"), RiftyEffects.STEP_MANA, RiftyEffects::step),
-                RelicSkill.active(Component.literal("Dobra Dimensional"), RiftyEffects.FOLD_MANA, RiftyEffects::fold),
-                RelicSkill.active(Component.literal("Dimensional Crash"), RiftyEffects.CRASH_MANA, RiftyEffects::crash),
-                RelicSkill.active(Component.literal("Subespaço"), RiftyEffects.SUBSPACE_MANA, RiftyEffects::subspace),
-                new RelicSkill(Component.literal("Black Hole"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Todas as outras habilidades da Rifty precisam estar em recarga."),
+                RelicSkill.passive(Component.translatable("relic.nexus.rifty.passo_dimensional"), RiftyEffects.STEP_MANA, RiftyEffects::step),
+                RelicSkill.active(Component.translatable("relic.nexus.rifty.dobra_dimensional"), RiftyEffects.FOLD_MANA, RiftyEffects::fold),
+                RelicSkill.active(Component.translatable("relic.nexus.rifty.dimensional_crash"), RiftyEffects.CRASH_MANA, RiftyEffects::crash),
+                RelicSkill.active(Component.translatable("relic.nexus.rifty.subespaco"), RiftyEffects.SUBSPACE_MANA, RiftyEffects::subspace),
+                new RelicSkill(Component.translatable("relic.nexus.rifty.black_hole"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.rifty.todas_as_outras_habilidades_da"),
                         RiftyEffects::canBlackHole, RiftyEffects::blackHole, RiftyEffects.HOLE_MANA));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Atacar sem alvo teleporta até 5 blocos para onde você olha (para antes de blocos). "
-                    + "Com um inimigo a até 4 blocos, mira o golpe nele em vez de teleportar.";
-            case 1 -> "Rasga uma linha de até 15 blocos: dano cheio em todos os inimigos no caminho e você reaparece no fim.";
-            case 2 -> "Quebra a dimensão em cima do alvo (até 15 blocos): ~45% da vida máxima (metade mágico, metade void). "
-                    + "Executa mobs com 50% de vida ou menos (jogadores: 25%). Bosses nunca são executados.";
-            case 3 -> "Até 20s fora da realidade: atravessa blocos como andaimes (pule para subir, agache para descer), "
-                    + "imune a dano físico. Não interage com nada; atacar encerra. Gasta mana enquanto ativo.";
-            case 4 -> "Buraco negro por 15s que puxa inimigos, itens e XP. O raio cresce a cada captura (10 → 100). "
-                    + "Com mais de 10 capturas, explode no fim.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.rifty.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

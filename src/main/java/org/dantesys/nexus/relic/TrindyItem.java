@@ -23,12 +23,12 @@ import java.util.List;
 public final class TrindyItem extends RelicItem {
     public TrindyItem(Properties properties) {
         super(properties.attributes(TridentItem.createAttributes()), MatrizModos.LANCA, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Captura"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Vortex"), TrindyEffects.VORTEX_MANA, TrindyEffects::armVortex),
-                RelicSkill.active(Component.literal("Olha a Onda"), TrindyEffects.WAVE_MANA, TrindyEffects::wave),
-                RelicSkill.active(Component.literal("Área de Caça"), TrindyEffects.HUNT_MANA, TrindyEffects::armHunt),
-                new RelicSkill(Component.literal("Mega Tempest"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("A Área de Caça precisa estar em recarga."),
+                RelicSkill.passive(Component.translatable("relic.nexus.trindy.captura"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.trindy.vortex"), TrindyEffects.VORTEX_MANA, TrindyEffects::armVortex),
+                RelicSkill.active(Component.translatable("relic.nexus.trindy.olha_a_onda"), TrindyEffects.WAVE_MANA, TrindyEffects::wave),
+                RelicSkill.active(Component.translatable("relic.nexus.trindy.area_de_caca"), TrindyEffects.HUNT_MANA, TrindyEffects::armHunt),
+                new RelicSkill(Component.translatable("relic.nexus.trindy.mega_tempest"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.trindy.a_area_de_caca_precisa"),
                         TrindyEffects::canTempest, TrindyEffects::armTempest, TrindyEffects.TEMPEST_MANA));
     }
 
@@ -62,14 +62,7 @@ public final class TrindyItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Funciona com Lealdade: arremessado, puxa o alvo atingido até você. Agachado, funciona como Correnteza, até fora da água.";
-            case 1 -> "O próximo arremesso cria um vórtice de 6 blocos por 5s que puxa e fere os inimigos.";
-            case 2 -> "Surfa uma onda por 15 blocos, empurrando e ferindo quem estiver no caminho.";
-            case 3 -> "O próximo arremesso cria uma área de 10 blocos por 10s onde tubarões mordem os inimigos a cada segundo.";
-            case 4 -> "O próximo arremesso cria uma tempestade de raios; no fim, uma boca de tubarão gigante devora a presa marcada.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.trindy.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

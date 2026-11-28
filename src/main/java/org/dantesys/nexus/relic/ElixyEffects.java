@@ -127,9 +127,9 @@ public final class ElixyEffects {
             Holder<MobEffect> e = pool.get(i);
             effects.add(e.is(MobEffects.INSTANT_DAMAGE) ? new MobEffectInstance(e, 1, 0) : new MobEffectInstance(e, duration, amp));
         }
-        throwPotion(player, splash(effects, 0x6b2d8a, "Poção do Louco"));
+        throwPotion(player, splash(effects, 0x6b2d8a, "nexus_pocao_louco"));
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.putInt(COUNT_TAG, count));
-        RelicUtil.say(player, "Poção do Louco: " + count + (count == 1 ? " efeito." : " efeitos."));
+        RelicUtil.say(player, Component.translatable(count == 1 ? "relic.nexus.elixy.pocao_louco_efeito" : "relic.nexus.elixy.pocao_louco_efeitos", count));
         return true;
     }
 
@@ -141,7 +141,7 @@ public final class ElixyEffects {
         int amp = 2 + random.nextInt(1 + context.affinity() * 3 / 1001);
         ItemStack potion = new ItemStack(Items.POTION);
         potion.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.of(effect.value().getColor()),
-                List.of(new MobEffectInstance(effect, 1200, amp)), Optional.of("Poção da Elixy")));
+                List.of(new MobEffectInstance(effect, 1200, amp)), Optional.of("nexus_pocao_elixy")));
         RelicUtil.giveOrDrop(player, potion);
         player.level().playSound(null, player.blockPosition(), SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 1.0f, 1.2f);
         return true;
@@ -150,7 +150,7 @@ public final class ElixyEffects {
     // ---------- Nv 15 — Ouro dos Tolos ----------
 
     public static boolean foolsGold(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
-        ThrownSplashPotion thrown = throwPotion(player, splash(List.of(), 0xffcc33, "Ouro dos Tolos"));
+        ThrownSplashPotion thrown = throwPotion(player, splash(List.of(), 0xffcc33, "nexus_ouro_tolos"));
         thrown.getPersistentData().putBoolean(GOLD_TAG, true);
         return true;
     }

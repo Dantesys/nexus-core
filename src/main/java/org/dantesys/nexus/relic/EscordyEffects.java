@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -223,7 +224,7 @@ public final class EscordyEffects {
             return Use.FIRED;
         }
         if (charge >= limit(player, stack, now)) {
-            RelicUtil.say(player, "Carga máxima.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.escordy.carga_maxima"));
             return Use.NONE;
         }
         return Use.CHARGE;
@@ -249,7 +250,7 @@ public final class EscordyEffects {
         var magic = RelicUtil.magic(player);
         if (!player.hasInfiniteMaterials()) {
             if (!magic.useMana(cost)) {
-                RelicUtil.say(player, "Mana insuficiente para recarregar.");
+                RelicUtil.say(player, Component.translatable("relic.nexus.escordy.mana_insuficiente_para_recarregar"));
                 return;
             }
             player.syncData(ModAttachmentType.MAGIC_STATS);
@@ -276,7 +277,7 @@ public final class EscordyEffects {
             for (int left = charge; left > 0; left -= normal) shots.add(Math.min(normal, left));
             CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> { t.remove(MIX_UNTIL); t.putInt(CHARGE, 0); });
             setReserve(stack, shots.stream().mapToInt(Integer::intValue).toArray());
-            if (!shots.isEmpty()) RelicUtil.say(player, "Mix acabou: " + shots.size() + " disparos em reserva.");
+            if (!shots.isEmpty()) RelicUtil.say(player, Component.translatable("relic.nexus.escordy.mix_acabou_disparos_em_reserva", shots.size()));
             item().refreshModelData(player, stack);
         }
     }
@@ -285,7 +286,7 @@ public final class EscordyEffects {
 
     public static boolean agile(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         setLong(stack, AGILE_UNTIL, player.level().getGameTime() + AGILE_TICKS + context.resonance() / 10);
-        RelicUtil.say(player, "Mãos Ágeis!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.escordy.maos_ageis"));
         return true;
     }
 
@@ -298,13 +299,13 @@ public final class EscordyEffects {
             t.putInt(SAVED, saved);
         });
         item().refreshModelData(player, stack);
-        RelicUtil.say(player, "Cartucho Pronto: carga 5 sem recarregar.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.escordy.cartucho_pronto_carga_5_sem"));
         return true;
     }
 
     public static boolean fireworkAmmo(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.putBoolean(FIREWORK, true));
-        RelicUtil.say(player, "Munição Alternativa: o próximo disparo é de fogos.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.escordy.municao_alternativa_o_proximo_disparo"));
         return true;
     }
 
@@ -318,7 +319,7 @@ public final class EscordyEffects {
         setLong(stack, MIX_UNTIL, player.level().getGameTime() + MIX_TICKS);
         item().refreshModelData(player, stack);
         player.level().playSound(null, player.blockPosition(), SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 1.0f, 0.8f);
-        RelicUtil.say(player, "Mix por 2 minutos!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.escordy.mix_por_2_minutos"));
         return true;
     }
 

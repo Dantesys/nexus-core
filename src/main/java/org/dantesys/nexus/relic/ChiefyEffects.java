@@ -55,9 +55,9 @@ public final class ChiefyEffects {
     private static boolean wielding(Player p) { return p.getMainHandItem().is(item()); }
     private static ItemStack randomFood(ServerLevel level) { return new ItemStack(FOODS.get(level.getRandom().nextInt(FOODS.size()))); }
 
-    private static void lore(ItemStack stack, String line) {
+    private static void lore(ItemStack stack, String key) {
         ItemLore lore = stack.getOrDefault(DataComponents.LORE, ItemLore.EMPTY);
-        stack.set(DataComponents.LORE, lore.withLineAdded(Component.literal(line).withStyle(net.minecraft.ChatFormatting.GOLD)));
+        stack.set(DataComponents.LORE, lore.withLineAdded(Component.translatable(key).withStyle(net.minecraft.ChatFormatting.GOLD)));
     }
 
     // ---------- Nv 1 — Lamina em Chamas ----------
@@ -76,7 +76,7 @@ public final class ChiefyEffects {
             FoodProperties food = cooked.get(DataComponents.FOOD);
             cooked.set(DataComponents.FOOD, new FoodProperties(Math.round(food.nutrition() * 1.5f), food.saturation() * 1.5f, food.canAlwaysEat()));
             CustomData.update(DataComponents.CUSTOM_DATA, cooked, t -> t.putBoolean(IMPROVED, true));
-            lore(cooked, "Melhorada pela Chiefy");
+            lore(cooked, "relic.nexus.chiefy.lore_melhorada");
             drop.setItem(cooked);
         }
     }
@@ -85,7 +85,7 @@ public final class ChiefyEffects {
 
     public static boolean pinata(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         LivingEntity target = RelicUtil.targetEntity(player, 5, e -> RelicTargets.canHit(player, e));
-        if (target == null) { RelicUtil.say(player, "Nenhum alvo na mira."); return false; }
+        if (target == null) { RelicUtil.say(player, Component.translatable("relic.nexus.chiefy.nenhum_alvo_na_mira")); return false; }
         ServerLevel level = (ServerLevel) player.level();
         var random = level.getRandom();
         if (target instanceof Player || RelicUtil.isBoss(target) || (target instanceof OwnableEntity own && own.getOwnerReference() != null)) {
@@ -139,13 +139,13 @@ public final class ChiefyEffects {
             left -= part.getCount();
             String id = effect.unwrapKey().map(k -> k.identifier().toString()).orElse("");
             CustomData.update(DataComponents.CUSTOM_DATA, part, t -> t.putString(SEASONED, id));
-            lore(part, "Temperada pela Chiefy");
+            lore(part, "relic.nexus.chiefy.lore_temperada");
             if (food.isEmpty()) inv.setItem(i, part);
             else RelicUtil.giveOrDrop(player, part);
         }
-        if (left == SEASON_MAX) { RelicUtil.say(player, "Nenhuma comida para temperar."); return false; }
+        if (left == SEASON_MAX) { RelicUtil.say(player, Component.translatable("relic.nexus.chiefy.nenhuma_comida_para_temperar")); return false; }
         player.level().playSound(null, player.blockPosition(), SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 0.8f, 1.6f);
-        RelicUtil.say(player, (SEASON_MAX - left) + " comidas temperadas.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.chiefy.comidas_temperadas", (SEASON_MAX - left)));
         return true;
     }
 

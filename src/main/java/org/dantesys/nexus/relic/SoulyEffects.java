@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -95,7 +96,7 @@ public final class SoulyEffects {
         else if (victim instanceof Player p && carrier(p)) RelicUtil.consume(p, s -> s.is(Items.TOTEM_OF_UNDYING), 1);
         ((ServerLevel) victim.level()).sendParticles(ParticleTypes.SOUL, victim.getX(), victim.getY() + 1, victim.getZ(), 30, 0.4, 0.6, 0.4, 0.05);
         victim.level().playSound(null, victim.blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 1.5f, 0.6f);
-        RelicUtil.say(killer, "Totem por totem!");
+        RelicUtil.say(killer, Component.translatable("relic.nexus.souly.totem_por_totem"));
         return true;
     }
 
@@ -208,7 +209,7 @@ public final class SoulyEffects {
         }
         s.eaterUntil = player.level().getGameTime() + EATER_TICKS;
         player.level().playSound(null, player.blockPosition(), SoundEvents.SOUL_ESCAPE.value(), SoundSource.PLAYERS, 2.0f, 0.5f);
-        RelicUtil.say(player, "Soul Eater: " + count + " marcas em " + s.eaterMarks.size() + " alvos.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.souly.soul_eater_marcas_em_alvos", count, s.eaterMarks.size()));
         return true;
     }
 
@@ -230,7 +231,7 @@ public final class SoulyEffects {
                 mark = new Mark(target.getUUID(), now + MARK_TICKS, empowered);
                 MARKS.put(player.getUUID(), mark);
                 PrivateVisuals.glow(player, target, MARK_TICKS, net.minecraft.world.scores.TeamColor.DARK_RED, true);
-                RelicUtil.say(player, empowered ? "Alma marcada (totem consumido)!" : "Alma marcada.");
+                RelicUtil.say(player, Component.translatable(empowered ? "relic.nexus.souly.alma_marcada_totem" : "relic.nexus.souly.alma_marcada"));
             }
             if (mark.target.equals(target.getUUID()) && mark.empowered) {
                 event.setAmount(event.getAmount() * 2);

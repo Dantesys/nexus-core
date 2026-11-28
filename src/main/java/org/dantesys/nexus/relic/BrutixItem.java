@@ -11,26 +11,18 @@ import java.util.List;
 /** Brutix: machado do barbaro. Quanto mais apanha, mais forte fica. */
 public final class BrutixItem extends RelicItem {
     public BrutixItem(Properties properties) {
-        super(properties.axe(ModToolMaterial.STEEL_MATERIA, 6.0F, -3.1F), MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Fúria"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Boomerang"), BrutixEffects.BOOMERANG_MANA, BrutixEffects::boomerang),
-                RelicSkill.active(Component.literal("Giro Destruidor"), BrutixEffects.SPIN_MANA, BrutixEffects::spin),
-                RelicSkill.active(Component.literal("Grito de Guerra"), BrutixEffects.ROAR_MANA, BrutixEffects::roar),
-                new RelicSkill(Component.literal("Descarga de Fúria"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Fúria em pelo menos metade dos estágios máximos."),
+        super(properties.axe(ModToolMaterial.RELIC, 6.0F, -3.1F), MatrizModos.MARTELO, 0, 0, 2,
+                RelicSkill.passive(Component.translatable("relic.nexus.brutix.furia"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.brutix.boomerang"), BrutixEffects.BOOMERANG_MANA, BrutixEffects::boomerang),
+                RelicSkill.active(Component.translatable("relic.nexus.brutix.giro_destruidor"), BrutixEffects.SPIN_MANA, BrutixEffects::spin),
+                RelicSkill.active(Component.translatable("relic.nexus.brutix.grito_de_guerra"), BrutixEffects.ROAR_MANA, BrutixEffects::roar),
+                new RelicSkill(Component.translatable("relic.nexus.brutix.descarga_de_furia"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.brutix.furia_em_pelo_menos_metade"),
                         BrutixEffects::canDischarge, BrutixEffects::discharge, BrutixEffects.DISCHARGE_MANA));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Levar dano enche a fúria; cada barra cheia dá um estágio de força (3, até 5 com a maestria). "
-                    + "Após ~10s sem dano, perde um estágio por vez.";
-            case 1 -> "Arremessa o machado até 10 blocos (+2 por estágio de fúria); ele volta até você, cortando na ida e na volta.";
-            case 2 -> "Gira por 3s acertando e empurrando quem está em volta. Gasta a fúria: mais estágios, mais dano e raio.";
-            case 3 -> "Rugido que enfraquece e afasta os inimigos em volta (mais forte com a fúria, sem gastá-la).";
-            case 4 -> "Corte diagonal brutal à frente: dano base alto + bônus por estágio gasto. Depois, fraqueza e fúria desligada por 10s.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.brutix.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

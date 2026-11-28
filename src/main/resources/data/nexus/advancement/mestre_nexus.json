@@ -5,10 +5,10 @@
       "id": "nexus:nucleo_forja"
     },
     "title": {
-      "text": "Mestre Nexus"
+      "translate": "advancements.nexus.mestre_nexus.title"
     },
     "description": {
-      "text": "Alcance 1000 nos quatro status de mana."
+      "translate": "advancements.nexus.mestre_nexus.description"
     },
     "frame": "challenge",
     "show_toast": true,

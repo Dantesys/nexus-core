@@ -4,10 +4,10 @@
       "id": "nexus:nucleo"
     },
     "title": {
-      "text": "Despertar da Mana"
+      "translate": "advancements.nexus.despertar_da_mana.title"
     },
     "description": {
-      "text": "Descubra seus status de mana na Bola de Cristal."
+      "translate": "advancements.nexus.despertar_da_mana.description"
     },
     "frame": "task",
     "show_toast": true,

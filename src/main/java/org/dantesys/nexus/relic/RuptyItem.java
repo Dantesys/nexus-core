@@ -15,32 +15,18 @@ import java.util.List;
  */
 public final class RuptyItem extends RelicItem {
     public RuptyItem(Properties properties) {
-        super(properties.sword(ModToolMaterial.STEEL_MATERIA, 3.0f, -2.4f), MatrizModos.ESPADA, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Ruptura Mágica"), 0, RuptyEffects::markPassive),
-                RelicSkill.active(Component.literal("Corte Vertical"), RuptyRules.VERTICAL_MANA, RuptyEffects::verticalCut),
-                RelicSkill.active(Component.literal("Rotação"), RuptyRules.ROTATION_MANA, RuptyEffects::rotation),
-                RelicSkill.active(Component.literal("Marca Aberta"), RuptyRules.OPEN_MANA, RuptyEffects::openMark),
-                new RelicSkill(Component.literal("Marca Mortal"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Ter uma espada no inventário (consumida na ativação)."),
+        super(properties.sword(ModToolMaterial.RELIC, 3.0f, -2.4f), MatrizModos.ESPADA, 0, 0, 2,
+                RelicSkill.passive(Component.translatable("relic.nexus.rupty.ruptura_magica"), 0, RuptyEffects::markPassive),
+                RelicSkill.active(Component.translatable("relic.nexus.rupty.corte_vertical"), RuptyRules.VERTICAL_MANA, RuptyEffects::verticalCut),
+                RelicSkill.active(Component.translatable("relic.nexus.rupty.rotacao"), RuptyRules.ROTATION_MANA, RuptyEffects::rotation),
+                RelicSkill.active(Component.translatable("relic.nexus.rupty.marca_aberta"), RuptyRules.OPEN_MANA, RuptyEffects::openMark),
+                new RelicSkill(Component.translatable("relic.nexus.rupty.marca_mortal"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.rupty.ter_uma_espada_no_inventario"),
                         RuptyEffects::canUseMortal, RuptyEffects::mortalMark, RuptyRules.MORTAL_MANA));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Cada golpe cria uma marca de corte no alvo: -5% de defesa contra a Rupty. "
-                    + "Cada marca dura 20s (não renova). Máx. 10 por alvo (50%), inclusive bosses. "
-                    + "Redução acima de 100% vira dano extra.";
-            case 1 -> "Corte em linha reta de até 5 blocos à frente, atingindo todos na linha: "
-                    + "dano de um golpe normal e 3 marcas em cada um.";
-            case 2 -> "Golpe em 360° (raio 3) com 1,5× o dano normal. 5 marcas em quem está a até 1,5 bloco, "
-                    + "3 em quem está mais longe; depois empurra os atingidos.";
-            case 3 -> "As marcas existentes dobram de efeito e duração (10% cada, 40s) "
-                    + "e cada alvo marcado perde meio coração a cada 2s.";
-            case 4 -> "Consome uma espada do inventário. O próximo golpe aplica uma marca que só sai com a morte: "
-                    + "-50% de defesa contra a Rupty e, a cada 2s, metade do dano da espada consumida "
-                    + "(encantamentos de dano contam). Resiste ao totem.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.rupty.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {
@@ -63,11 +49,11 @@ public final class RuptyItem extends RelicItem {
 
     @Override public List<Component> extraTooltip(ItemStack stack) {
         return mortalReady(stack)
-                ? List.of(Component.literal("Marca Mortal preparada").withStyle(ChatFormatting.DARK_RED))
+                ? List.of(Component.translatable("relic.nexus.rupty.marca_mortal_preparada").withStyle(ChatFormatting.DARK_RED))
                 : List.of();
     }
 
     @Override public Component hudInfo(ItemStack stack) {
-        return mortalReady(stack) ? Component.literal("Marca Mortal pronta").withStyle(ChatFormatting.DARK_RED) : null;
+        return mortalReady(stack) ? Component.translatable("relic.nexus.rupty.marca_mortal_pronta").withStyle(ChatFormatting.DARK_RED) : null;
     }
 }

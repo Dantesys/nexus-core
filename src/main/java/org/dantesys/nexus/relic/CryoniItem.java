@@ -8,24 +8,17 @@ import org.dantesys.nexus.util.MatrizModos;
 public final class CryoniItem extends RelicItem {
     public CryoniItem(Properties properties) {
         super(properties, MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Sangue Criogênico"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Tempo Lento"), CryoniEffects.SLOW_MANA, CryoniEffects::slowTime),
-                new RelicSkill(Component.literal("Oh o Reverse"), RelicSkill.Kind.ACTIVE, Component.literal("Precisa de 10s de histórico na mesma dimensão."),
+                RelicSkill.passive(Component.translatable("relic.nexus.cryoni.sangue_criogenico"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.cryoni.tempo_lento"), CryoniEffects.SLOW_MANA, CryoniEffects::slowTime),
+                new RelicSkill(Component.translatable("relic.nexus.cryoni.oh_o_reverse"), RelicSkill.Kind.ACTIVE, Component.translatable("relic.nexus.cryoni.precisa_de_10s_de_historico"),
                         CryoniEffects::canReverse, CryoniEffects::reverse, CryoniEffects.REVERSE_MANA),
-                RelicSkill.active(Component.literal("Zona Congelada"), CryoniEffects.FREEZE_MANA, CryoniEffects::frozenZone),
-                new RelicSkill(Component.literal("Zero Absoluto"), RelicSkill.Kind.ACTIVE, Component.literal("1 stack de gelo (gasto)."),
+                RelicSkill.active(Component.translatable("relic.nexus.cryoni.zona_congelada"), CryoniEffects.FREEZE_MANA, CryoniEffects::frozenZone),
+                new RelicSkill(Component.translatable("relic.nexus.cryoni.zero_absoluto"), RelicSkill.Kind.ACTIVE, Component.translatable("relic.nexus.cryoni.1_stack_de_gelo_gasto"),
                         CryoniEffects::canZero, CryoniEffects::absoluteZero, CryoniEffects.ZERO_MANA));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Imune a fogo, lava e frio. Inimigos a 1,5 bloco de você congelam (como na neve em pó) em 2s.";
-            case 1 -> "Campo de 5 blocos por 10s onde tudo fica a 50% da velocidade (bosses 30%).";
-            case 2 -> "Volta 10 segundos no tempo: posição, vida, fome e efeitos daquele momento.";
-            case 3 -> "Por 5s, o tempo para num raio de 20: só você se move. Seus golpes acumulam e caem todos no fim.";
-            case 4 -> "5 ondas congelantes até 30 blocos: 3 ondas congelam por 20s; as 5 viram estátua de gelo (morte garantida).";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.cryoni.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

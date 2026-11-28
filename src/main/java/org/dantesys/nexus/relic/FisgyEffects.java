@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -224,7 +225,7 @@ public final class FisgyEffects {
         LivingEntity target = hooked(player);
         if (target != null) return applyLife(player, target);
         armed(player).life = player.level().getGameTime() + ARM_TICKS;
-        RelicUtil.say(player, "Peixe da Vida: fisgue um mob.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.fisgy.peixe_da_vida_fisgue_um"));
         return true;
     }
 
@@ -232,13 +233,13 @@ public final class FisgyEffects {
         LivingEntity target = hooked(player);
         if (target != null) return applyShark(player, target);
         armed(player).shark = player.level().getGameTime() + ARM_TICKS;
-        RelicUtil.say(player, "Isca de Tubarão: fisgue um alvo.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.fisgy.isca_de_tubarao_fisgue_um"));
         return true;
     }
 
     private static boolean applyLife(ServerPlayer player, LivingEntity target) {
         if (target.getType().builtInRegistryHolder().is(net.minecraft.tags.EntityTypeTags.AQUATIC)) {
-            RelicUtil.say(player, "Peixe da Vida não pega bichos aquáticos.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.fisgy.peixe_da_vida_nao_pega"));
             return false;
         }
         ServerLevel level = (ServerLevel) player.level();
@@ -256,7 +257,7 @@ public final class FisgyEffects {
         level.addFreshEntity(aquatic);
         level.sendParticles(ParticleTypes.SPLASH, target.getX(), target.getY() + 1, target.getZ(), 30, 0.5, 0.5, 0.5, 0.1);
         level.playSound(null, target.blockPosition(), SoundEvents.FISH_SWIM, SoundSource.PLAYERS, 1.0f, 1.0f);
-        if (dies) RelicUtil.say(player, "Virou peixe!");
+        if (dies) RelicUtil.say(player, Component.translatable("relic.nexus.fisgy.virou_peixe"));
         item().addMasteryXp(player, 2);
         return true;
     }
@@ -419,7 +420,7 @@ public final class FisgyEffects {
                     hook.setDeltaMovement(0, 0.35, 0);
                     hook.needsSync = true;
                     level.playSound(null, hook.blockPosition(), SoundEvents.FISHING_BOBBER_SPLASH, SoundSource.NEUTRAL, 1.0f, 1.0f);
-                    RelicUtil.say(player, "Fisgou! Recolha a linha!");
+                    RelicUtil.say(player, Component.translatable("relic.nexus.fisgy.fisgou_recolha_a_linha"));
                 }
                 if (now % 3 == 0) {
                     BlockState ground = level.getBlockState(hook.blockPosition().below());

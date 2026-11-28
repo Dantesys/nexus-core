@@ -16,13 +16,12 @@ import org.dantesys.nexus.util.MatrizModos;
 public final class SkopyItem extends RelicItem {
     public SkopyItem(Properties properties) {
         super(properties, MatrizModos.ARCO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Sinal Arcano"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Camuflagem"), SkopyEffects.CAMO_MANA, SkopyEffects::camouflage),
-                RelicSkill.active(Component.literal("Na Mosca"), SkopyEffects.MOSCA_MANA, SkopyEffects::naMosca),
-                RelicSkill.active(Component.literal("Ghost"), SkopyEffects.GHOST_MANA, SkopyEffects::ghost),
-                new RelicSkill(Component.literal("Ultrasonic"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Regeneração rank A ou maior, sem cegueira, nenhuma flecha no inventário "
-                                + "e nenhum mob ou jogador num raio de 5 blocos."),
+                RelicSkill.passive(Component.translatable("relic.nexus.skopy.sinal_arcano"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.skopy.camuflagem"), SkopyEffects.CAMO_MANA, SkopyEffects::camouflage),
+                RelicSkill.active(Component.translatable("relic.nexus.skopy.na_mosca"), SkopyEffects.MOSCA_MANA, SkopyEffects::naMosca),
+                RelicSkill.active(Component.translatable("relic.nexus.skopy.ghost"), SkopyEffects.GHOST_MANA, SkopyEffects::ghost),
+                new RelicSkill(Component.translatable("relic.nexus.skopy.ultrasonic"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.skopy.regeneracao_rank_a_ou_maior"),
                         SkopyEffects::canUltrasonic, SkopyEffects::ultrasonic, SkopyEffects.ULTRA_MANA));
     }
 
@@ -32,7 +31,7 @@ public final class SkopyItem extends RelicItem {
     /** Nao precisa de flechas: so de mana para o tiro. */
     @Override public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (!player.hasInfiniteMaterials() && RelicUtil.magic(player).getMana() < SkopyEffects.SHOT_MANA) {
-            if (player instanceof ServerPlayer sp) RelicUtil.say(sp, "Mana insuficiente para atirar.");
+            if (player instanceof ServerPlayer sp) RelicUtil.say(sp, Component.translatable("relic.nexus.skopy.mana_insuficiente_para_atirar"));
             return InteractionResult.FAIL;
         }
         player.startUsingItem(hand);
@@ -47,15 +46,7 @@ public final class SkopyItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Flechas de mana (sem flechas). Cada acerto dá brilho (só você vê) e um efeito negativo sorteado.";
-            case 1 -> "Invisibilidade total por alguns segundos; mobs perdem o alvo. O próximo tiro tem bônus de dano e quebra a invisibilidade.";
-            case 2 -> "O primeiro tiro marca o alvo por 15s; o segundo é teleportado direto nele, com acerto garantido.";
-            case 3 -> "O próximo tiro vira espectral: sem gravidade, até 200 blocos, atravessa até 3 obstáculos.";
-            case 4 -> "Tiro instantâneo de até 1000 blocos que atravessa tudo. Dano = vida atual do alvo, -1% por obstáculo "
-                    + "(bosses: no máximo 50%).";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.skopy.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

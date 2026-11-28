@@ -5,10 +5,10 @@
       "id": "nexus:matriz_primordial"
     },
     "title": {
-      "text": "Afinidade Absoluta"
+      "translate": "advancements.nexus.afinidade_absoluta.title"
     },
     "description": {
-      "text": "Alcance Afinidade S."
+      "translate": "advancements.nexus.afinidade_absoluta.description"
     },
     "frame": "goal",
     "show_toast": true,

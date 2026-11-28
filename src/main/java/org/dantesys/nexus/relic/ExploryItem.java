@@ -16,12 +16,12 @@ import org.dantesys.nexus.util.MatrizModos;
 public final class ExploryItem extends RelicItem {
     public ExploryItem(Properties properties) {
         super(properties, MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Mochila"), 0, (p, s, c) -> false),
-                RelicSkill.passive(Component.literal("Rastreador"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Acampamento"), ExploryEffects.CAMP_MANA, ExploryEffects::camp),
-                RelicSkill.active(Component.literal("De Volta da Aventura"), ExploryEffects.HOME_MANA, ExploryEffects::home),
-                new RelicSkill(Component.literal("Aventura a um Passo"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("O Rastreador com um alvo e o De Volta da Aventura pronto."),
+                RelicSkill.passive(Component.translatable("relic.nexus.explory.mochila"), 0, (p, s, c) -> false),
+                RelicSkill.passive(Component.translatable("relic.nexus.explory.rastreador"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.explory.acampamento"), ExploryEffects.CAMP_MANA, ExploryEffects::camp),
+                RelicSkill.active(Component.translatable("relic.nexus.explory.de_volta_da_aventura"), ExploryEffects.HOME_MANA, ExploryEffects::home),
+                new RelicSkill(Component.translatable("relic.nexus.explory.aventura_a_um_passo_2"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.explory.o_rastreador_com_um_alvo"),
                         ExploryEffects::canJump, ExploryEffects::adventureJump, ExploryEffects.JUMP_MANA));
     }
 
@@ -45,25 +45,18 @@ public final class ExploryItem extends RelicItem {
         Player player = CLIENT_PLAYER.get();
         if (name.isEmpty() || player == null) return null;
         if (!player.level().dimension().identifier().toString().equals(tag.getStringOr(ExploryEffects.TARGET_DIM, ""))) {
-            return Component.literal(name + " (outra dimensão)");
+            return Component.translatable("relic.nexus.explory.outra_dimensao", Component.translatable(name));
         }
         double dx = tag.getIntOr(ExploryEffects.TARGET_X, 0) + 0.5 - player.getX(), dz = tag.getIntOr(ExploryEffects.TARGET_Z, 0) + 0.5 - player.getZ();
         int distance = (int) Math.sqrt(dx * dx + dz * dz);
         float angle = Mth.wrapDegrees((float) Math.toDegrees(Math.atan2(dz, dx)) - 90f - player.getYRot());
         String[] arrows = {"↑", "↗", "→", "↘", "↓", "↙", "←", "↖"};
         String arrow = arrows[Math.floorMod(Math.round(angle / 45f), 8)];
-        return Component.literal(name + " " + arrow + " " + distance + " m");
+        return Component.translatable("relic.nexus.explory.m", Component.translatable(name), arrow, distance);
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Agachar + clique direito abre sua mochila pessoal (9 espaços, 27 no nível 10, 54 no 20). Mantida ao morrer.";
-            case 1 -> "Clique direito escolhe uma estrutura e a bússola aponta para ela (vila; templos e postos; fortalezas e cidade antiga).";
-            case 2 -> "Acampamento por 10 min: ponto de renascimento, fogueira que cura aliados e área sem mobs hostis.";
-            case 3 -> "Teleporta para a casa desta dimensão (3s de preparo, leva aliados a 3 blocos). Agachado, remarca a casa.";
-            case 4 -> "Teleporta o grupo para a estrutura do Rastreador; o próximo De Volta da Aventura traz de volta.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.explory.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

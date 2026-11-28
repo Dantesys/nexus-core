@@ -11,13 +11,14 @@ import java.util.List;
 /** Oculty: oculos do espiao. Usado na cabeca, no lugar do capacete. */
 public final class OcultyItem extends RelicItem {
     public OcultyItem(Properties properties) {
-        super(properties.equippable(EquipmentSlot.HEAD), MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Modo Furtivo"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Micro Agente"), OcultyEffects.MICRO_MANA, OcultyEffects::micro),
-                RelicSkill.active(Component.literal("X-Ray"), OcultyEffects.XRAY_MANA, OcultyEffects::xray),
-                RelicSkill.active(Component.literal("Plano F"), OcultyEffects.PLAN_MANA, OcultyEffects::planF),
-                new RelicSkill(Component.literal("Imaterial Spy"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Nenhum mob ou jogador num raio de 5 blocos e pelo menos um num raio de 100."),
+        super(properties.humanoidArmor(org.dantesys.nexus.items.ModArmorMaterial.RELIC_ARMOR_MATERIAL, net.minecraft.world.item.equipment.ArmorType.HELMET)
+                        .equippable(EquipmentSlot.HEAD), MatrizModos.MARTELO, 0, 0, 2,
+                RelicSkill.passive(Component.translatable("relic.nexus.oculty.modo_furtivo"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.oculty.micro_agente"), OcultyEffects.MICRO_MANA, OcultyEffects::micro),
+                RelicSkill.active(Component.translatable("relic.nexus.oculty.x_ray"), OcultyEffects.XRAY_MANA, OcultyEffects::xray),
+                RelicSkill.active(Component.translatable("relic.nexus.oculty.plano_f"), OcultyEffects.PLAN_MANA, OcultyEffects::planF),
+                new RelicSkill(Component.translatable("relic.nexus.oculty.imaterial_spy"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.oculty.nenhum_mob_ou_jogador_num"),
                         OcultyEffects::canSpy, OcultyEffects::spy, OcultyEffects.SPY_MANA));
     }
 
@@ -28,16 +29,7 @@ public final class OcultyItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Na cabeça: visão noturna. Agachado: invisível, gastando mana por segundo. Dano (levar ou causar) quebra; "
-                    + "mobs perdem você de vista e brilhos não te revelam.";
-            case 1 -> "Fica no tamanho mínimo por alguns segundos, com velocidade e super pulo; depois volta a crescer aos poucos.";
-            case 2 -> "Marca mobs e jogadores em 15×15×15 com brilho só para você (hostis vermelho, pacíficos verde, jogadores azul).";
-            case 3 -> "Bomba de fumaça: cega quem está perto e os mobs perdem o alvo. Você ganha um efeito sorteado (com fraqueza).";
-            case 4 -> "Vira espectador por 30s, com o corpo parado no lugar. Volta antes se alguém chegar a 5 blocos do corpo. "
-                    + "Durante o efeito, a tecla da relíquia mostra o inventário do jogador que você olha.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.oculty.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {
@@ -57,12 +49,12 @@ public final class OcultyItem extends RelicItem {
     }
 
     @Override public List<Component> extraTooltip(ItemStack stack) {
-        return List.of(Component.literal("Próximo Plano F: " + OcultyEffects.PLAN_NAMES[(int) modelValue(stack, 1, 0)]));
+        return List.of(Component.translatable("relic.nexus.oculty.proximo_plano_f", Component.translatable(OcultyEffects.PLAN_NAMES[(int) modelValue(stack, 1, 0)])));
     }
 
     @Override public Component hudInfo(ItemStack stack) {
         int seconds = (int) modelValue(stack, 2, 0);
-        String plan = "Plano F: " + OcultyEffects.PLAN_NAMES[(int) modelValue(stack, 1, 0)];
-        return Component.literal(seconds > 0 ? "Micro " + seconds + "s · " + plan : plan);
+        Component plan = Component.translatable("relic.nexus.oculty.hud_plano_f", Component.translatable(OcultyEffects.PLAN_NAMES[(int) modelValue(stack, 1, 0)]));
+        return seconds > 0 ? Component.translatable("relic.nexus.oculty.hud_micro", seconds, plan) : plan;
     }
 }

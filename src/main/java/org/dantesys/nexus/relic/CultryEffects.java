@@ -91,10 +91,10 @@ public final class CultryEffects {
     public static void eatPill(ServerPlayer player, int type, int grade) {
         CompoundTag data = pills(player).copy();
         int maxGrade = data.getIntOr("grau", 0);
-        if (grade > maxGrade + 1) { RelicUtil.say(player, "Coma antes uma pílula do grau anterior."); return; }
+        if (grade > maxGrade + 1) { RelicUtil.say(player, Component.translatable("relic.nexus.cultry.coma_antes_uma_pilula_do")); return; }
         String key = PilulaItem.TYPES[type];
         int count = data.getIntOr(key, 0);
-        if (count >= CAP[grade - 1]) { RelicUtil.say(player, "Seu corpo já absorveu o máximo deste grau."); return; }
+        if (count >= CAP[grade - 1]) { RelicUtil.say(player, Component.translatable("relic.nexus.cultry.seu_corpo_ja_absorveu_o")); return; }
         data.putInt(key, count + 1);
         data.putInt("grau", Math.max(maxGrade, grade));
         player.getPersistentData().put(PILLS, data);
@@ -153,14 +153,14 @@ public final class CultryEffects {
             }
             if (made > 0) {
                 sp.level().playSound(null, sp.blockPosition(), SoundEvents.BREWING_STAND_BREW, SoundSource.PLAYERS, 1.0f, 0.8f);
-                RelicUtil.say(sp, made + " pílula(s) refinada(s).");
+                RelicUtil.say(sp, Component.translatable("relic.nexus.cultry.pilula_s_refinada_s", made));
             }
         }
     }
 
     public static void openRefinery(ServerPlayer player) {
         SimpleContainer container = new SimpleContainer(9);
-        player.openMenu(new SimpleMenuProvider((id, inv, p) -> new Refinery(id, p, container), Component.literal("Caldeirão do Refino (3 iguais → 1 melhor)")));
+        player.openMenu(new SimpleMenuProvider((id, inv, p) -> new Refinery(id, p, container), Component.translatable("relic.nexus.cultry.caldeirao_do_refino_3_iguais")));
     }
 
     // ---------- Nv 5 — Meditacao ----------
@@ -169,17 +169,17 @@ public final class CultryEffects {
 
     public static boolean meditate(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         if (!player.isShiftKeyDown() || player.getDeltaMovement().horizontalDistanceSqr() > 0.001) {
-            RelicUtil.say(player, "Fique parado e agachado para meditar.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.cultry.fique_parado_e_agachado_para"));
             return false;
         }
         MEDITATING.add(player.getUUID());
-        RelicUtil.say(player, "Meditando...");
+        RelicUtil.say(player, Component.translatable("relic.nexus.cultry.meditando"));
         return true;
     }
 
     @SubscribeEvent
     public static void interrupt(LivingDamageEvent.Post event) {
-        if (MEDITATING.remove(event.getEntity().getUUID()) && event.getEntity() instanceof ServerPlayer p) RelicUtil.say(p, "Meditação interrompida.");
+        if (MEDITATING.remove(event.getEntity().getUUID()) && event.getEntity() instanceof ServerPlayer p) RelicUtil.say(p, Component.translatable("relic.nexus.cultry.meditacao_interrompida"));
     }
 
     @SubscribeEvent
@@ -307,13 +307,13 @@ public final class CultryEffects {
         player.giveExperienceLevels(-player.experienceLevel / 2);
         TRIALS.add(new Trial(player, player.level().getGameTime()));
         player.level().playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 3.0f, 0.6f);
-        RelicUtil.say(player, "A tribulação desceu!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.cultry.a_tribulacao_desceu"));
         return true;
     }
 
     private static boolean tickTrial(Trial t, ServerLevel level, long now) {
         long age = now - t.start;
-        if (!t.owner.isAlive()) { RelicUtil.say(t.owner, "Você não suportou a tribulação."); return true; }
+        if (!t.owner.isAlive()) { RelicUtil.say(t.owner, Component.translatable("relic.nexus.cultry.voce_nao_suportou_a_tribulacao")); return true; }
         if (age >= 200) {
             IMMORTAL.put(t.owner.getUUID(), now + IMMORTAL_TICKS);
             var attrs = List.of(Attributes.MAX_HEALTH, Attributes.ATTACK_DAMAGE, Attributes.ARMOR, Attributes.MOVEMENT_SPEED);
@@ -323,7 +323,7 @@ public final class CultryEffects {
             }
             t.owner.heal(t.owner.getMaxHealth());
             if (!t.owner.isCreative() && !t.owner.isSpectator()) { t.owner.getAbilities().mayfly = true; t.owner.onUpdateAbilities(); }
-            RelicUtil.say(t.owner, "Imortal!");
+            RelicUtil.say(t.owner, Component.translatable("relic.nexus.cultry.imortal"));
             return true;
         }
         if (age % 20 == 0) {
@@ -359,7 +359,7 @@ public final class CultryEffects {
         if (MEDITATING.contains(player.getUUID())) {
             if (!player.isShiftKeyDown() || player.getDeltaMovement().horizontalDistanceSqr() > 0.003) {
                 MEDITATING.remove(player.getUUID());
-                RelicUtil.say(player, "Meditação encerrada.");
+                RelicUtil.say(player, Component.translatable("relic.nexus.cultry.meditacao_encerrada"));
             } else if (now % 20 == 0) {
                 player.heal(1);
                 player.getFoodData().eat(1, 0.5f);

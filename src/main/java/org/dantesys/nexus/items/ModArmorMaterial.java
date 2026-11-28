@@ -36,6 +36,27 @@ public final class ModArmorMaterial {
             STEEL_ASSET
     );
 
+    /**
+     * Armadura das reliquias: mesma defesa do netherite (3/6/8/3) e dureza um pouco maior.
+     * O asset e so um padrao: cada reliquia troca a textura pelo proprio estagio.
+     */
+    public static final ArmorMaterial RELIC_ARMOR_MATERIAL = new ArmorMaterial(
+            37,
+            Util.make(new EnumMap<>(ArmorType.class), defense -> {
+                defense.put(ArmorType.BOOTS, 3);
+                defense.put(ArmorType.LEGGINGS, 6);
+                defense.put(ArmorType.CHESTPLATE, 8);
+                defense.put(ArmorType.HELMET, 3);
+                defense.put(ArmorType.BODY, 19);
+            }),
+            15,
+            SoundEvents.ARMOR_EQUIP_NETHERITE,
+            3.5F,
+            0.1F,
+            ModTags.Items.MATRIZ_RELIQUIA,
+            EquipmentAssets.NETHERITE
+    );
+
     private ModArmorMaterial() {
     }
 }

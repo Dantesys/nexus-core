@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
@@ -255,7 +256,7 @@ public final class BrutixEffects {
         spend(player, s);
         player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 1));
         s.disabledUntil = now(player) + 200;
-        RelicUtil.say(player, "Descarga de Fúria: " + spent + " estágios!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.brutix.descarga_de_furia_estagios", spent));
         return true;
     }
 

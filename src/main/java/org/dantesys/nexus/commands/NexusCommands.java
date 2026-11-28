@@ -75,7 +75,7 @@ public class NexusCommands {
         var id = net.minecraft.commands.arguments.IdentifierArgument.getId(context, "reliquia");
         var registry = net.minecraft.core.registries.BuiltInRegistries.ITEM;
         if (!registry.containsKey(id) || !(registry.getValue(id) instanceof org.dantesys.nexus.relic.RelicItem)) {
-            throw new DynamicCommandExceptionType(value -> Component.literal("Relíquia inválida: " + value)).create(id);
+            throw new DynamicCommandExceptionType(value -> Component.translatable("message.nexus.nexuscommands.reliquia_invalida", String.valueOf(value))).create(id);
         }
         int level = IntegerArgumentType.getInteger(context, "nivel");
         var players = EntityArgument.getPlayers(context, "target");
@@ -83,21 +83,13 @@ public class NexusCommands {
             player.getData(ModAttachmentType.RELIC_MASTERY).setLevel(id.toString(), level);
             player.syncData(ModAttachmentType.RELIC_MASTERY);
         }
-        context.getSource().sendSuccess(() -> Component.literal("Maestria de " + id + " definida para " + level
-                + " em " + players.size() + " jogador(es)."), true);
+        context.getSource().sendSuccess(() -> Component.translatable("message.nexus.nexuscommands.maestria_de_definida_para_em", id.toString(), level, players.size()), true);
         return players.size();
     }
 
     private static int getStatus(CommandContext<CommandSourceStack> context, ServerPlayer player) {
         MagicStatus status = player.getData(ModAttachmentType.MAGIC_STATS);
-        context.getSource().sendSuccess(() -> Component.literal(
-                player.getName().getString()
-                        + " | created=" + status.isCreated()
-                        + " | mana=" + status.getMana() + "/" + status.getMaxMana()
-                        + " | regeneration=" + status.getRegeneracao()
-                        + " | affinity=" + status.getAfinidade()
-                        + " | resonance=" + status.getRessonancia()
-        ), false);
+        context.getSource().sendSuccess(() -> Component.translatable("message.nexus.nexuscommands.created_mana_regeneration_affinity_reson", player.getName(), status.isCreated(), status.getMana(), status.getMaxMana(), status.getRegeneracao(), status.getAfinidade(), status.getRessonancia()), false);
         return 1;
     }
 
@@ -107,7 +99,7 @@ public class NexusCommands {
             status.setCreated(created);
             sync(player, status);
         }
-        return success(context, players.size(), "status created definido como " + created);
+        return success(context, players.size(), Component.translatable("message.nexus.nexuscommands.created_definido", created));
     }
 
     private static int setManaValue(CommandContext<CommandSourceStack> context, Collection<ServerPlayer> players, ManaField field) {
@@ -123,7 +115,7 @@ public class NexusCommands {
             }
             sync(player, status);
         }
-        return success(context, players.size(), "mana " + field.id + " definida como " + value);
+        return success(context, players.size(), Component.translatable("message.nexus.nexuscommands.mana_definida", field.id, value));
     }
 
     private static void sync(ServerPlayer player, MagicStatus status) {
@@ -131,8 +123,8 @@ public class NexusCommands {
         ManaAdvancements.check(player, status);
     }
 
-    private static int success(CommandContext<CommandSourceStack> context, int count, String message) {
-        context.getSource().sendSuccess(() -> Component.literal(message + " para " + count + " jogador(es)."), true);
+    private static int success(CommandContext<CommandSourceStack> context, int count, Component message) {
+        context.getSource().sendSuccess(() -> Component.translatable("message.nexus.nexuscommands.para_jogador_es", message, count), true);
         return count;
     }
 

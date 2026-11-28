@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
@@ -136,7 +137,7 @@ public final class RiftyEffects {
     public static boolean crash(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         LivingEntity target = RelicUtil.targetEntity(player, CRASH_RANGE, e -> e.isAlive() && RelicTargets.canHit(player, e));
         if (target == null) {
-            RelicUtil.say(player, "Nenhum alvo na mira.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.rifty.nenhum_alvo_na_mira"));
             return false;
         }
         ServerLevel level = (ServerLevel) player.level();
@@ -175,7 +176,7 @@ public final class RiftyEffects {
         MagicStatus magic = player.getData(ModAttachmentType.MAGIC_STATS);
         if (magic.getMana() < amount || !magic.useMana(amount)) {
             player.removeEffect(ModEffects.SUBESPACO);
-            RelicUtil.say(player, "Subespaço: mana esgotada.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.rifty.subespaco_mana_esgotada"));
             return false;
         }
         player.syncData(ModAttachmentType.MAGIC_STATS);

@@ -1,5 +1,7 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
+
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -115,7 +117,7 @@ public final class EternyEffects {
             count++;
         }
         player.level().playSound(null, player.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 0.8f, 1.0f);
-        RelicUtil.say(player, "Vida Extra em " + count + (count == 1 ? " alvo." : " alvos."));
+        RelicUtil.say(player, Component.translatable(count == 1 ? "relic.nexus.eterny.vida_extra_alvo" : "relic.nexus.eterny.vida_extra_alvos", count));
         return true;
     }
 

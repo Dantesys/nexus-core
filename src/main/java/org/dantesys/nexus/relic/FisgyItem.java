@@ -21,12 +21,12 @@ import org.dantesys.nexus.util.MatrizModos;
 public final class FisgyItem extends RelicItem {
     public FisgyItem(Properties properties) {
         super(properties, MatrizModos.LANCA, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Pesca em Qualquer Lugar"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Peixe da Vida"), FisgyEffects.LIFE_MANA, FisgyEffects::lifeFish),
-                RelicSkill.active(Component.literal("O Mar Não Está pra Peixe"), FisgyEffects.RAIN_MANA, FisgyEffects::fishRain),
-                RelicSkill.active(Component.literal("Isca de Tubarão"), FisgyEffects.SHARK_MANA, FisgyEffects::sharkBait),
-                new RelicSkill(Component.literal("Tornado de Peixes"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("1 pack (64) de peixes no inventário (qualquer peixe conta), consumidos."),
+                RelicSkill.passive(Component.translatable("relic.nexus.fisgy.pesca_em_qualquer_lugar"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.fisgy.peixe_da_vida"), FisgyEffects.LIFE_MANA, FisgyEffects::lifeFish),
+                RelicSkill.active(Component.translatable("relic.nexus.fisgy.o_mar_nao_esta_pra"), FisgyEffects.RAIN_MANA, FisgyEffects::fishRain),
+                RelicSkill.active(Component.translatable("relic.nexus.fisgy.isca_de_tubarao"), FisgyEffects.SHARK_MANA, FisgyEffects::sharkBait),
+                new RelicSkill(Component.translatable("relic.nexus.fisgy.tornado_de_peixes"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.fisgy.1_pack_64_de_peixes"),
                         FisgyEffects::canTornado, FisgyEffects::tornado, FisgyEffects.TORNADO_MANA));
     }
 
@@ -47,15 +47,7 @@ public final class FisgyItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Pesca fora da água (terra, areia, neve, lava, Nether, End), cada lugar com a própria tabela de peixes. "
-                    + "Recolher a linha sem peixe com a boia presa num bloco (chão, parede ou teto) puxa você até ela, como um arpão.";
-            case 1 -> "Fisgue um mob: ele perde a vida de um bicho aquático sorteado, que aparece ao lado. Se não aguentar, vira peixe.";
-            case 2 -> "Chuva de peixes em volta: acertam e somem; os que erram viram peixe de verdade no chão.";
-            case 3 -> "Fisgue um alvo: uma boca de tubarão sai do chão e morde. Na água, puxa para o fundo.";
-            case 4 -> "Gasta 64 peixes e solta um tornado de peixes em linha reta, que puxa, gira e arremessa os inimigos.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.fisgy.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

@@ -15,12 +15,12 @@ import java.util.List;
 public final class CultryItem extends RelicItem {
     public CultryItem(Properties properties) {
         super(properties, MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Caldeirão do Refino"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Meditação"), CultryEffects.MEDITATE_MANA, CultryEffects::meditate),
-                RelicSkill.active(Component.literal("Chamas do Caldeirão"), CultryEffects.FLAMES_MANA, CultryEffects::throwCauldron),
-                RelicSkill.active(Component.literal("Palma da Lótus"), CultryEffects.PALM_MANA, CultryEffects::lotusPalm),
-                new RelicSkill(Component.literal("Tribulação Celestial"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Nível 100 de XP, vida e fome cheias e já ter comido uma pílula superior."),
+                RelicSkill.passive(Component.translatable("relic.nexus.cultry.caldeirao_do_refino"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.cultry.meditacao"), CultryEffects.MEDITATE_MANA, CultryEffects::meditate),
+                RelicSkill.active(Component.translatable("relic.nexus.cultry.chamas_do_caldeirao"), CultryEffects.FLAMES_MANA, CultryEffects::throwCauldron),
+                RelicSkill.active(Component.translatable("relic.nexus.cultry.palma_da_lotus"), CultryEffects.PALM_MANA, CultryEffects::lotusPalm),
+                new RelicSkill(Component.translatable("relic.nexus.cultry.tribulacao_celestial"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.cultry.nivel_100_de_xp_vida"),
                         CultryEffects::canTribulation, CultryEffects::tribulation, CultryEffects.TRIBULATION_MANA));
     }
 
@@ -35,14 +35,7 @@ public final class CultryItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Bater queima. Mobs mortos viram pílulas que aumentam atributos para sempre. Clique direito refina as pílulas.";
-            case 1 -> "Parado e agachado, medita: recupera vida e fome, ganha XP de maestria e XP (que vem em dobro).";
-            case 2 -> "Arremessa o caldeirão: um campo de sucção que cresce, queima e transforma mobs em pílulas.";
-            case 3 -> "8 pulsos de palma em volta, até 16 blocos, que ferem e empurram (até bosses).";
-            case 4 -> "Chama a tribulação: raios nos inimigos e 3 em você. Sobrevivendo, fica Imortal por 1 minuto.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.cultry.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

@@ -319,7 +319,7 @@ public final class RuptyEffects {
     public static boolean openMark(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         State state = STATES.get(player.getUUID());
         if (state == null || state.marks.stream().noneMatch(m -> !m.open)) {
-            player.sendSystemMessage(Component.literal("Nenhuma marca de Ruptura Mágica ativa."), true);
+            player.sendSystemMessage(Component.translatable("relic.nexus.rupty.nenhuma_marca_de_ruptura_magica"), true);
             return false;
         }
         Set<LivingEntity> opened = new HashSet<>();
@@ -335,7 +335,7 @@ public final class RuptyEffects {
             level.sendParticles(slash, target.getX(), target.getY() + target.getBbHeight() * 0.5, target.getZ(), 1, 0, 0, 0, 0);
             level.playSound(null, target.blockPosition(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 0.8f, 0.6f);
         }
-        player.sendSystemMessage(Component.literal("Marca Aberta: " + opened.size() + " alvo(s)."), true);
+        player.sendSystemMessage(Component.translatable("relic.nexus.rupty.marca_aberta_alvo_s", opened.size()), true);
         return true;
     }
 
@@ -366,7 +366,7 @@ public final class RuptyEffects {
                 16, 0.4, 0.5, 0.4, 0.02);
         level.playSound(null, player.blockPosition(), SoundEvents.ITEM_BREAK.value(), SoundSource.PLAYERS, 0.8f, 0.6f);
         level.playSound(null, player.blockPosition(), SoundEvents.WITHER_SHOOT, SoundSource.PLAYERS, 0.5f, 1.4f);
-        player.sendSystemMessage(Component.literal("Marca Mortal preparada: o próximo golpe marca o alvo."), true);
+        player.sendSystemMessage(Component.translatable("relic.nexus.rupty.marca_mortal_preparada_o_proximo"), true);
         refresh(player);
         return true;
     }
@@ -377,7 +377,7 @@ public final class RuptyEffects {
         level.sendParticles(particle(ModParticles.RUPTY_MARCA_MORTAL), target.getX(), target.getY() + target.getBbHeight() * 0.6,
                 target.getZ(), 24, target.getBbWidth() * 0.4, target.getBbHeight() * 0.3, target.getBbWidth() * 0.4, 0.04);
         level.playSound(null, target.blockPosition(), SoundEvents.WITHER_HURT, SoundSource.PLAYERS, 0.7f, 0.5f);
-        player.sendSystemMessage(Component.literal("Marca Mortal aplicada!"), true);
+        player.sendSystemMessage(Component.translatable("relic.nexus.rupty.marca_mortal_aplicada"), true);
         refresh(player);
     }
 

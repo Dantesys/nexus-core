@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -97,13 +98,13 @@ public final class TrindyEffects {
         s.armed = Mode.NONE;
     }
 
-    public static boolean armVortex(ServerPlayer player, ItemStack stack, RelicAbilityContext c) { return arm(player, Mode.VORTEX, "Vortex"); }
-    public static boolean armHunt(ServerPlayer player, ItemStack stack, RelicAbilityContext c) { return arm(player, Mode.HUNT, "Área de Caça"); }
-    public static boolean armTempest(ServerPlayer player, ItemStack stack, RelicAbilityContext c) { return arm(player, Mode.TEMPEST, "Mega Tempest"); }
+    public static boolean armVortex(ServerPlayer player, ItemStack stack, RelicAbilityContext c) { return arm(player, Mode.VORTEX, "relic.nexus.trindy.vortex"); }
+    public static boolean armHunt(ServerPlayer player, ItemStack stack, RelicAbilityContext c) { return arm(player, Mode.HUNT, "relic.nexus.trindy.area_de_caca"); }
+    public static boolean armTempest(ServerPlayer player, ItemStack stack, RelicAbilityContext c) { return arm(player, Mode.TEMPEST, "relic.nexus.trindy.mega_tempest"); }
 
     private static boolean arm(ServerPlayer player, Mode mode, String name) {
         state(player).armed = mode;
-        RelicUtil.say(player, name + " pronto: arremesse o tridente.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.trindy.pronto_arremesse_o_tridente", Component.translatable(name)));
         return true;
     }
 
@@ -195,7 +196,7 @@ public final class TrindyEffects {
         if (top == null || !(a.level.getEntity(top) instanceof LivingEntity target)) return;
         if (target.position().distanceTo(a.center) > a.radius) {
             target.getPersistentData().putBoolean(TEMPEST_MARK, true);
-            RelicUtil.say(a.owner, "A presa escapou... mas ficou marcada.");
+            RelicUtil.say(a.owner, Component.translatable("relic.nexus.trindy.a_presa_escapou_mas_ficou"));
             return;
         }
         boolean guaranteed = target.getPersistentData().getBooleanOr(TEMPEST_MARK, false);

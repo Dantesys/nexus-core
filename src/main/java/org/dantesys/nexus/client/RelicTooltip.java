@@ -32,15 +32,15 @@ public final class RelicTooltip {
             var data = org.dantesys.nexus.items.PlantaItem.data(event.getItemStack());
             var lines = event.getToolTip();
             if (data.getStringOr(org.dantesys.nexus.items.PlantaItem.ID, "").isEmpty()) {
-                lines.add(Component.literal("Planta vazia").withStyle(ChatFormatting.GRAY));
+                lines.add(Component.translatable("message.nexus.relictooltip.planta_vazia").withStyle(ChatFormatting.GRAY));
                 return;
             }
-            lines.add(Component.literal("Tamanho: " + data.getIntOr("Sx", 0) + "×" + data.getIntOr("Sy", 0) + "×" + data.getIntOr("Sz", 0))
+            lines.add(Component.translatable("message.nexus.relictooltip.tamanho", data.getIntOr("Sx", 0), data.getIntOr("Sy", 0), data.getIntOr("Sz", 0))
                     .withStyle(ChatFormatting.GRAY));
-            lines.add(Component.literal("Blocos: " + data.getIntOr("Blocos", 0)).withStyle(ChatFormatting.GRAY));
-            lines.add(Component.literal("Custo de mana: " + data.getIntOr("Custo", 0)).withStyle(ChatFormatting.AQUA));
-            lines.add(Component.literal("Rotação: " + Math.floorMod(data.getIntOr("Rotacao", 0), 4) * 90 + "°").withStyle(ChatFormatting.GRAY));
-            lines.add(Component.literal("Na outra mão, com a Krefty e a Construção Instantânea selecionada. Tecla H gira.")
+            lines.add(Component.translatable("message.nexus.relictooltip.blocos", data.getIntOr("Blocos", 0)).withStyle(ChatFormatting.GRAY));
+            lines.add(Component.translatable("message.nexus.relictooltip.custo_de_mana", data.getIntOr("Custo", 0)).withStyle(ChatFormatting.AQUA));
+            lines.add(Component.translatable("message.nexus.relictooltip.rotacao", Math.floorMod(data.getIntOr("Rotacao", 0), 4) * 90).withStyle(ChatFormatting.GRAY));
+            lines.add(Component.translatable("message.nexus.relictooltip.na_outra_mao_com_a")
                     .withStyle(ChatFormatting.DARK_GRAY));
             return;
         }
@@ -48,18 +48,17 @@ public final class RelicTooltip {
         RelicMastery mastery = event.getEntity().getData(ModAttachmentType.RELIC_MASTERY);
         int level = mastery.level(relic.masteryId());
         var lines = event.getToolTip();
-        lines.add(Component.literal("Maestria: " + level + "/" + RelicMastery.MAX_LEVEL).withStyle(ChatFormatting.GOLD));
+        lines.add(Component.translatable("message.nexus.relictooltip.maestria", level, RelicMastery.MAX_LEVEL).withStyle(ChatFormatting.GOLD));
         var elemento = relic.getElement(event.getItemStack());
-            lines.add(Component.literal("Mana de funcionamento: ").append(elemento == null
+            lines.add(Component.translatable("message.nexus.relictooltip.mana_de_funcionamento").append(elemento == null
                     ? Component.translatable("element.nexus.nao_elemental")
                     : org.dantesys.nexus.api.element.NexusElement.name(elemento.unwrapKey().orElseThrow().identifier())));
         if (!shiftDown() && !controlDown()) {
-            lines.add(Component.literal("Segure Shift ou Ctrl para ver as habilidades").withStyle(ChatFormatting.DARK_GRAY));
+            lines.add(Component.translatable("message.nexus.relictooltip.segure_shift_ou_ctrl_para").withStyle(ChatFormatting.DARK_GRAY));
             return;
         }
         if (level < RelicMastery.MAX_LEVEL) {
-            lines.add(Component.literal("Experiência: " + mastery.experience(relic.masteryId()) % RelicMastery.XP_PER_LEVEL
-                    + "/" + RelicMastery.XP_PER_LEVEL).withStyle(ChatFormatting.GRAY));
+            lines.add(Component.translatable("message.nexus.relictooltip.experiencia", mastery.experience(relic.masteryId()) % RelicMastery.XP_PER_LEVEL, RelicMastery.XP_PER_LEVEL).withStyle(ChatFormatting.GRAY));
         }
         lines.addAll(relic.extraTooltip(event.getItemStack()));
         int selected = relic.selectedSkill(event.getItemStack());
@@ -69,25 +68,27 @@ public final class RelicTooltip {
             int required = RelicSkill.requiredLevel(slot);
             boolean unlocked = level >= required;
             boolean active = skill.kind() == RelicSkill.Kind.ACTIVE;
-            String type = active ? (slot == last && slot == RelicSkill.MAX_SKILLS - 1 ? "Ativa (final)" : "Ativa") : "Passiva";
-            lines.add(Component.literal((active && selected == slot ? "> " : "") + "Nv " + required + " · ")
-                    .append(skill.name()).append(" — " + type + (unlocked ? "" : " (bloqueada)"))
+            String type = active ? (slot == last && slot == RelicSkill.MAX_SKILLS - 1 ? "message.nexus.relictooltip.ativa_final" : "message.nexus.relictooltip.ativa") : "message.nexus.relictooltip.passiva";
+            lines.add(Component.translatable("message.nexus.relictooltip.nv", (active && selected == slot ? "> " : ""), required)
+                    .append(skill.name()).append(" — ").append(Component.translatable(type))
+                    .append(unlocked ? Component.empty() : Component.translatable("message.nexus.relictooltip.bloqueada"))
                     .withStyle(unlocked ? ChatFormatting.GREEN : ChatFormatting.GRAY));
             if (active && unlocked) {
                 int cost = relic.getManaCost(event.getItemStack(), slot);
                 long cooldown = relic.getCooldownRemaining(event.getItemStack(), event.getEntity().level().getGameTime(), slot);
-                lines.add(Component.literal("Mana: " + cost + (cooldown > 0 ? " · recarga " + (cooldown + 19) / 20 + "s" : ""))
+                lines.add((cooldown > 0 ? Component.translatable("message.nexus.relictooltip.mana_recarga", cost, (cooldown + 19) / 20)
+                        : Component.translatable("message.nexus.relictooltip.mana", cost))
                         .withStyle(ChatFormatting.AQUA));
             }
             Component description = relic.skillDescription(event.getItemStack(), slot);
             if (!description.getString().isEmpty()) lines.add(description.copy().withStyle(ChatFormatting.GRAY));
             if (!skill.conditionDescription().getString().isEmpty()) {
-                lines.add(Component.literal("Requisitos: ").append(skill.conditionDescription()).withStyle(ChatFormatting.LIGHT_PURPLE));
+                lines.add(Component.translatable("message.nexus.relictooltip.requisitos").append(skill.conditionDescription()).withStyle(ChatFormatting.LIGHT_PURPLE));
             }
         }
-        lines.add(Component.literal("Trocar habilidade: Shift + rolagem do mouse")
+        lines.add(Component.translatable("message.nexus.relictooltip.trocar_habilidade_shift_rolagem_do")
                 .withStyle(ChatFormatting.DARK_GRAY));
-        lines.add(Component.literal("Tecla da relíquia: usar a habilidade ativa selecionada")
+        lines.add(Component.translatable("message.nexus.relictooltip.tecla_da_reliquia_usar_a")
                 .withStyle(ChatFormatting.DARK_GRAY));
     }
 }

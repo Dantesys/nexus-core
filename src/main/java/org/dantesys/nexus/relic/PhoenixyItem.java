@@ -10,11 +10,11 @@ import org.dantesys.nexus.util.MatrizModos;
 public final class PhoenixyItem extends RelicItem {
     public PhoenixyItem(Properties properties) {
         super(properties.fireResistant(), MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Fogo da Vida"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Proteção da Fênix"), PhoenixyEffects.PROTECT_MANA, PhoenixyEffects::protect),
-                RelicSkill.active(Component.literal("Fúria da Fênix"), PhoenixyEffects.FURY_MANA, PhoenixyEffects::fury),
-                RelicSkill.passive(Component.literal("Asas Flamejantes"), 0, (p, s, c) -> false),
-                RelicSkill.passive(Component.literal("Renascimento da Fênix"), 0, (p, s, c) -> false));
+                RelicSkill.passive(Component.translatable("relic.nexus.phoenixy.fogo_da_vida"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.phoenixy.protecao_da_fenix"), PhoenixyEffects.PROTECT_MANA, PhoenixyEffects::protect),
+                RelicSkill.active(Component.translatable("relic.nexus.phoenixy.furia_da_fenix"), PhoenixyEffects.FURY_MANA, PhoenixyEffects::fury),
+                RelicSkill.passive(Component.translatable("relic.nexus.phoenixy.asas_flamejantes"), 0, (p, s, c) -> false),
+                RelicSkill.passive(Component.translatable("relic.nexus.phoenixy.renascimento_da_fenix_2"), 0, (p, s, c) -> false));
     }
 
     /** Voando com as asas, a tecla da reliquia solta a Explosao de Chamas (impulso). */
@@ -33,14 +33,7 @@ public final class PhoenixyItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Fogo, lava e queimadura (inclusive o dracônico) curam você no mesmo valor do dano.";
-            case 1 -> "Aliados e pets a até 3 blocos ganham o Fogo da Vida por 30s.";
-            case 2 -> "Por 10s, fogo da fênix num raio de 5: queima inimigos (não apaga com água) e cura você e os protegidos.";
-            case 3 -> "A pena vira élitro. Voando, a tecla da relíquia dá um impulso (5% da mana). Brasas caem por onde passa.";
-            case 4 -> "Ao morrer, explode em chamas e renasce com metade da vida (recarga 15 min). Mortes garantidas ignoram.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.phoenixy.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

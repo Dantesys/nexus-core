@@ -4,7 +4,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.dantesys.nexus.util.MatrizModos;
@@ -12,14 +11,14 @@ import org.dantesys.nexus.util.MatrizModos;
 /** Colossy: calca do gigante. So vale vestida. */
 public final class ColossyItem extends RelicItem {
     public ColossyItem(Properties properties) {
-        super(properties.attributes(SteelyItem.armor("colossy", EquipmentSlotGroup.LEGS, 6, 3, 0.1))
+        super(properties.humanoidArmor(org.dantesys.nexus.items.ModArmorMaterial.RELIC_ARMOR_MATERIAL, net.minecraft.world.item.equipment.ArmorType.LEGGINGS)
                         .component(DataComponents.EQUIPPABLE, SteelyItem.equip(EquipmentSlot.LEGS, "colossy")),
                 MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Gigantismo"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Soco Terremoto"), ColossyEffects.QUAKE_MANA, ColossyEffects::quake),
-                RelicSkill.passive(Component.literal("Fome de Gigante"), 0, ColossyEffects::eat),
-                RelicSkill.active(Component.literal("Pisão Esmagador"), ColossyEffects.STOMP_MANA, ColossyEffects::stomp),
-                new RelicSkill(Component.literal("Gancho"), RelicSkill.Kind.ACTIVE, Component.literal("Com 60% da vida ou menos."),
+                RelicSkill.passive(Component.translatable("relic.nexus.colossy.gigantismo"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.colossy.soco_terremoto"), ColossyEffects.QUAKE_MANA, ColossyEffects::quake),
+                RelicSkill.passive(Component.translatable("relic.nexus.colossy.fome_de_gigante"), 0, ColossyEffects::eat),
+                RelicSkill.active(Component.translatable("relic.nexus.colossy.pisao_esmagador"), ColossyEffects.STOMP_MANA, ColossyEffects::stomp),
+                new RelicSkill(Component.translatable("relic.nexus.colossy.gancho"), RelicSkill.Kind.ACTIVE, Component.translatable("relic.nexus.colossy.com_60_da_vida_ou"),
                         ColossyEffects::canHook, ColossyEffects::armHook, ColossyEffects.HOOK_MANA));
     }
 
@@ -28,14 +27,7 @@ public final class ColossyItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Vestida: fica maior e ganha, na mesma proporção, vida, dano, defesa e pulo (10% a 30%), +0,5 bloco de alcance.";
-            case 1 -> "Soca o chão: dano numa área de 4 blocos e Lentidão II por 3s.";
-            case 2 -> "Atacar um animal pacífico sem dono o come: recupera 50% da vida e toda a fome (recarga 1 min).";
-            case 3 -> "Pisão à frente (3x3): dano e encolhe os atingidos pela metade por 10s.";
-            case 4 -> "Com pouca vida, o próximo golpe vira um gancho que lança o alvo ~20 blocos para cima e o atordoa ao cair.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.colossy.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

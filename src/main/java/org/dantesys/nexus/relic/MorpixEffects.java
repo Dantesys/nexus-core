@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -102,14 +103,14 @@ public final class MorpixEffects {
     public static void collect(AttackEntityEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player) || !player.isShiftKeyDown() || !player.getMainHandItem().is(item())) return;
         if (!item().isUnlocked(player, 0) || !(event.getTarget() instanceof LivingEntity target)) return;
-        if (RelicUtil.isBoss(target) && item().masteryLevel(player) < 15) { RelicUtil.say(player, "DNA de boss só na maestria 15."); return; }
+        if (RelicUtil.isBoss(target) && item().masteryLevel(player) < 15) { RelicUtil.say(player, Component.translatable("relic.nexus.morpix.dna_de_boss_so_na")); return; }
         ItemStack stack = player.getMainHandItem();
         String dna = target instanceof Player ? "minecraft:player" : power(id(target));
-        String name = target instanceof Player ? "Humano" : target.getType().getDescription().getString();
+        String name = target instanceof Player ? "relic.nexus.morpix.humano" : target.getType().getDescriptionId();
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> { t.putString(DNA_ID, dna); t.putString(DNA_NAME, name); });
         ((ServerLevel) player.level()).sendParticles(ParticleTypes.HAPPY_VILLAGER, target.getX(), target.getY() + 1, target.getZ(), 8, 0.3, 0.4, 0.3, 0);
         player.level().playSound(null, player.blockPosition(), SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0f, 1.4f);
-        RelicUtil.say(player, "DNA guardado: " + name + ".");
+        RelicUtil.say(player, Component.translatable("relic.nexus.morpix.dna_guardado", Component.translatable(name)));
         event.setCanceled(true);
     }
 
@@ -125,7 +126,7 @@ public final class MorpixEffects {
         List<String> current = powers(player);
         if (dna.equals("minecraft:player")) current.clear();
         else if (item().isUnlocked(player, 2) && !current.isEmpty()) {
-            if (current.contains(dna)) { RelicUtil.say(player, "Esse DNA já está em uso."); return false; }
+            if (current.contains(dna)) { RelicUtil.say(player, Component.translatable("relic.nexus.morpix.esse_dna_ja_esta_em")); return false; }
             current.add(dna);
             while (current.size() > 2) current.remove(0);
         } else current = new ArrayList<>(List.of(dna));
@@ -133,13 +134,16 @@ public final class MorpixEffects {
         setPowers(player, current);
         ((ServerLevel) player.level()).sendParticles(ParticleTypes.WITCH, player.getX(), player.getY() + 1, player.getZ(), 30, 0.4, 0.6, 0.4, 0.05);
         player.level().playSound(null, player.blockPosition(), SoundEvents.ZOMBIE_VILLAGER_CURE, SoundSource.PLAYERS, 0.6f, 1.6f);
-        RelicUtil.say(player, current.isEmpty() ? "De volta à forma humana." : "Poderes: " + String.join(" + ", current.stream().map(MorpixEffects::label).toList()));
+        RelicUtil.say(player, current.isEmpty() ? Component.translatable("relic.nexus.morpix.de_volta_a_forma_humana")
+                : Component.translatable("relic.nexus.morpix.poderes", net.minecraft.network.chat.ComponentUtils.formatList(
+                        current.stream().map(MorpixEffects::label).toList(), Component.literal(" + "))));
         return true;
     }
 
-    private static String label(String id) {
+    private static Component label(String id) {
         var key = Identifier.tryParse(id);
-        return key == null ? id : BuiltInRegistries.ENTITY_TYPE.getOptional(key).map(t -> t.getDescription().getString()).orElse(id);
+        return key == null ? Component.literal(id) : BuiltInRegistries.ENTITY_TYPE.getOptional(key)
+                .map(t -> (Component) t.getDescription()).orElse(Component.literal(id));
     }
 
     // ---------- Poderes (passivos e o clique direito) ----------
@@ -321,7 +325,7 @@ public final class MorpixEffects {
             applyAttributes(target, List.of(dna));
         }
         ((ServerLevel) player.level()).sendParticles(ParticleTypes.WITCH, target.getX(), target.getY() + 1, target.getZ(), 20, 0.3, 0.5, 0.3, 0.05);
-        RelicUtil.say(player, "Cobaia recebeu o DNA de " + label(dna) + ".");
+        RelicUtil.say(player, Component.translatable("relic.nexus.morpix.cobaia_recebeu_o_dna_de", label(dna)));
         return true;
     }
 
@@ -343,7 +347,7 @@ public final class MorpixEffects {
         var type = key == null ? null : BuiltInRegistries.ENTITY_TYPE.getOptional(key).orElse(null);
         ServerLevel level = (ServerLevel) player.level();
         if (type == null || !(type.create(level, EntitySpawnReason.TRIGGERED) instanceof Mob body)) {
-            RelicUtil.say(player, "Esse DNA não pode virar uma forma.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.morpix.esse_dna_nao_pode_virar"));
             return false;
         }
         clearDna(stack);
@@ -363,7 +367,7 @@ public final class MorpixEffects {
         player.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, TRANSFORM_TICKS, 0, false, false, false));
         RelicUtil.hideEquipment(player);
         level.sendParticles(ParticleTypes.WITCH, player.getX(), player.getY() + 1, player.getZ(), 60, 0.6, 1, 0.6, 0.1);
-        RelicUtil.say(player, "Transformação: " + label(dna) + " por 1 minuto.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.morpix.transformacao_por_1_minuto", label(dna)));
         return true;
     }
 
@@ -373,7 +377,7 @@ public final class MorpixEffects {
         if (form.body.isAlive()) form.body.discard();
         player.removeEffect(MobEffects.INVISIBILITY);
         RelicUtil.showEquipment(player);
-        RelicUtil.say(player, "De volta à forma humana.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.morpix.de_volta_a_forma_humana"));
     }
 
     /** Transformado, o dano vai para a forma; morrer a forma desfaz a transformacao. */

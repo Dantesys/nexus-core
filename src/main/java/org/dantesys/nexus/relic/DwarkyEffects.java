@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -135,7 +136,7 @@ public final class DwarkyEffects {
         if (!targets) {
             player.addEffect(new MobEffectInstance(MobEffects.SPEED, 200, 1));
             player.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, 200, 2));
-            RelicUtil.say(player, "Ninguém por perto: velocidade e super pulo!");
+            RelicUtil.say(player, Component.translatable("relic.nexus.dwarky.ninguem_por_perto_velocidade_e"));
             return true;
         }
         State s = state(player);
@@ -188,14 +189,14 @@ public final class DwarkyEffects {
         long until = player.level().getGameTime() + HOMERUN_ARM_TICKS;
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.putLong(HOMERUN_TAG, until));
         state(player).homeRunCharge = 0;
-        RelicUtil.say(player, "Home Run: segure o clique direito para carregar e acerte o alvo.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.dwarky.home_run_segure_o_clique"));
         return true;
     }
 
     public static void chargeHomeRun(ServerPlayer player, ItemStack stack, int held) {
         float charge = Math.min(1f, held / (float) HOMERUN_FULL);
         state(player).homeRunCharge = charge;
-        RelicUtil.say(player, "Home Run carregado: " + Math.round(charge * 100) + "%");
+        RelicUtil.say(player, Component.translatable("relic.nexus.dwarky.home_run_carregado", Math.round(charge * 100)));
     }
 
     private record Flight(LivingEntity target, ServerPlayer owner, long start, float charge) {}

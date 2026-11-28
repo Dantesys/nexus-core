@@ -17,14 +17,14 @@ import java.util.List;
 public final class MorpixItem extends RelicItem {
     public MorpixItem(Properties properties) {
         super(properties, MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("DNA"), 0, (p, s, c) -> false),
-                new RelicSkill(Component.literal("Mimetizar"), RelicSkill.Kind.ACTIVE, Component.literal("Precisa de DNA na seringa."),
+                RelicSkill.passive(Component.translatable("relic.nexus.morpix.dna"), 0, (p, s, c) -> false),
+                new RelicSkill(Component.translatable("relic.nexus.morpix.mimetizar"), RelicSkill.Kind.ACTIVE, Component.translatable("relic.nexus.morpix.precisa_de_dna_na_seringa"),
                         MorpixEffects::hasDna, MorpixEffects::mimic, MorpixEffects.MIMIC_MANA),
-                RelicSkill.passive(Component.literal("Combinação"), 0, (p, s, c) -> false),
-                new RelicSkill(Component.literal("Cobaia"), RelicSkill.Kind.ACTIVE, Component.literal("Agache e clique com o botão direito num aliado ou pet."),
+                RelicSkill.passive(Component.translatable("relic.nexus.morpix.combinacao"), 0, (p, s, c) -> false),
+                new RelicSkill(Component.translatable("relic.nexus.morpix.cobaia"), RelicSkill.Kind.ACTIVE, Component.translatable("relic.nexus.morpix.agache_e_clique_com_o"),
                         MorpixEffects::canInject, MorpixEffects::inject, MorpixEffects.INJECT_MANA),
-                new RelicSkill(Component.literal("Transformação"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Forma humana (sem DNA em uso) e DNA na seringa."),
+                new RelicSkill(Component.translatable("relic.nexus.morpix.transformacao"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.morpix.forma_humana_sem_dna_em"),
                         MorpixEffects::canTransform, MorpixEffects::transform, MorpixEffects.TRANSFORM_MANA));
     }
 
@@ -36,7 +36,7 @@ public final class MorpixItem extends RelicItem {
 
     @Override public Component hudInfo(ItemStack stack) {
         String dna = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getStringOr(MorpixEffects.DNA_NAME, "");
-        return dna.isEmpty() ? null : Component.literal("DNA: " + dna);
+        return dna.isEmpty() ? null : Component.translatable("relic.nexus.morpix.dna_2", Component.translatable(dna));
     }
 
     @Override public List<Component> extraTooltip(ItemStack stack) {
@@ -45,14 +45,7 @@ public final class MorpixItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Agachar e bater num mob ou jogador guarda o DNA dele na seringa (bosses a partir da maestria 15).";
-            case 1 -> "Consome o DNA e te dá os poderes daquele mob até o próximo Mimetizar. Clique direito usa o poder ativo.";
-            case 2 -> "Permite somar 2 DNAs diferentes; um terceiro troca o mais antigo. DNA de jogador volta ao normal.";
-            case 3 -> "Agachar + clique direito num aliado ou pet aplica o DNA nele até ele morrer (sem bosses).";
-            case 4 -> "Vira de verdade o mob do DNA por 1 minuto, mais forte que o original. Se a forma morrer, você volta.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.morpix.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

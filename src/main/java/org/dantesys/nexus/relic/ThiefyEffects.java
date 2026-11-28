@@ -60,7 +60,7 @@ public final class ThiefyEffects {
     private static ThiefyItem item() { return ModItems.THIEFY.get(); }
     private static boolean wielding(Player p) { return p.getMainHandItem().is(item()); }
 
-    private static String describe(ItemStack s) { return s.getCount() + "x " + s.getHoverName().getString(); }
+    private static Component describe(ItemStack s) { return Component.literal(s.getCount() + "x ").append(s.getHoverName()); }
 
     private static boolean noArmor(Player p) {
         for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
@@ -91,7 +91,7 @@ public final class ThiefyEffects {
             if (slots.isEmpty()) return;
             int slot = slots.get(thief.getRandom().nextInt(slots.size()));
             ItemStack loot = inv.getItem(slot);
-            inv.setItem(slot, RelicUtil.note("Roubado por " + thief.getName().getString() + ": " + describe(loot)));
+            inv.setItem(slot, RelicUtil.note(Component.translatable("relic.nexus.thiefy.nota_roubado", thief.getName(), describe(loot))));
             thief.getInventory().add(loot);
         } else if (target instanceof Mob mob) {
             ItemStack held = mob.getMainHandItem();
@@ -122,12 +122,12 @@ public final class ThiefyEffects {
             icons.add(s.isEmpty() || RelicUtil.isRelic(s) ? ItemStack.EMPTY : s.copy());
         }
         long until = thief.level().getGameTime() + SNEAK_TICKS;
-        IconMenu.open(thief, Component.literal("Inventário de ").append(victim.getName()), icons, slot -> {
+        IconMenu.open(thief, Component.translatable("relic.nexus.thiefy.inventario_de").append(victim.getName()), icons, slot -> {
             ItemStack real = inv.getItem(slot);
             if (real.isEmpty() || RelicUtil.isRelic(real) || !ItemStack.isSameItemSameComponents(real, icons.get(slot))) return;
-            inv.setItem(slot, RelicUtil.note("Roubado por " + thief.getName().getString() + ": " + describe(real)));
+            inv.setItem(slot, RelicUtil.note(Component.translatable("relic.nexus.thiefy.nota_roubado", thief.getName(), describe(real))));
             RelicUtil.giveOrDrop(thief, real);
-            RelicUtil.say(thief, "Roubou " + describe(real) + ".");
+            RelicUtil.say(thief, Component.translatable("relic.nexus.thiefy.roubou", describe(real)));
         }, p -> p.level().getGameTime() < until && victim.isAlive() && victim.distanceTo(p) <= 4);
         return true;
     }
@@ -182,7 +182,7 @@ public final class ThiefyEffects {
     public static void cloneDied(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof Mannequin m) || !m.getPersistentData().getBooleanOr(CLONE_TAG, false)) return;
         ServerLevel level = (ServerLevel) m.level();
-        level.addFreshEntity(new ItemEntity(level, m.getX(), m.getY() + 0.5, m.getZ(), RelicUtil.note("Enganado! — Thiefy")));
+        level.addFreshEntity(new ItemEntity(level, m.getX(), m.getY() + 0.5, m.getZ(), RelicUtil.note(Component.translatable("relic.nexus.thiefy.nota_enganado"))));
         level.sendParticles(ParticleTypes.POOF, m.getX(), m.getY() + 1, m.getZ(), 20, 0.3, 0.6, 0.3, 0.02);
     }
 
@@ -198,7 +198,7 @@ public final class ThiefyEffects {
     public static boolean silence(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         SILENT.put(player.getUUID(), player.level().getGameTime() + SILENCE_TICKS);
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.putBoolean(SILENCE_TAG, true));
-        RelicUtil.say(player, "Silêncio por 5 minutos.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.thiefy.silencio_por_5_minutos"));
         return true;
     }
 
@@ -208,7 +208,7 @@ public final class ThiefyEffects {
         if (stack.isEmpty()) return;
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.remove(SILENCE_TAG));
         item().startCooldown(player, stack, 3, SILENCE_COOLDOWN);
-        RelicUtil.say(player, "O silêncio acabou.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.thiefy.o_silencio_acabou"));
     }
 
     @SubscribeEvent
@@ -260,12 +260,12 @@ public final class ThiefyEffects {
                 targets.add(pos.immutable());
                 ItemStack icon = new ItemStack(level.getBlockState(pos).getBlock().asItem());
                 if (icon.isEmpty()) icon = new ItemStack(Items.CHEST);
-                icon.set(DataComponents.CUSTOM_NAME, Component.literal(icon.getHoverName().getString() + " (" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ")"));
+                icon.set(DataComponents.CUSTOM_NAME, Component.translatable("relic.nexus.thiefy.texto", icon.getHoverName(), pos.getX(), pos.getY(), pos.getZ()));
                 icons.add(icon);
             }
         }
-        if (targets.isEmpty()) { RelicUtil.say(thief, "Nada para roubar por perto."); return false; }
-        IconMenu.open(thief, Component.literal("O Grande Roubo"), icons, slot -> {
+        if (targets.isEmpty()) { RelicUtil.say(thief, Component.translatable("relic.nexus.thiefy.nada_para_roubar_por_perto")); return false; }
+        IconMenu.open(thief, Component.translatable("relic.nexus.thiefy.o_grande_roubo"), icons, slot -> {
             if (slot >= targets.size()) return;
             Object t = targets.get(slot);
             if (t instanceof Player victim) robPlayer(thief, victim);
@@ -299,8 +299,8 @@ public final class ThiefyEffects {
             if (slot != EquipmentSlot.OFFHAND && thief.getItemBySlot(slot).isEmpty()) thief.setItemSlot(slot, s);
             else take(thief, s);
         }
-        victim.getInventory().add(RelicUtil.note("Obrigado pela doação! — Thiefy"));
-        RelicUtil.say(thief, "Roubou tudo de " + victim.getName().getString() + "!");
+        victim.getInventory().add(RelicUtil.note(Component.translatable("relic.nexus.thiefy.nota_doacao")));
+        RelicUtil.say(thief, Component.translatable("relic.nexus.thiefy.roubou_tudo_de", victim.getName()));
     }
 
     private static void robContainer(ServerPlayer thief, Container c) {
@@ -310,7 +310,7 @@ public final class ThiefyEffects {
             c.setItem(i, ItemStack.EMPTY);
             take(thief, s);
         }
-        if (c.getContainerSize() > 0 && c.getItem(0).isEmpty()) c.setItem(0, RelicUtil.note("Obrigado pela doação! — Thiefy"));
+        if (c.getContainerSize() > 0 && c.getItem(0).isEmpty()) c.setItem(0, RelicUtil.note(Component.translatable("relic.nexus.thiefy.nota_doacao")));
         c.setChanged();
     }
 

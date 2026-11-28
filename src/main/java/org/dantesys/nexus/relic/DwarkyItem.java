@@ -32,14 +32,14 @@ import java.util.List;
  */
 public final class DwarkyItem extends RelicItem {
     public DwarkyItem(Properties properties) {
-        super(properties.component(DataComponents.TOOL, MaceItem.createToolProperties()).attributes(MaceItem.createAttributes()),
+        super(properties.component(DataComponents.TOOL, MaceItem.createToolProperties()).attributes(org.dantesys.nexus.items.ModToolMaterial.relicMaceAttributes()),
                 MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Sangue de Anão"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Corrente"), DwarkyEffects.CHAIN_MANA, DwarkyEffects::chain),
-                RelicSkill.active(Component.literal("Pulo Explosivo"), DwarkyEffects.LEAP_MANA, DwarkyEffects::leap),
-                RelicSkill.active(Component.literal("Home Run"), DwarkyEffects.HOMERUN_MANA, DwarkyEffects::homeRun),
-                new RelicSkill(Component.literal("Quebra-Montanha"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("1 pack (64) de pedra no inventário (tag nexus:pedras_quebra_montanha), consumido."),
+                RelicSkill.passive(Component.translatable("relic.nexus.dwarky.sangue_de_anao"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.dwarky.corrente"), DwarkyEffects.CHAIN_MANA, DwarkyEffects::chain),
+                RelicSkill.active(Component.translatable("relic.nexus.dwarky.pulo_explosivo"), DwarkyEffects.LEAP_MANA, DwarkyEffects::leap),
+                RelicSkill.active(Component.translatable("relic.nexus.dwarky.home_run"), DwarkyEffects.HOMERUN_MANA, DwarkyEffects::homeRun),
+                new RelicSkill(Component.translatable("relic.nexus.dwarky.quebra_montanha"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.dwarky.1_pack_64_de_pedra"),
                         DwarkyEffects::canMountain, DwarkyEffects::mountain, DwarkyEffects.MOUNTAIN_MANA));
     }
 
@@ -109,14 +109,7 @@ public final class DwarkyItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Com a clava na mão: tamanho 75% e resistência a queda (parcial, total na maestria máxima).";
-            case 1 -> "Por 10s vira mangual: golpes atingem 3×3×3 (50% nos outros) e o alcance aumenta um pouco.";
-            case 2 -> "Pulo alto com ataque em área ao cair (até 5 blocos à frente). Sem alvos: velocidade e super pulo.";
-            case 3 -> "Arma o Home Run: segure o clique direito para carregar; o próximo golpe arremessa o alvo longe.";
-            case 4 -> "A clava fica gigante e esmaga a área à frente: muito dano e o alvo encolhe por 15–20s.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.dwarky.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

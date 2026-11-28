@@ -22,29 +22,19 @@ public final class BastryItem extends RelicItem {
                         Optional.of(context.getOrThrow(DamageTypeTags.BYPASSES_SHIELD)),
                         Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK))),
                 MatrizModos.ESPADA, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Carga"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Campo Reflexivo"), BastryEffects.FIELD_MANA, BastryEffects::field),
-                RelicSkill.active(Component.literal("Counter"), BastryEffects.COUNTER_MANA, BastryEffects::counter),
-                RelicSkill.active(Component.literal("Pele de Aço"), BastryEffects.STEEL_MANA, BastryEffects::steelSkin),
-                new RelicSkill(Component.literal("Intocável"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Capacidade rank A ou maior, vida em até 75% ou carga em pelo menos 75%, "
-                                + "e todas as outras habilidades da Bastry em recarga."),
+                RelicSkill.passive(Component.translatable("relic.nexus.bastry.carga"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.bastry.campo_reflexivo"), BastryEffects.FIELD_MANA, BastryEffects::field),
+                RelicSkill.active(Component.translatable("relic.nexus.bastry.counter"), BastryEffects.COUNTER_MANA, BastryEffects::counter),
+                RelicSkill.active(Component.translatable("relic.nexus.bastry.pele_de_aco"), BastryEffects.STEEL_MANA, BastryEffects::steelSkin),
+                new RelicSkill(Component.translatable("relic.nexus.bastry.intocavel"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.bastry.capacidade_rank_a_ou_maior"),
                         BastryEffects::canUntouchable, BastryEffects::untouchable, BastryEffects.UNTOUCHABLE_MANA));
     }
 
     @Override public ItemUseAnimation getUseAnimation(ItemStack stack) { return ItemUseAnimation.BLOCK; }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "O dano bloqueado vira carga (limite pela maestria e pela Capacidade). Com a carga cheia, o dano passa. "
-                    + "A carga cai com o tempo e é gasta no próximo golpe: vale o maior entre o dano da carga e o do item.";
-            case 1 -> "Campo de 2 blocos por ~10s que devolve projéteis para quem atirou. Quem está dentro fica protegido; "
-                    + "você não pode usar projéteis enquanto ele dura.";
-            case 2 -> "Por 10s, recebe só metade do dano corpo a corpo e devolve o dobro do que recebeu. Sem escudo nesse tempo.";
-            case 3 -> "Gasta a carga e a transforma em resistências (25%, 50%, 75% e 100% da carga).";
-            case 4 -> "Por 30s, ignora todo dano (menos void e /kill) e efeitos negativos. A carga converte os efeitos ruins em bons.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.bastry.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {
@@ -64,6 +54,6 @@ public final class BastryItem extends RelicItem {
     }
 
     @Override public Component hudInfo(ItemStack stack) {
-        return Component.literal("Carga " + (int) modelValue(stack, 1, 0) + "/" + (int) modelValue(stack, 2, 0));
+        return Component.translatable("relic.nexus.bastry.carga_2", (int) modelValue(stack, 1, 0), (int) modelValue(stack, 2, 0));
     }
 }

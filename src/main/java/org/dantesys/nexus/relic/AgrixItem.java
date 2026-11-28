@@ -11,26 +11,18 @@ public final class AgrixItem extends RelicItem {
     public static final int SLOT_GREEN = 1, SLOT_GROWTH = 2, SLOT_EGG = 3, SLOT_FARM = 4;
 
     public AgrixItem(Properties properties) {
-        super(properties.hoe(ModToolMaterial.STEEL_MATERIA, -2.0F, -1.0F), MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Ciclo da Vida"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Zona Verde"), AgrixEffects.GREEN_MANA, AgrixEffects::greenZone),
-                RelicSkill.active(Component.literal("Crescimento Populacional"), AgrixEffects.GROWTH_MANA, AgrixEffects::growth),
-                RelicSkill.active(Component.literal("De Volta ao Ovo"), AgrixEffects.EGG_MANA, AgrixEffects::backToEgg),
-                new RelicSkill(Component.literal("Fazendinha"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Ressonância rank A ou maior e pelo menos 3 tipos de semente ou plantação no inventário (consumidos)."),
+        super(properties.hoe(ModToolMaterial.RELIC, -2.0F, -1.0F), MatrizModos.MARTELO, 0, 0, 2,
+                RelicSkill.passive(Component.translatable("relic.nexus.agrix.ciclo_da_vida"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.agrix.zona_verde"), AgrixEffects.GREEN_MANA, AgrixEffects::greenZone),
+                RelicSkill.active(Component.translatable("relic.nexus.agrix.crescimento_populacional"), AgrixEffects.GROWTH_MANA, AgrixEffects::growth),
+                RelicSkill.active(Component.translatable("relic.nexus.agrix.de_volta_ao_ovo"), AgrixEffects.EGG_MANA, AgrixEffects::backToEgg),
+                new RelicSkill(Component.translatable("relic.nexus.agrix.fazendinha"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.agrix.ressonancia_rank_a_ou_maior"),
                         AgrixEffects::canFarm, AgrixEffects::farm, AgrixEffects.FARM_MANA));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Mobs hostis mortos por você viram uma plantação no chão (terra, grama ou areia) ou dropam uma semente. "
-                    + "Animais que você acasala podem ter gêmeos.";
-            case 1 -> "Marque dois pontos: plantas, mudas e árvores recebem farinha de osso a cada 1,5s por um tempo.";
-            case 2 -> "Marque dois pontos: filhotes crescem mais rápido e os animais voltam a acasalar mais cedo.";
-            case 3 -> "Transforma o mob pacífico que você olha no ovo dele, guardando todos os dados.";
-            case 4 -> "Marque dois pontos: por 20s, mobs hostis dentro viram mobs pacíficos para sempre.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.agrix.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

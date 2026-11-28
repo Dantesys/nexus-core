@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -60,7 +61,9 @@ public final class DomixEffects {
     public static final int CRITTERS_MANA = 120, CRITTERS_COOLDOWN = 2400, CRITTERS_TICKS = 400;
     public static final int BORROW_MANA = 100, BORROW_COOLDOWN = 3000;
     public static final String[] POWERS = {"lobo", "gato", "papagaio", "cavalo", "lhama", "camelo", "axolote", "nautilo"};
-    public static final String[] POWER_NAMES = {"Lobo", "Gato", "Papagaio", "Cavalo", "Lhama", "Camelo", "Axolote", "Náutilo"};
+    public static final String[] POWER_NAMES = {"relic.nexus.domix.poder.lobo", "relic.nexus.domix.poder.gato", "relic.nexus.domix.poder.papagaio",
+            "relic.nexus.domix.poder.cavalo", "relic.nexus.domix.poder.lhama", "relic.nexus.domix.poder.camelo", "relic.nexus.domix.poder.axolote",
+            "relic.nexus.domix.poder.nautilo"};
     private static final String TEMP_TAG = "NexusPetTemporario", SPIT_TAG = "NexusCuspe";
     private static final Identifier CAT_FALL = Identifier.fromNamespaceAndPath(Nexus.MODID, "poder_gato");
     private static final Identifier PET_HEALTH = Identifier.fromNamespaceAndPath(Nexus.MODID, "domix_vida");
@@ -168,7 +171,7 @@ public final class DomixEffects {
             count++;
         }
         if (count == 0) {
-            RelicUtil.say(player, "Nenhum pet seu por perto.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.domix.nenhum_pet_seu_por_perto"));
             return false;
         }
         return true;
@@ -225,7 +228,7 @@ public final class DomixEffects {
             player.getAbilities().mayfly = true;
             player.onUpdateAbilities();
         }
-        RelicUtil.say(player, "Poder Emprestado: " + POWER_NAMES[power] + "!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.domix.poder_emprestado", Component.translatable(POWER_NAMES[power])));
         return true;
     }
 
@@ -248,7 +251,7 @@ public final class DomixEffects {
             player.onUpdateAbilities();
             player.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 160, 0));
         }
-        RelicUtil.say(player, "O pet voltou.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.domix.o_pet_voltou"));
     }
 
     public static int powerIndex(ServerPlayer player) {

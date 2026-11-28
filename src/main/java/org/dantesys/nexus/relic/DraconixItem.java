@@ -15,11 +15,11 @@ import java.util.List;
 public final class DraconixItem extends RelicItem {
     public DraconixItem(Properties properties) {
         super(properties.fireResistant(), MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Olhar Dracônico"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Baforada"), DraconixEffects.BREATH_MANA, DraconixEffects::breath),
-                RelicSkill.passive(Component.literal("Pele Escamosa"), 0, (p, s, c) -> false),
-                RelicSkill.passive(Component.literal("Asas"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("O Verdadeiro Dragão"), 0, DraconixEffects::trueDragon));
+                RelicSkill.passive(Component.translatable("relic.nexus.draconix.olhar_draconico"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.draconix.baforada"), DraconixEffects.BREATH_MANA, DraconixEffects::breath),
+                RelicSkill.passive(Component.translatable("relic.nexus.draconix.pele_escamosa"), 0, (p, s, c) -> false),
+                RelicSkill.passive(Component.translatable("relic.nexus.draconix.asas"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.draconix.o_verdadeiro_dragao"), 0, DraconixEffects::trueDragon));
     }
 
     /** Agachado: liga/desliga a Pele Escamosa. Planando com a pele: impulso das asas. */
@@ -42,20 +42,11 @@ public final class DraconixItem extends RelicItem {
     }
 
     @Override public Component hudInfo(ItemStack stack) {
-        return modelValue(stack, 1, 0) > 0 ? Component.literal("Pele Escamosa") : null;
+        return modelValue(stack, 1, 0) > 0 ? Component.translatable("relic.nexus.draconix.pele_escamosa") : null;
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Visão Noturna; hostis a 8 blocos fogem de você; endermen não se irritam; jogadores que te encaram causam 2% menos dano.";
-            case 1 -> "Baforada em cone (8 blocos): dano e fogo dracônico (não apaga com água, ignora Resistência ao Fogo).";
-            case 2 -> "Agachar + clique direito liga a pele: armadura acima do netherite, imune a fogo e lava. Sem armadura comum.";
-            case 3 -> "Com a pele ligada, ganha asas para planar; clique direito planando dá um impulso (5% da mana).";
-            case 4 -> "Chocar (uma vez): derrote o Ender Dragon, jogue sopro do dragão na lava e entre na lava roxa sem pele e sem armadura. "
-                    + "Ativar chama o dragão (já montado se estiver caindo ou voando) ou o guarda. Com ele fora, Baforada vira a baforada gigante dele, "
-                    + "clique direito montado dá um rugido que espanta e enfraquece, e as passivas da relíquia ficam com o dragão. Se ele morrer, 30 min para chocar de novo.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.draconix.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

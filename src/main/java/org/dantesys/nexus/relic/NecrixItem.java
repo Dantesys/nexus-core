@@ -10,25 +10,18 @@ import org.dantesys.nexus.util.MatrizModos;
 public final class NecrixItem extends RelicItem {
     public NecrixItem(Properties properties) {
         super(properties, MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Aliado dos Mortos"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Guerreiros Ósseos"), NecrixEffects.WARRIORS_MANA, NecrixEffects::warriors),
-                RelicSkill.active(Component.literal("Zona Óssea"), NecrixEffects.ZONE_MANA, NecrixEffects::boneZone),
-                new RelicSkill(Component.literal("A Elite Óssea"), RelicSkill.Kind.ACTIVE, Component.literal("Só um mini Wither por vez."),
+                RelicSkill.passive(Component.translatable("relic.nexus.necrix.aliado_dos_mortos"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.necrix.guerreiros_osseos"), NecrixEffects.WARRIORS_MANA, NecrixEffects::warriors),
+                RelicSkill.active(Component.translatable("relic.nexus.necrix.zona_ossea"), NecrixEffects.ZONE_MANA, NecrixEffects::boneZone),
+                new RelicSkill(Component.translatable("relic.nexus.necrix.a_elite_ossea"), RelicSkill.Kind.ACTIVE, Component.translatable("relic.nexus.necrix.so_um_mini_wither_por"),
                         NecrixEffects::canElite, NecrixEffects::elite, NecrixEffects.ELITE_MANA),
-                new RelicSkill(Component.literal("Exército de Ossos"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("1 stack de ossos e 3 cabeças de esqueleto Wither (gastos)."),
+                new RelicSkill(Component.translatable("relic.nexus.necrix.exercito_de_ossos"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.necrix.1_stack_de_ossos_e"),
                         NecrixEffects::canArmy, NecrixEffects::army, NecrixEffects.ARMY_MANA));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Zumbis e esqueletos (e variantes) não te atacam, a não ser que você ataque primeiro.";
-            case 1 -> "Invoca 5 esqueletos guerreiros (pets) que melhoram com a maestria. Usar de novo apaga os antigos.";
-            case 2 -> "Campo de 10 blocos por 10s: dano por segundo; quem morre nele vira guarda esqueleto seu. Quem sai leva Wither.";
-            case 3 -> "Invoca um mini Wither por até 20s que ataca os inimigos com caveiras. Recarga conta da morte dele.";
-            case 4 -> "Exército imortal de ~20 esqueletos por 30s (quem cai é substituído), com um mini Wither.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.necrix.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

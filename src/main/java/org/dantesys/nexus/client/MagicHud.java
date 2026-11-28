@@ -1,5 +1,6 @@
 package org.dantesys.nexus.client;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -119,7 +120,7 @@ public class MagicHud {
         var skill = relic.getSkills().get(slot);
         net.minecraft.network.chat.MutableComponent line;
         if (skill.kind() != org.dantesys.nexus.relic.RelicSkill.Kind.ACTIVE || !relic.isUnlocked(minecraft.player, slot)) {
-            line = net.minecraft.network.chat.Component.literal("Sem habilidade ativa");
+            line = net.minecraft.network.chat.Component.translatable("message.nexus.magichud.sem_habilidade_ativa");
         } else {
             line = skill.name().copy();
             long cooldown = relic.getCooldownRemaining(stack, minecraft.player.level().getGameTime(), slot);

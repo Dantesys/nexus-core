@@ -10,24 +10,17 @@ import org.dantesys.nexus.util.MatrizModos;
 public final class SculkyItem extends RelicItem {
     public SculkyItem(Properties properties) {
         super(properties, MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Eco Vivo"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Amplificador"), SculkyEffects.AMP_MANA, SculkyEffects::amplify),
-                RelicSkill.active(Component.literal("Pressão Sonora"), SculkyEffects.PRESSURE_MANA, SculkyEffects::pressure),
-                RelicSkill.active(Component.literal("Passo Sculk"), SculkyEffects.STEP_MANA, SculkyEffects::sculkStep),
-                new RelicSkill(Component.literal("Sonic Boom"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Amplificador ativo e Pressão Sonora e Passo Sculk prontos."),
+                RelicSkill.passive(Component.translatable("relic.nexus.sculky.eco_vivo"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.sculky.amplificador"), SculkyEffects.AMP_MANA, SculkyEffects::amplify),
+                RelicSkill.active(Component.translatable("relic.nexus.sculky.pressao_sonora"), SculkyEffects.PRESSURE_MANA, SculkyEffects::pressure),
+                RelicSkill.active(Component.translatable("relic.nexus.sculky.passo_sculk"), SculkyEffects.STEP_MANA, SculkyEffects::sculkStep),
+                new RelicSkill(Component.translatable("relic.nexus.sculky.sonic_boom"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.sculky.amplificador_ativo_e_pressao_sonora"),
                         SculkyEffects::canBoom, SculkyEffects::sonicBoom, SculkyEffects.BOOM_MANA));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Na mão: o Warden te ignora e o Sonic Boom não fere; você vê as vibrações num raio de 16 (contorno de quem as fez).";
-            case 1 -> "Por 1 minuto, melhora todas as habilidades e a passiva da relíquia.";
-            case 2 -> "Por 10s, batidas de grave em volta: brilho, dano, empurrão, náusea e interrompe quem come ou mira.";
-            case 3 -> "Cria uma mancha de sculk por 1 min. Em cima de sculk, teleporta para o sculk da mesma mancha para onde olha.";
-            case 4 -> "Dispara um Sonic Boom de 30 blocos que atravessa tudo: mata mobs comuns e fere muito jogadores e bosses.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.sculky.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

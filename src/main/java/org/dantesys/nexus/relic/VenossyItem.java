@@ -11,13 +11,13 @@ import java.util.List;
 /** Venossy: adaga do assassino. */
 public final class VenossyItem extends RelicItem {
     public VenossyItem(Properties properties) {
-        super(properties.sword(ModToolMaterial.STEEL_MATERIA, 3.0F, -1.8F), MatrizModos.ESPADA, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Mestre dos Venenos"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Aura de Assassino"), VenossyEffects.AURA_MANA, VenossyEffects::aura),
-                RelicSkill.active(Component.literal("Toxina Potente"), VenossyEffects.TOXIN_MANA, VenossyEffects::throwToxin),
-                RelicSkill.active(Component.literal("Veneno Paralisante"), VenossyEffects.PARALYZE_MANA, VenossyEffects::throwParalyze),
-                new RelicSkill(Component.literal("Sangue Tóxico"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Estar com a Toxina Potente e o Veneno Paralisante em você."),
+        super(properties.sword(ModToolMaterial.RELIC, 3.0F, -1.8F), MatrizModos.ESPADA, 0, 0, 2,
+                RelicSkill.passive(Component.translatable("relic.nexus.venossy.mestre_dos_venenos"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.venossy.aura_de_assassino"), VenossyEffects.AURA_MANA, VenossyEffects::aura),
+                RelicSkill.active(Component.translatable("relic.nexus.venossy.toxina_potente"), VenossyEffects.TOXIN_MANA, VenossyEffects::throwToxin),
+                RelicSkill.active(Component.translatable("relic.nexus.venossy.veneno_paralisante"), VenossyEffects.PARALYZE_MANA, VenossyEffects::throwParalyze),
+                new RelicSkill(Component.translatable("relic.nexus.venossy.sangue_toxico_2"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.venossy.estar_com_a_toxina_potente"),
                         VenossyEffects::canToxicBlood, VenossyEffects::toxicBlood, VenossyEffects.BLOOD_MANA));
     }
 
@@ -28,14 +28,7 @@ public final class VenossyItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Imune a veneno. Seus golpes envenenam (I, II no nível 10, III no 20), até mortos-vivos, e o veneno pode matar.";
-            case 1 -> "Aura de 3 blocos por 10s: inimigos nela levam o dobro do seu veneno e dos seus golpes.";
-            case 2 -> "Lança a adaga (volta sozinha): toxina que tira meio coração a cada 5s até a morte. Só o totem remove.";
-            case 3 -> "Lança a adaga (volta sozinha): o alvo fica totalmente paralisado por 5s, até bosses.";
-            case 4 -> "Com os dois venenos em você, tira-os e o próximo golpe aplica versões amplificadas e sem cura.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.venossy.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

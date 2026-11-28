@@ -101,11 +101,11 @@ public class RelicItem extends Item {
         if (!stack.is(this) || skills.isEmpty()) return;
         int slot = RelicSkill.nextActive(selectedSkill(stack), skills, masteryLevel(player), next);
         if (slot < 0) {
-            player.sendSystemMessage(Component.literal("Nenhuma habilidade ativa liberada ainda."), true);
+            player.sendSystemMessage(Component.translatable("message.nexus.relic.nenhuma_habilidade_ativa_liberada_ainda"), true);
             return;
         }
         writeLong(stack, SELECTED_TAG, slot);
-        player.sendSystemMessage(Component.literal("Selecionada: ").append(skills.get(slot).name().copy()), true);
+        player.sendSystemMessage(Component.translatable("message.nexus.relic.selecionada").append(skills.get(slot).name().copy()), true);
     }
 
     // ---------- Custos e recargas ----------
@@ -165,11 +165,11 @@ public class RelicItem extends Item {
     public boolean activate(ServerPlayer player, ItemStack stack, int slot) {
         if (!stack.is(this) || slot < 0 || slot >= skills.size()) return false;
         if (!(this instanceof MorpixItem) && MorpixEffects.transformed(player)) {
-            player.sendSystemMessage(Component.literal("Transformado: só os ataques da forma."), true);
+            player.sendSystemMessage(Component.translatable("message.nexus.relic.transformado_so_os_ataques_da"), true);
             return false;
         }
         if (!allowWhileParalyzed(slot) && player.hasEffect(org.dantesys.nexus.effects.ModEffects.PARALISIA)) {
-            player.sendSystemMessage(Component.literal("Paralisado!"), true);
+            player.sendSystemMessage(Component.translatable("message.nexus.relic.paralisado"), true);
             return false;
         }
         if (skills.get(slot).kind() == RelicSkill.Kind.PASSIVE) return false;
@@ -186,18 +186,18 @@ public class RelicItem extends Item {
         RelicSkill skill = skills.get(slot);
         if (skill.kind() != kind) return false;
         if (!isUnlocked(player, slot)) {
-            if (feedback) player.sendSystemMessage(Component.literal("Liberada na maestria " + RelicSkill.requiredLevel(slot) + "."), true);
+            if (feedback) player.sendSystemMessage(Component.translatable("message.nexus.relic.liberada_na_maestria", RelicSkill.requiredLevel(slot)), true);
             return false;
         }
         if (!skillsAvailable(player, stack, slot)) {
-            if (feedback) player.sendSystemMessage(Component.literal("Habilidades indisponíveis no momento."), true);
+            if (feedback) player.sendSystemMessage(Component.translatable("message.nexus.relic.habilidades_indisponiveis_no_momento"), true);
             return false;
         }
         long gameTime = player.level().getGameTime();
         boolean free = isFreeUse(player, stack, slot);
         long remaining = free ? 0 : getCooldownRemaining(stack, gameTime, slot);
         if (remaining > 0) {
-            if (feedback) player.sendSystemMessage(skill.name().copy().append(" em recarga: " + (remaining + 19) / 20 + "s"), true);
+            if (feedback) player.sendSystemMessage(Component.translatable("message.nexus.relic.em_recarga", skill.name(), (remaining + 19) / 20), true);
             return false;
         }
         if (!skill.condition().test(player, stack)) {
@@ -217,7 +217,7 @@ public class RelicItem extends Item {
         RelicAbilityContext context = new RelicAbilityContext(getElement(stack), resonance, affinity, cost, cooldown, power);
 
         if (magic.getMana() < cost) {
-            if (feedback) player.sendSystemMessage(Component.literal("Mana insuficiente (" + cost + ")."), true);
+            if (feedback) player.sendSystemMessage(Component.translatable("message.nexus.relic.mana_insuficiente", cost), true);
             return false;
         }
         if (!skill.effect().activate(player, stack, context)) return false;
@@ -310,7 +310,8 @@ public class RelicItem extends Item {
                 net.minecraft.resources.Identifier.fromNamespaceAndPath(org.dantesys.nexus.Nexus.MODID, relic + "_" + STAGE_NAMES[Math.clamp(stage, 0, 3)]));
         var current = stack.get(DataComponents.EQUIPPABLE);
         if (current != null && current.slot() == slot && current.assetId().isPresent() && current.assetId().get().equals(asset)) return;
-        stack.set(DataComponents.EQUIPPABLE, net.minecraft.world.item.equipment.Equippable.builder(slot).setAsset(asset).build());
+        stack.set(DataComponents.EQUIPPABLE, net.minecraft.world.item.equipment.Equippable.builder(slot)
+                .setEquipSound(org.dantesys.nexus.items.ModArmorMaterial.RELIC_ARMOR_MATERIAL.equipSound()).setAsset(asset).build());
         if (glider) stack.set(DataComponents.GLIDER, net.minecraft.util.Unit.INSTANCE);
     }
 

@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -89,7 +90,7 @@ public final class SkopyEffects {
         var magic = RelicUtil.magic(player);
         if (!player.hasInfiniteMaterials()) {
             if (!magic.useMana(SHOT_MANA)) {
-                RelicUtil.say(player, "Mana insuficiente para atirar.");
+                RelicUtil.say(player, Component.translatable("relic.nexus.skopy.mana_insuficiente_para_atirar"));
                 return false;
             }
             player.syncData(org.dantesys.nexus.data.ModAttachmentType.MAGIC_STATS);
@@ -110,7 +111,7 @@ public final class SkopyEffects {
                 if (target.hurtServer(level, level.damageSources().arrow(ghost, player), damage)) onArrowHit(player, target);
                 return true;
             }
-            RelicUtil.say(player, "Na Mosca: o alvo marcado sumiu.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.skopy.na_mosca_o_alvo_marcado"));
         }
 
         Arrow arrow = new Arrow(level, player, new ItemStack(Items.ARROW), stack);
@@ -173,7 +174,7 @@ public final class SkopyEffects {
                 s.moscaStage = 2;
                 s.moscaTarget = target;
                 s.moscaUntil = now(player) + MOSCA_MARK_TICKS;
-                RelicUtil.say(player, "Na Mosca: alvo marcado. O próximo tiro vai direto nele.");
+                RelicUtil.say(player, Component.translatable("relic.nexus.skopy.na_mosca_alvo_marcado_o"));
             }
         }
     }
@@ -235,7 +236,7 @@ public final class SkopyEffects {
         State s = state(player);
         s.moscaStage = 1;
         s.moscaTarget = null;
-        RelicUtil.say(player, "Na Mosca: o próximo tiro marca o alvo.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.skopy.na_mosca_o_proximo_tiro"));
         return true;
     }
 
@@ -243,7 +244,7 @@ public final class SkopyEffects {
 
     public static boolean ghost(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         state(player).ghostReady = true;
-        RelicUtil.say(player, "Ghost: o próximo tiro é espectral.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.skopy.ghost_o_proximo_tiro_e"));
         return true;
     }
 

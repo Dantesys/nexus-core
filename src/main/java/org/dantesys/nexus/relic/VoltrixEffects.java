@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -64,7 +65,7 @@ public final class VoltrixEffects {
 
     public static boolean armChain(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         state(player).chainArmed = true;
-        RelicUtil.say(player, "Golpe em Cadeia pronto.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.voltrix.golpe_em_cadeia_pronto"));
         return true;
     }
 
@@ -180,7 +181,7 @@ public final class VoltrixEffects {
     public static boolean fury(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         state(player).furyUntil = player.level().getGameTime() + FURY_TICKS;
         player.level().playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.PLAYERS, 2.0f, 1.2f);
-        RelicUtil.say(player, "Fúria do Trovão!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.voltrix.furia_do_trovao"));
         return true;
     }
 

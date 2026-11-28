@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -107,11 +108,11 @@ public final class DraconixEffects {
     // ---------- Nv 10 — Pele Escamosa / Nv 15 — Asas ----------
 
     public static void toggleScales(ServerPlayer player) {
-        if (dragonOut(player)) { RelicUtil.say(player, "O dragão está com a sua pele. Guarde-o primeiro."); return; }
+        if (dragonOut(player)) { RelicUtil.say(player, Component.translatable("relic.nexus.draconix.o_dragao_esta_com_a")); return; }
         boolean on = !player.getPersistentData().getBooleanOr(SCALES, false);
         player.getPersistentData().putBoolean(SCALES, on);
         applyScales(player, on);
-        RelicUtil.say(player, on ? "Pele Escamosa: ligada." : "Pele Escamosa: desligada.");
+        RelicUtil.say(player, Component.translatable(on ? "relic.nexus.draconix.pele_escamosa_ligada" : "relic.nexus.draconix.pele_escamosa_desligada"));
         player.level().playSound(null, player.blockPosition(), on ? SoundEvents.ARMOR_EQUIP_NETHERITE.value() : SoundEvents.ARMOR_EQUIP_LEATHER.value(), SoundSource.PLAYERS, 1.0f, 0.7f);
         ItemStack egg = item().findIn(player);
         if (!egg.isEmpty()) item().refreshModelData(player, egg);
@@ -148,7 +149,7 @@ public final class DraconixEffects {
         var magic = player.getData(ModAttachmentType.MAGIC_STATS);
         int cost = Math.max(1, magic.getMaxMana() / 20);
         if (!player.hasInfiniteMaterials()) {
-            if (magic.getMana() < cost) { RelicUtil.say(player, "Mana insuficiente (" + cost + ")."); return; }
+            if (magic.getMana() < cost) { RelicUtil.say(player, Component.translatable("relic.nexus.draconix.mana_insuficiente", cost)); return; }
             magic.useMana(cost);
             player.syncData(ModAttachmentType.MAGIC_STATS);
         }
@@ -186,15 +187,15 @@ public final class DraconixEffects {
             out.discard();
             DRAGONS.remove(player.getUUID());
             player.level().playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_FLAP, SoundSource.PLAYERS, 1.0f, 1.3f);
-            RelicUtil.say(player, "O dragão voltou para o ovo. Seus poderes voltaram.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.draconix.o_dragao_voltou_para_o"));
             return true;
         }
         if (!hatched(egg)) {
-            RelicUtil.say(player, "O ovo ainda não chocou: derrote o Ender Dragon, jogue sopro do dragão na lava e entre na lava roxa sem pele e sem armadura.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.draconix.o_ovo_ainda_nao_chocou"));
             return false;
         }
         if (player.getPersistentData().getBooleanOr(SCALES, false)) {
-            RelicUtil.say(player, "Desligue a Pele Escamosa: o dragão precisa da pele dele.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.draconix.desligue_a_pele_escamosa_o"));
             return false;
         }
         ServerLevel level = (ServerLevel) player.level();
@@ -213,7 +214,7 @@ public final class DraconixEffects {
         }
         level.sendParticles(net.minecraft.core.particles.PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), at.x, at.y + 1, at.z, 80, 1.2, 0.8, 1.2, 0.02);
         level.playSound(null, player.blockPosition(), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.PLAYERS, 1.5f, 1.4f);
-        RelicUtil.say(player, "O dragão atendeu ao chamado!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.draconix.o_dragao_atendeu_ao_chamado"));
         return true;
     }
 
@@ -223,7 +224,7 @@ public final class DraconixEffects {
         if (d == null) return;
         long now = player.level().getGameTime();
         Long until = ROAR.get(player.getUUID());
-        if (until != null && until > now) { RelicUtil.say(player, "Rugido em recarga: " + (until - now + 19) / 20 + "s"); return; }
+        if (until != null && until > now) { RelicUtil.say(player, Component.translatable("relic.nexus.draconix.rugido_em_recarga_s", (until - now + 19) / 20)); return; }
         ROAR.put(player.getUUID(), now + ROAR_COOLDOWN);
         ServerLevel level = (ServerLevel) player.level();
         d.openMouth(20);
@@ -244,7 +245,7 @@ public final class DraconixEffects {
         DRAGONS.remove(player.getUUID());
         ItemStack egg = item().findIn(player);
         if (!egg.isEmpty()) item().setCooldownTicks(player, egg, 4, DEATH_COOLDOWN);
-        RelicUtil.say(player, "Seu dragão caiu e voltou para o ovo. Ele leva 30 minutos para chocar de novo.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.draconix.seu_dragao_caiu_e_voltou"));
     }
 
     private static boolean killedEnderDragon(ServerPlayer player) {
@@ -264,13 +265,13 @@ public final class DraconixEffects {
         ItemStack egg = item().findIn(player);
         if (egg.isEmpty() || hatched(egg)) return;
         String problem = null;
-        if (!item().isUnlocked(player, 4)) problem = "O ovo ainda não está pronto (maestria máxima).";
-        else if (!killedEnderDragon(player)) problem = "O ovo só choca para quem derrotou o Ender Dragon.";
-        else if (player.getPersistentData().getBooleanOr(SCALES, false)) problem = "Desligue a Pele Escamosa para chocar o ovo.";
-        else if (wearsArmor(player)) problem = "Tire a armadura para chocar o ovo.";
+        if (!item().isUnlocked(player, 4)) problem = "relic.nexus.draconix.ovo_nao_pronto";
+        else if (!killedEnderDragon(player)) problem = "relic.nexus.draconix.ovo_precisa_ender_dragon";
+        else if (player.getPersistentData().getBooleanOr(SCALES, false)) problem = "relic.nexus.draconix.ovo_desligue_pele";
+        else if (wearsArmor(player)) problem = "relic.nexus.draconix.ovo_tire_armadura";
         if (problem != null) {
             long now = level.getGameTime();
-            if (HINT.getOrDefault(player.getUUID(), 0L) <= now) { RelicUtil.say(player, problem); HINT.put(player.getUUID(), now + 100); }
+            if (HINT.getOrDefault(player.getUUID(), 0L) <= now) { RelicUtil.say(player, Component.translatable(problem)); HINT.put(player.getUUID(), now + 100); }
             return;
         }
         BlockPos center = player.blockPosition();
@@ -280,7 +281,7 @@ public final class DraconixEffects {
         level.sendParticles(net.minecraft.core.particles.PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), player.getX(), player.getY() + 1, player.getZ(), 150, 1.5, 1.5, 1.5, 0.05);
         level.playSound(null, center, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.PLAYERS, 2.0f, 1.6f);
         level.playSound(null, center, SoundEvents.SNIFFER_EGG_HATCH, SoundSource.PLAYERS, 2.0f, 0.8f);
-        RelicUtil.say(player, "O ovo chocou! Ative O Verdadeiro Dragão para chamá-lo.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.draconix.o_ovo_chocou_ative_o"));
     }
 
     /** Sopro do dragão jogado na lava a transforma em lava roxa. */
@@ -346,7 +347,7 @@ public final class DraconixEffects {
                 if (worn.isEmpty()) continue;
                 player.setItemSlot(slot, ItemStack.EMPTY);
                 RelicUtil.giveOrDrop(player, worn);
-                RelicUtil.say(player, "A Pele Escamosa não deixa usar armadura.");
+                RelicUtil.say(player, Component.translatable("relic.nexus.draconix.a_pele_escamosa_nao_deixa"));
             }
             if (player.isInLava()) player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 40, 0, true, false, false));
         }

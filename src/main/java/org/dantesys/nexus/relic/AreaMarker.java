@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.resources.ResourceKey;
@@ -64,22 +65,22 @@ public final class AreaMarker {
     public static AABB mark(ServerPlayer player, RelicItem relic, int slot, int maxSide) {
         UUID id = player.getUUID();
         if (player.isShiftKeyDown()) {
-            if (PENDING.remove(id) != null) RelicUtil.say(player, "Marcação cancelada.");
+            if (PENDING.remove(id) != null) RelicUtil.say(player, Component.translatable("message.nexus.relic.marcacao_cancelada"));
             return null;
         }
         BlockHitResult hit = RelicUtil.targetBlock(player, MAX_DISTANCE);
         if (hit == null) {
-            RelicUtil.say(player, "Mire em um bloco (até " + MAX_DISTANCE + " blocos).");
+            RelicUtil.say(player, Component.translatable("message.nexus.relic.mire_em_um_bloco_ate", MAX_DISTANCE));
             return null;
         }
         if (!hasPending(player, relic, slot)) {
             PENDING.put(id, new Pending(relic, slot, player.level().dimension(), hit.getBlockPos(), maxSide));
-            RelicUtil.say(player, "Ponto 1 marcado. Mire no ponto 2 e use de novo (Shift cancela).");
+            RelicUtil.say(player, Component.translatable("message.nexus.relic.ponto_1_marcado_mire_no"));
             return null;
         }
         BlockPos first = PENDING.get(id).first(), second = hit.getBlockPos();
         if (!fits(first, second, maxSide)) {
-            RelicUtil.say(player, "Área grande demais (máx. " + maxSide + " blocos por lado).");
+            RelicUtil.say(player, Component.translatable("message.nexus.relic.area_grande_demais_max_blocos", maxSide));
             return null;
         }
         PENDING.remove(id);

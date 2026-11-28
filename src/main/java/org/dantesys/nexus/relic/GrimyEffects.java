@@ -45,8 +45,9 @@ import java.util.*;
 public final class GrimyEffects {
     private GrimyEffects() {}
 
-    public static final String[] NAMES = {"Míssil Mágico", "Escudo Arcano", "Bola de Fogo", "Reflexão Mágica", "Raio Arcano", "YNP",
-            "Clarão Destruidor", "Explosion", "Dooom", "Super Nova"};
+    public static final String[] NAMES = {"relic.nexus.grimy.pagina.0", "relic.nexus.grimy.pagina.1", "relic.nexus.grimy.pagina.2",
+            "relic.nexus.grimy.pagina.3", "relic.nexus.grimy.pagina.4", "relic.nexus.grimy.pagina.5", "relic.nexus.grimy.pagina.6",
+            "relic.nexus.grimy.pagina.7", "relic.nexus.grimy.pagina.8", "relic.nexus.grimy.pagina.9"};
     /** Custo em % da Capacidade de mana e recarga em ticks, por pagina. */
     private static final int[] COST = {3, 10, 8, 12, 0, 15, 20, 50, 100, 100};
     private static final int[] COOLDOWN = {20, 600, 100, 900, 0, 1200, 600, 2400, 18000, 18000};
@@ -71,7 +72,7 @@ public final class GrimyEffects {
     private static void setPage(ServerPlayer player, ItemStack stack, int page) {
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.putInt(PAGE, page));
         player.level().playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
-        RelicUtil.say(player, "Página " + (page + 1) + ": " + NAMES[page]);
+        RelicUtil.say(player, Component.translatable("relic.nexus.grimy.pagina", (page + 1), Component.translatable(NAMES[page])));
     }
 
     public static void turnPage(ServerPlayer player, ItemStack stack, boolean next) {
@@ -85,10 +86,10 @@ public final class GrimyEffects {
         List<ItemStack> icons = new ArrayList<>();
         for (int i = 0; i < open; i++) {
             ItemStack icon = new ItemStack(i >= 8 ? Items.ENCHANTED_BOOK : Items.PAPER);
-            icon.set(DataComponents.CUSTOM_NAME, Component.literal((i + 1) + ". " + NAMES[i]));
+            icon.set(DataComponents.CUSTOM_NAME, Component.translatable("relic.nexus.grimy.texto", (i + 1), Component.translatable(NAMES[i])));
             icons.add(icon);
         }
-        IconMenu.open(player, Component.literal("Grimy — páginas"), icons, i -> setPage(player, stack, i), p -> p.getMainHandItem() == stack || p.getOffhandItem() == stack);
+        IconMenu.open(player, Component.translatable("relic.nexus.grimy.grimy_paginas"), icons, i -> setPage(player, stack, i), p -> p.getMainHandItem() == stack || p.getOffhandItem() == stack);
     }
 
     private static long cooldownLeft(ServerPlayer p, ItemStack stack, int page) {
@@ -104,7 +105,7 @@ public final class GrimyEffects {
         if (player.hasInfiniteMaterials()) return true;
         var magic = player.getData(ModAttachmentType.MAGIC_STATS);
         int cost = Math.max(1, magic.getMaxMana() * percent / 100);
-        if (magic.getMana() < cost) { RelicUtil.say(player, "Mana insuficiente (" + cost + ")."); return false; }
+        if (magic.getMana() < cost) { RelicUtil.say(player, Component.translatable("relic.nexus.grimy.mana_insuficiente", cost)); return false; }
         magic.useMana(cost);
         player.syncData(ModAttachmentType.MAGIC_STATS);
         return true;
@@ -114,13 +115,13 @@ public final class GrimyEffects {
     private static net.minecraft.world.damagesource.DamageSource magicSource(ServerPlayer p) { return RelicUtil.source(lvl(p), RelicUtil.damageType("grimy_magia"), p); }
 
     public static boolean cast(ServerPlayer player, ItemStack stack, int page) {
-        if (page >= unlockedPages(player)) { RelicUtil.say(player, "Página ainda bloqueada."); return false; }
-        if (page == BEAM) { RelicUtil.say(player, "Segure o clique direito para o Raio Arcano."); return false; }
+        if (page >= unlockedPages(player)) { RelicUtil.say(player, Component.translatable("relic.nexus.grimy.pagina_ainda_bloqueada")); return false; }
+        if (page == BEAM) { RelicUtil.say(player, Component.translatable("relic.nexus.grimy.segure_o_clique_direito_para")); return false; }
         long left = cooldownLeft(player, stack, page);
-        if (left > 0) { RelicUtil.say(player, NAMES[page] + " em recarga: " + (left + 19) / 20 + "s"); return false; }
+        if (left > 0) { RelicUtil.say(player, Component.translatable("relic.nexus.grimy.em_recarga_s", Component.translatable(NAMES[page]), (left + 19) / 20)); return false; }
         var magic = player.getData(ModAttachmentType.MAGIC_STATS);
-        if (page >= 8 && !player.hasInfiniteMaterials() && magic.getMana() < magic.getMaxMana()) { RelicUtil.say(player, "Precisa da barra de mana cheia."); return false; }
-        if (page == 7 && !player.hasInfiniteMaterials() && magic.getMana() < magic.getMaxMana() / 2) { RelicUtil.say(player, "Precisa de pelo menos metade da mana."); return false; }
+        if (page >= 8 && !player.hasInfiniteMaterials() && magic.getMana() < magic.getMaxMana()) { RelicUtil.say(player, Component.translatable("relic.nexus.grimy.precisa_da_barra_de_mana")); return false; }
+        if (page == 7 && !player.hasInfiniteMaterials() && magic.getMana() < magic.getMaxMana() / 2) { RelicUtil.say(player, Component.translatable("relic.nexus.grimy.precisa_de_pelo_menos_metade")); return false; }
         boolean done = switch (page) {
             case 0 -> missile(player);
             case 1 -> shield(player);
@@ -149,7 +150,7 @@ public final class GrimyEffects {
         LivingEntity target = player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(20), e -> RelicTargets.canHit(player, e) && e.distanceTo(player) <= 20)
                 .stream().filter(e -> look.dot(e.getEyePosition().subtract(eye).normalize()) > 0.8)
                 .max(Comparator.comparingDouble(e -> look.dot(e.getEyePosition().subtract(eye).normalize()))).orElse(null);
-        if (target == null) { RelicUtil.say(player, "Nenhum alvo na mira."); return false; }
+        if (target == null) { RelicUtil.say(player, Component.translatable("relic.nexus.grimy.nenhum_alvo_na_mira")); return false; }
         ShulkerBullet bullet = new ShulkerBullet(player.level(), player, target, Direction.Axis.Y);
         bullet.setPos(eye.add(look));
         bullet.getPersistentData().putBoolean(TAG, true);
@@ -337,7 +338,7 @@ public final class GrimyEffects {
         CHANNELS.add(new Channel(player, lvl(player), aim(player, 30), player.level().getGameTime() + 40));
         player.addEffect(new MobEffectInstance(ModEffects.PARALISIA, 40, 0, false, false));
         player.level().playSound(null, player.blockPosition(), SoundEvents.EVOKER_PREPARE_ATTACK, SoundSource.PLAYERS, 1.5f, 0.6f);
-        RelicUtil.say(player, "EXPLOSION!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.grimy.explosion"));
         return true;
     }
 
@@ -375,7 +376,7 @@ public final class GrimyEffects {
         Vec3 center = aim(player, 20);
         DOOMS.add(new Doom(player, lvl(player), center, player.level().getGameTime() + 140, BuracoNegro.spawn(lvl(player), center, 4.0F)));
         player.level().playSound(null, player.blockPosition(), SoundEvents.WITHER_SPAWN, SoundSource.PLAYERS, 1.5f, 0.4f);
-        RelicUtil.say(player, "Dooom!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.grimy.dooom"));
         return true;
     }
 

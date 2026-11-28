@@ -2,6 +2,7 @@ package org.dantesys.nexus.relic;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -19,11 +20,11 @@ import java.util.List;
 public final class GrimyItem extends RelicItem {
     public GrimyItem(Properties properties) {
         super(properties, MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Aprendiz"), 0, (p, s, c) -> false),
-                RelicSkill.passive(Component.literal("Mago Jr."), 0, (p, s, c) -> false),
-                RelicSkill.passive(Component.literal("Mago"), 0, (p, s, c) -> false),
-                RelicSkill.passive(Component.literal("Arquimago"), 0, (p, s, c) -> false),
-                RelicSkill.passive(Component.literal("Grão-Mago Arcanum"), 0, (p, s, c) -> false));
+                RelicSkill.passive(Component.translatable("relic.nexus.grimy.aprendiz"), 0, (p, s, c) -> false),
+                RelicSkill.passive(Component.translatable("relic.nexus.grimy.mago_jr"), 0, (p, s, c) -> false),
+                RelicSkill.passive(Component.translatable("relic.nexus.grimy.mago"), 0, (p, s, c) -> false),
+                RelicSkill.passive(Component.translatable("relic.nexus.grimy.arquimago"), 0, (p, s, c) -> false),
+                RelicSkill.passive(Component.translatable("relic.nexus.grimy.grao_mago_arcanum"), 0, (p, s, c) -> false));
     }
 
     /** Shift + rolagem: vira as paginas. */
@@ -59,27 +60,20 @@ public final class GrimyItem extends RelicItem {
 
     @Override public Component hudInfo(ItemStack stack) {
         int page = GrimyEffects.page(stack);
-        StringBuilder line = new StringBuilder("Página " + (page + 1) + ": " + GrimyEffects.NAMES[page]);
+        MutableComponent line = Component.translatable("relic.nexus.grimy.pagina", page + 1, Component.translatable(GrimyEffects.NAMES[page]));
         Player player = CLIENT_PLAYER.get();
         if (player != null) {
             long left = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getLongOr(GrimyEffects.CD + page, 0) - player.level().getGameTime();
-            if (left > 0) line.append(" (").append((left + 19) / 20).append("s)");
+            if (left > 0) line.append(" (" + (left + 19) / 20 + "s)");
         }
-        return Component.literal(line.toString());
+        return line;
     }
 
     @Override public List<Component> extraTooltip(ItemStack stack) {
-        return List.of(Component.literal("Agachar + clique direito: escolher página. Clique direito ou tecla da relíquia: lançar."));
+        return List.of(Component.translatable("relic.nexus.grimy.agachar_clique_direito_escolher_pagina"));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Páginas 1 e 2: Míssil Mágico (teleguiado) e Escudo Arcano.";
-            case 1 -> "Páginas 3 e 4: Bola de Fogo e Reflexão Mágica.";
-            case 2 -> "Páginas 5 e 6: Raio Arcano (segure o clique) e YNP (barreira).";
-            case 3 -> "Páginas 7 e 8: Clarão Destruidor e Explosion.";
-            case 4 -> "Páginas 9 e 10 (finais, gastam a mana cheia): Dooom e Super Nova.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.grimy.skill." + slot + ".desc");
     }
 }

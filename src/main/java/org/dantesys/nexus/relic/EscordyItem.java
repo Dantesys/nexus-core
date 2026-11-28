@@ -24,12 +24,12 @@ import java.util.List;
 public final class EscordyItem extends RelicItem {
     public EscordyItem(Properties properties) {
         super(properties, MatrizModos.ARCO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Cartucho"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Mãos Ágeis"), EscordyEffects.AGILE_MANA, EscordyEffects::agile),
-                RelicSkill.active(Component.literal("Cartucho Pronto"), EscordyEffects.READY_MANA, EscordyEffects::ready),
-                RelicSkill.active(Component.literal("Munição Alternativa"), EscordyEffects.FIREWORK_MANA, EscordyEffects::fireworkAmmo),
-                new RelicSkill(Component.literal("Mix"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("Regeneração rank A ou maior, algum mob ou jogador num raio de 5 blocos e nenhuma carga em reserva."),
+                RelicSkill.passive(Component.translatable("relic.nexus.escordy.cartucho"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.escordy.maos_ageis_2"), EscordyEffects.AGILE_MANA, EscordyEffects::agile),
+                RelicSkill.active(Component.translatable("relic.nexus.escordy.cartucho_pronto"), EscordyEffects.READY_MANA, EscordyEffects::ready),
+                RelicSkill.active(Component.translatable("relic.nexus.escordy.municao_alternativa"), EscordyEffects.FIREWORK_MANA, EscordyEffects::fireworkAmmo),
+                new RelicSkill(Component.translatable("relic.nexus.escordy.mix"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.escordy.regeneracao_rank_a_ou_maior"),
                         EscordyEffects::canMix, EscordyEffects::mix, EscordyEffects.MIX_MANA));
     }
 
@@ -64,16 +64,7 @@ public final class EscordyItem extends RelicItem {
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Sem flechas: cada recarga gasta mana e soma 1 carga (10, até 20 com a maestria). Cada carga é um chumbo; "
-                    + "mais chumbos, cone mais largo. Forte de perto. Clique dispara; Shift + clique segurado recarrega mais.";
-            case 1 -> "Por ~10s, recarrega muito rápido e um pouco mais barato.";
-            case 2 -> "Por alguns segundos, fica sempre com carga 5, sem recarregar nem gastar mana. A carga guardada volta depois.";
-            case 3 -> "O próximo disparo vira fogos de artifício (até 5 foguetes), mais fortes com mais carga. Você não leva dano.";
-            case 4 -> "Por ~2 min: limite de 50 cargas, chumbos com efeitos sorteados e chance de virar foguete. "
-                    + "No fim, a carga vira disparos de reserva.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.escordy.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {
@@ -96,6 +87,7 @@ public final class EscordyItem extends RelicItem {
 
     @Override public Component hudInfo(ItemStack stack) {
         int charge = (int) modelValue(stack, 1, 0), limit = (int) modelValue(stack, 2, 10), reserve = (int) modelValue(stack, 3, 0);
-        return Component.literal("Carga " + charge + "/" + limit + (reserve > 0 ? " · Reserva " + reserve : ""));
+        return reserve > 0 ? Component.translatable("relic.nexus.escordy.hud_carga_reserva", charge, limit, reserve)
+                : Component.translatable("relic.nexus.escordy.hud_carga", charge, limit);
     }
 }

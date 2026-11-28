@@ -92,7 +92,7 @@ public final class ExploryEffects {
             else if (!stack.isEmpty()) overflow.add(stack);
         }
         overflow.forEach(s -> RelicUtil.giveOrDrop(player, s));
-        player.openMenu(new SimpleMenuProvider((id, inv, p) -> new Backpack(id, p, container, rows), Component.literal("Mochila")));
+        player.openMenu(new SimpleMenuProvider((id, inv, p) -> new Backpack(id, p, container, rows), Component.translatable("relic.nexus.explory.mochila")));
         player.level().playSound(null, player.blockPosition(), SoundEvents.BUNDLE_DROP_CONTENTS, SoundSource.PLAYERS, 0.6f, 1.0f);
     }
 
@@ -124,19 +124,19 @@ public final class ExploryEffects {
 
     private record Target(String name, int minLevel, ResourceKey<Level> dim, List<ResourceKey<Structure>> structures, boolean village) {}
     private static final List<Target> TARGETS = List.of(
-            new Target("Vila", 5, Level.OVERWORLD, List.of(), true),
-            new Target("Templo do Deserto", 10, Level.OVERWORLD, List.of(BuiltinStructures.DESERT_PYRAMID), false),
-            new Target("Templo da Selva", 10, Level.OVERWORLD, List.of(BuiltinStructures.JUNGLE_TEMPLE), false),
-            new Target("Cabana da Bruxa", 10, Level.OVERWORLD, List.of(BuiltinStructures.SWAMP_HUT), false),
-            new Target("Posto Avançado", 10, Level.OVERWORLD, List.of(BuiltinStructures.PILLAGER_OUTPOST), false),
-            new Target("Fortaleza do End", 15, Level.OVERWORLD, List.of(BuiltinStructures.STRONGHOLD), false),
-            new Target("Cidade Antiga", 15, Level.OVERWORLD, List.of(BuiltinStructures.ANCIENT_CITY), false),
-            new Target("Fortaleza do Nether", 15, Level.NETHER, List.of(BuiltinStructures.FORTRESS), false));
+            new Target("relic.nexus.explory.alvo.vila", 5, Level.OVERWORLD, List.of(), true),
+            new Target("relic.nexus.explory.alvo.templo_deserto", 10, Level.OVERWORLD, List.of(BuiltinStructures.DESERT_PYRAMID), false),
+            new Target("relic.nexus.explory.alvo.templo_selva", 10, Level.OVERWORLD, List.of(BuiltinStructures.JUNGLE_TEMPLE), false),
+            new Target("relic.nexus.explory.alvo.cabana_bruxa", 10, Level.OVERWORLD, List.of(BuiltinStructures.SWAMP_HUT), false),
+            new Target("relic.nexus.explory.alvo.posto_avancado", 10, Level.OVERWORLD, List.of(BuiltinStructures.PILLAGER_OUTPOST), false),
+            new Target("relic.nexus.explory.alvo.fortaleza_end", 15, Level.OVERWORLD, List.of(BuiltinStructures.STRONGHOLD), false),
+            new Target("relic.nexus.explory.alvo.cidade_antiga", 15, Level.OVERWORLD, List.of(BuiltinStructures.ANCIENT_CITY), false),
+            new Target("relic.nexus.explory.alvo.fortaleza_nether", 15, Level.NETHER, List.of(BuiltinStructures.FORTRESS), false));
 
     public static void cycleTracker(ServerPlayer player, ItemStack stack) {
         int level = item().masteryLevel(player);
         List<Target> open = TARGETS.stream().filter(t -> level >= t.minLevel).toList();
-        if (open.isEmpty()) { RelicUtil.say(player, "Rastreador liberado na maestria 5."); return; }
+        if (open.isEmpty()) { RelicUtil.say(player, Component.translatable("relic.nexus.explory.rastreador_liberado_na_maestria_5")); return; }
         int index = Math.floorMod(stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().getIntOr(TARGET_INDEX, -1) + 1, open.size());
         Target target = open.get(index);
         ServerLevel searchLevel = player.level().getServer().getLevel(target.dim);
@@ -155,7 +155,7 @@ public final class ExploryEffects {
         final int idx = index;
         if (found == null) {
             CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> { t.putInt(TARGET_INDEX, idx); t.remove(TARGET_NAME); });
-            RelicUtil.say(player, target.name + ": nada por perto.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.explory.nada_por_perto", Component.translatable(target.name)));
             return;
         }
         BlockPos pos = found;
@@ -165,7 +165,7 @@ public final class ExploryEffects {
             t.putString(TARGET_DIM, target.dim.identifier().toString());
             t.putInt(TARGET_X, pos.getX()); t.putInt(TARGET_Y, pos.getY()); t.putInt(TARGET_Z, pos.getZ());
         });
-        RelicUtil.say(player, "Rastreando: " + target.name + ".");
+        RelicUtil.say(player, Component.translatable("relic.nexus.explory.rastreando", Component.translatable(target.name)));
         player.level().playSound(null, player.blockPosition(), SoundEvents.LODESTONE_COMPASS_LOCK, SoundSource.PLAYERS, 1.0f, 1.0f);
     }
 
@@ -183,7 +183,7 @@ public final class ExploryEffects {
         ServerLevel level = (ServerLevel) player.level();
         BlockPos pos = player.blockPosition();
         if (!level.getBlockState(pos).canBeReplaced() || !level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), net.minecraft.core.Direction.UP)) {
-            RelicUtil.say(player, "Precisa de um chão firme e livre para a fogueira.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.explory.precisa_de_um_chao_firme"));
             return false;
         }
         endCamp(player.getUUID(), level.getServer());
@@ -196,7 +196,7 @@ public final class ExploryEffects {
         }
         CAMPS.put(player.getUUID(), camp);
         level.playSound(null, pos, SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
-        RelicUtil.say(player, "Acampamento montado por 10 minutos.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.explory.acampamento_montado_por_10_minutos"));
         return true;
     }
 
@@ -210,7 +210,7 @@ public final class ExploryEffects {
             if (p != null) p.setRespawnPosition(e.getValue(), false);
         }
         ServerPlayer p = server.getPlayerList().getPlayer(owner);
-        if (p != null) RelicUtil.say(p, "O acampamento acabou.");
+        if (p != null) RelicUtil.say(p, Component.translatable("relic.nexus.explory.o_acampamento_acabou"));
     }
 
     @SubscribeEvent
@@ -244,22 +244,22 @@ public final class ExploryEffects {
             CompoundTag home = new CompoundTag();
             home.putDouble("x", player.getX()); home.putDouble("y", player.getY()); home.putDouble("z", player.getZ());
             player.getPersistentData().put(key, home);
-            RelicUtil.say(player, "Casa marcada nesta dimensão.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.explory.casa_marcada_nesta_dimensao"));
             return true;
         }
         boolean hasReturn = player.getPersistentData().contains(RETURN);
         if (!hasReturn && !player.getPersistentData().contains(key)) {
-            RelicUtil.say(player, "Nenhuma casa nesta dimensão (agache e use para marcar).");
+            RelicUtil.say(player, Component.translatable("relic.nexus.explory.nenhuma_casa_nesta_dimensao_agache"));
             return false;
         }
         WARMUPS.put(player.getUUID(), new Warmup(player.level().getGameTime() + HOME_WARMUP, player.position()));
-        RelicUtil.say(player, hasReturn ? "Voltando da aventura em 3s..." : "Voltando para casa em 3s...");
+        RelicUtil.say(player, Component.translatable(hasReturn ? "relic.nexus.explory.voltando_aventura" : "relic.nexus.explory.voltando_casa"));
         return true;
     }
 
     @SubscribeEvent
     public static void hurt(LivingDamageEvent.Post event) {
-        if (WARMUPS.remove(event.getEntity().getUUID()) != null && event.getEntity() instanceof ServerPlayer p) RelicUtil.say(p, "Viagem cancelada.");
+        if (WARMUPS.remove(event.getEntity().getUUID()) != null && event.getEntity() instanceof ServerPlayer p) RelicUtil.say(p, Component.translatable("relic.nexus.explory.viagem_cancelada"));
     }
 
     private static void travel(ServerPlayer player, ServerLevel level, Vec3 to) {
@@ -316,7 +316,7 @@ public final class ExploryEffects {
         ret.putDouble("x", player.getX()); ret.putDouble("y", player.getY()); ret.putDouble("z", player.getZ());
         player.getPersistentData().put(RETURN, ret);
         travel(player, level, safeSpot(level, tag.getIntOr(TARGET_X, 0), tag.getIntOr(TARGET_Z, 0), tag.getIntOr(TARGET_Y, 64)));
-        RelicUtil.say(player, "Aventura a um passo: " + tag.getStringOr(TARGET_NAME, "") + "!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.explory.aventura_a_um_passo", Component.translatable(tag.getStringOr(TARGET_NAME, ""))));
         return true;
     }
 

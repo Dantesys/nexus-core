@@ -10,24 +10,17 @@ import org.dantesys.nexus.util.MatrizModos;
 public final class ElixyItem extends RelicItem {
     public ElixyItem(Properties properties) {
         super(properties, MatrizModos.MARTELO, 0, 0, 2,
-                RelicSkill.passive(Component.literal("Negação"), 0, (p, s, c) -> false),
-                RelicSkill.active(Component.literal("Poção do Louco"), ElixyEffects.MAD_MANA, ElixyEffects::madPotion),
-                RelicSkill.active(Component.literal("Criador de Poção"), ElixyEffects.CREATE_MANA, ElixyEffects::createPotion),
-                RelicSkill.active(Component.literal("Ouro dos Tolos"), ElixyEffects.GOLD_MANA, ElixyEffects::foolsGold),
-                new RelicSkill(Component.literal("Transmutação"), RelicSkill.Kind.ACTIVE,
-                        Component.literal("2 poções de efeitos diferentes no inventário (gastas)."),
+                RelicSkill.passive(Component.translatable("relic.nexus.elixy.negacao"), 0, (p, s, c) -> false),
+                RelicSkill.active(Component.translatable("relic.nexus.elixy.pocao_do_louco"), ElixyEffects.MAD_MANA, ElixyEffects::madPotion),
+                RelicSkill.active(Component.translatable("relic.nexus.elixy.criador_de_pocao"), ElixyEffects.CREATE_MANA, ElixyEffects::createPotion),
+                RelicSkill.active(Component.translatable("relic.nexus.elixy.ouro_dos_tolos"), ElixyEffects.GOLD_MANA, ElixyEffects::foolsGold),
+                new RelicSkill(Component.translatable("relic.nexus.elixy.transmutacao"), RelicSkill.Kind.ACTIVE,
+                        Component.translatable("relic.nexus.elixy.2_pocoes_de_efeitos_diferentes"),
                         ElixyEffects::canTransmute, ElixyEffects::transmute, ElixyEffects.TRANSMUTE_MANA));
     }
 
     @Override public Component skillDescription(int slot) {
-        return Component.literal(switch (slot) {
-            case 0 -> "Todo efeito negativo em você vira o contrário (mesmo nível e duração). Náusea é anulada.";
-            case 1 -> "Arremessa uma poção com 1 a 5 efeitos negativos aleatórios. Recarga de 10s por efeito.";
-            case 2 -> "Gera uma poção com um efeito positivo aleatório (nível III ou mais) por 1 minuto.";
-            case 3 -> "Poção que transforma mobs sem dono em ouro. Em jogadores e bosses, dano de Dano Instantâneo I.";
-            case 4 -> "Por 30s, área de 10 blocos: hostis viram pacíficos para sempre; inimigos perdem efeitos bons e ganham ruins a cada segundo.";
-            default -> "";
-        });
+        return Component.translatable("relic.nexus.elixy.skill." + slot + ".desc");
     }
 
     @Override public int getCooldownTicks(ItemStack stack, int slot) {

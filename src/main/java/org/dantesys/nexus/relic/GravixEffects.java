@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -62,7 +63,7 @@ public final class GravixEffects {
     private static void setDrift(ServerPlayer player, State s, boolean on) {
         s.drifting = on;
         player.setNoGravity(on);
-        RelicUtil.say(player, on ? "Gravidade Zero: ligada." : "Gravidade Zero: desligada.");
+        RelicUtil.say(player, Component.translatable(on ? "relic.nexus.gravix.gravidade_zero_ligada" : "relic.nexus.gravix.gravidade_zero_desligada"));
         ItemStack boots = player.getItemBySlot(EquipmentSlot.FEET);
         if (boots.is(item())) item().refreshModelData(player, boots);
     }
@@ -159,7 +160,7 @@ public final class GravixEffects {
 
     public static boolean armShift(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         state(player).shiftArmed = true;
-        RelicUtil.say(player, "Gravidade Manipulada pronta: acerte um alvo.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.gravix.gravidade_manipulada_pronta_acerte_um"));
         return true;
     }
 

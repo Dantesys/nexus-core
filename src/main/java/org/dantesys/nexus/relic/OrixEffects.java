@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -184,7 +185,7 @@ public final class OrixEffects {
             level.sendParticles(ParticleTypes.SONIC_BOOM, player.getX() + Math.cos(angle) * 2, player.getY() + 1,
                     player.getZ() + Math.sin(angle) * 2, 0, Math.cos(angle), 0, Math.sin(angle), 0.3);
         }
-        RelicUtil.say(player, found.isEmpty() ? "Sonar: nenhum minério por perto." : "Sonar: " + found.size() + " minérios.");
+        RelicUtil.say(player, found.isEmpty() ? Component.translatable("relic.nexus.orix.sonar_nenhum") : Component.translatable("relic.nexus.orix.sonar_minerios", found.size()));
         return true;
     }
 
@@ -208,7 +209,7 @@ public final class OrixEffects {
     public static boolean midas(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         BlockHitResult hit = RelicUtil.targetBlock(player, MIDAS_DISTANCE);
         if (hit == null) {
-            RelicUtil.say(player, "Toque um bloco (até " + MIDAS_DISTANCE + " blocos).");
+            RelicUtil.say(player, Component.translatable("relic.nexus.orix.toque_um_bloco_ate_blocos", MIDAS_DISTANCE));
             return false;
         }
         ServerLevel level = (ServerLevel) player.level();
@@ -216,7 +217,7 @@ public final class OrixEffects {
         if (!level.mayInteract(player, pos)) return false;
         Block result = midasResult(level.getBlockState(pos), item().masteryLevel(player), level.getRandom());
         if (result == null) {
-            RelicUtil.say(player, "O Toque de Midas não muda esse bloco (ou o resultado ainda não está liberado).");
+            RelicUtil.say(player, Component.translatable("relic.nexus.orix.o_toque_de_midas_nao"));
             return false;
         }
         level.setBlock(pos, result.defaultBlockState(), 3);
@@ -245,12 +246,12 @@ public final class OrixEffects {
     public static boolean miningOff(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         int count = mineOres(player, stack, player.blockPosition());
         if (count == 0) {
-            RelicUtil.say(player, "Nenhum minério por perto.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.orix.nenhum_minerio_por_perto"));
             return false;
         }
         item().addMasteryXp(player, Math.max(1, count / 5));
         player.level().playSound(null, player.blockPosition(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 1.0f, 0.8f);
-        RelicUtil.say(player, "Mineradinha Off: " + count + " minérios.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.orix.mineradinha_off_minerios", count));
         return true;
     }
 
@@ -319,7 +320,7 @@ public final class OrixEffects {
         long until = level.getGameTime() + ALL_IN_TICKS;
         CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putLong(FORTUNE_TAG, until));
         level.playSound(null, center, SoundEvents.BEACON_POWER_SELECT, SoundSource.PLAYERS, 1.0f, 1.5f);
-        RelicUtil.say(player, "All In! " + session.blocks.size() + " minérios espalhados" + (mined > 0 ? ", " + mined + " minerados" : "") + ".");
+        RelicUtil.say(player, Component.translatable("relic.nexus.orix.all_in_minerios_espalhados", session.blocks.size(), (mined > 0 ? Component.translatable("relic.nexus.orix.minerados", mined) : Component.empty())));
         return true;
     }
 

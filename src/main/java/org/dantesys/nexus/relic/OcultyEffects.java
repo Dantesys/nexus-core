@@ -61,7 +61,7 @@ public final class OcultyEffects {
     public static final int XRAY_MANA = 40, XRAY_COOLDOWN = 400, XRAY_HALF = 24;
     public static final int PLAN_MANA = 60, PLAN_COOLDOWN = 900, PLAN_TICKS = 120;
     public static final int SPY_MANA = 150, SPY_COOLDOWN = 3600, SPY_TICKS = 600, SPY_MAX_DISTANCE = 128;
-    public static final String[] PLAN_NAMES = {"Invisibilidade verdadeira", "Velocidade", "Voo"};
+    public static final String[] PLAN_NAMES = {"relic.nexus.oculty.plano.0", "relic.nexus.oculty.plano.1", "relic.nexus.oculty.plano.2"};
     private static final String PLAN_TAG = "OcultyPlanoF", SPY_TAG = "NexusImaterialSpy";
     private static final Identifier MICRO_SCALE = Identifier.fromNamespaceAndPath(Nexus.MODID, "micro_agente");
 
@@ -167,7 +167,7 @@ public final class OcultyEffects {
             count++;
         }
         player.level().playSound(null, player.blockPosition(), SoundEvents.SPYGLASS_USE, SoundSource.PLAYERS, 1.0f, 0.8f);
-        RelicUtil.say(player, "X-Ray: " + count + " alvos.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.oculty.x_ray_alvos", count));
         return true;
     }
 
@@ -207,7 +207,7 @@ public final class OcultyEffects {
         player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, ticks, 0));
         int next = level.getRandom().nextInt(3);
         CustomData.update(DataComponents.CUSTOM_DATA, stack, t -> t.putInt(PLAN_TAG, next));
-        RelicUtil.say(player, "Plano F: " + PLAN_NAMES[plan] + ". Próximo: " + PLAN_NAMES[next] + ".");
+        RelicUtil.say(player, Component.translatable("relic.nexus.oculty.plano_f_proximo", Component.translatable(PLAN_NAMES[plan]), Component.translatable(PLAN_NAMES[next])));
         refresh(player);
         return true;
     }
@@ -305,7 +305,7 @@ public final class OcultyEffects {
         SPIES.put(player.getUUID(), spy);
         saveSpy(player, spy);
         player.setGameMode(GameType.SPECTATOR);
-        RelicUtil.say(player, "Imaterial Spy por 30s.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.oculty.imaterial_spy_por_30s"));
         return true;
     }
 
@@ -340,21 +340,21 @@ public final class OcultyEffects {
             if (entity != null) entity.discard();
             else ORPHAN_BODIES.add(bodyId);
         }
-        RelicUtil.say(player, "De volta ao corpo.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.oculty.de_volta_ao_corpo"));
     }
 
     /** Abre (so para ver) o inventario do jogador que o espiao esta olhando. */
     public static boolean peek(ServerPlayer player) {
         LivingEntity target = RelicUtil.targetEntity(player, 20, e -> e instanceof Player && e != player);
         if (!(target instanceof Player other)) {
-            RelicUtil.say(player, "Olhe para um jogador para ver o inventário.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.oculty.olhe_para_um_jogador_para"));
             return false;
         }
         Container copy = new SimpleContainer(54);
         var inventory = other.getInventory();
         for (int i = 0; i < Math.min(54, inventory.getContainerSize()); i++) copy.setItem(i, inventory.getItem(i).copy());
         player.openMenu(new SimpleMenuProvider((id, playerInventory, p) -> ChestMenu.sixRows(id, playerInventory, copy),
-                Component.literal("Inventário de ").append(other.getName())));
+                Component.translatable("relic.nexus.oculty.inventario_de").append(other.getName())));
         return true;
     }
 

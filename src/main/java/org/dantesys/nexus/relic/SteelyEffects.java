@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
@@ -160,7 +161,7 @@ public final class SteelyEffects {
         if (owner == null) return;
         ItemStack stack = item().findIn(owner);
         if (!stack.isEmpty()) item().startCooldown(owner, stack, 3, GUARD_COOLDOWN);
-        RelicUtil.say(owner, "Seu Guarda-Costas caiu.");
+        RelicUtil.say(owner, Component.translatable("relic.nexus.steely.seu_guarda_costas_caiu"));
     }
 
     // ---------- Nv 20 — Eu Sou o Iron Golem ----------
@@ -188,7 +189,7 @@ public final class SteelyEffects {
         tmod(player, Attributes.SCALE, T_SCALE, -0.25, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
         player.level().playSound(null, player.blockPosition(), SoundEvents.IRON_GOLEM_REPAIR, SoundSource.PLAYERS, 1.5f, 0.6f);
         player.setData(org.dantesys.nexus.data.ModAttachmentType.FORMA, GOLEM_FORM);
-        RelicUtil.say(player, "Eu sou o Iron Golem!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.steely.eu_sou_o_iron_golem"));
         return true;
     }
 
@@ -205,7 +206,7 @@ public final class SteelyEffects {
             if (a != null) a.removeModifier((Identifier) pair[1]);
         }
         player.removeEffect(MobEffects.ABSORPTION);
-        RelicUtil.say(player, "A transformação acabou.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.steely.a_transformacao_acabou"));
     }
 
     @SubscribeEvent

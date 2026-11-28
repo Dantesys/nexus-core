@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -252,7 +253,7 @@ public final class BastryEffects {
         State s = state(player);
         double fraction = Math.min(1.0, s.charge / Math.max(1, cap(player)));
         if (fraction < 0.25) {
-            RelicUtil.say(player, "Carga insuficiente (mínimo 25%).");
+            RelicUtil.say(player, Component.translatable("relic.nexus.bastry.carga_insuficiente_minimo_25"));
             return false;
         }
         int ticks = 100 + (int) (300 * fraction) + context.resonance() / 5;
@@ -269,7 +270,7 @@ public final class BastryEffects {
         s.charge = 0;
         refresh(player);
         player.level().playSound(null, player.blockPosition(), SoundEvents.ARMOR_EQUIP_NETHERITE.value(), SoundSource.PLAYERS, 1.0f, 0.8f);
-        RelicUtil.say(player, "Pele de Aço: " + (int) Math.round(fraction * 100) + "% da carga.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.bastry.pele_de_aco_da_carga", (int) Math.round(fraction * 100)));
         return true;
     }
 
@@ -305,7 +306,7 @@ public final class BastryEffects {
         s.untouchableUntil = now(player) + UNTOUCHABLE_TICKS;
         refresh(player);
         player.level().playSound(null, player.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 0.8f, 1.2f);
-        RelicUtil.say(player, "Intocável por 30s!");
+        RelicUtil.say(player, Component.translatable("relic.nexus.bastry.intocavel_por_30s"));
         return true;
     }
 

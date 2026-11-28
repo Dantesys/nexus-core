@@ -15,8 +15,8 @@ import org.dantesys.nexus.relic.CultryEffects;
 public class PilulaItem extends Item {
     public static final String TYPE = "PilulaTipo", GRADE = "PilulaGrau";
     public static final String[] TYPES = {"vida", "forca", "defesa", "velocidade"};
-    public static final String[] TYPE_NAMES = {"Vida", "Força", "Defesa", "Velocidade"};
-    public static final String[] GRADE_NAMES = {"Inferior", "Média", "Superior"};
+    public static final String[] TYPE_NAMES = {"item.nexus.pilula.tipo.vida", "item.nexus.pilula.tipo.forca", "item.nexus.pilula.tipo.defesa", "item.nexus.pilula.tipo.velocidade"};
+    public static final String[] GRADE_NAMES = {"item.nexus.pilula.grau.inferior", "item.nexus.pilula.grau.media", "item.nexus.pilula.grau.superior"};
 
     public PilulaItem(Properties properties) {
         super(properties.food(new FoodProperties(1, 0.1f, true)).stacksTo(64));
@@ -34,7 +34,7 @@ public class PilulaItem extends Item {
 
     @Override
     public Component getName(ItemStack stack) {
-        return Component.literal("Pílula " + GRADE_NAMES[grade(stack) - 1] + " de " + TYPE_NAMES[type(stack)]);
+        return Component.translatable("item.nexus.pilula.nome", Component.translatable(GRADE_NAMES[grade(stack) - 1]), Component.translatable(TYPE_NAMES[type(stack)]));
     }
 
     @Override

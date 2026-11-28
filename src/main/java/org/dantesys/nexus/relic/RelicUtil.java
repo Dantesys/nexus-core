@@ -42,7 +42,7 @@ public final class RelicUtil {
     /** Bosses: tag nexus:bosses (configuravel por datapack) ou c:bosses. */
     public static final TagKey<EntityType<?>> BOSSES = TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Nexus.MODID, "bosses"));
 
-    public static void say(ServerPlayer player, String text) { player.sendSystemMessage(Component.literal(text), true); }
+    public static void say(ServerPlayer player, Component text) { player.sendSystemMessage(text, true); }
 
     public static boolean isBoss(Entity entity) {
         var holder = entity.getType().builtInRegistryHolder();
@@ -246,9 +246,9 @@ public final class RelicUtil {
     }
 
     /** Papel deixado no lugar de um item roubado. */
-    public static ItemStack note(String text) {
+    public static ItemStack note(Component text) {
         ItemStack paper = new ItemStack(net.minecraft.world.item.Items.PAPER);
-        paper.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, Component.literal(text));
+        paper.set(net.minecraft.core.component.DataComponents.CUSTOM_NAME, text);
         return paper;
     }
 

@@ -1,5 +1,6 @@
 package org.dantesys.nexus.relic;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -148,7 +149,7 @@ public final class AgrixEffects {
         ServerLevel level = (ServerLevel) player.level();
         AREAS.add(new Area(player.getUUID(), level, box, kind, level.getGameTime() + ticks, item().masteryLevel(player)));
         level.playSound(null, BlockPos.containing(box.getCenter()), SoundEvents.BONE_MEAL_USE, SoundSource.PLAYERS, 1.0f, 1.0f);
-        RelicUtil.say(player, "Área ativa por " + ticks / 20 + "s.");
+        RelicUtil.say(player, Component.translatable("relic.nexus.agrix.area_ativa_por_s", ticks / 20));
         return true;
     }
 
@@ -273,16 +274,16 @@ public final class AgrixEffects {
     public static boolean backToEgg(ServerPlayer player, ItemStack stack, RelicAbilityContext context) {
         LivingEntity target = RelicUtil.targetEntity(player, EGG_DISTANCE, e -> e instanceof Mob);
         if (!(target instanceof Mob mob) || mob instanceof Enemy || RelicUtil.isBoss(mob)) {
-            RelicUtil.say(player, "Olhe para um mob pacífico (até " + EGG_DISTANCE + " blocos).");
+            RelicUtil.say(player, Component.translatable("relic.nexus.agrix.olhe_para_um_mob_pacifico", EGG_DISTANCE));
             return false;
         }
         if (mob instanceof OwnableEntity pet && pet.getOwnerReference() != null && pet.getOwner() != player) {
-            RelicUtil.say(player, "Esse mob tem outro dono.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.agrix.esse_mob_tem_outro_dono"));
             return false;
         }
         var egg = SpawnEggItem.byId(mob.getType());
         if (egg.isEmpty()) {
-            RelicUtil.say(player, "Esse mob não tem ovo.");
+            RelicUtil.say(player, Component.translatable("relic.nexus.agrix.esse_mob_nao_tem_ovo"));
             return false;
         }
         ServerLevel level = (ServerLevel) player.level();

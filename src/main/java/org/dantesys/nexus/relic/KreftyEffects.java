@@ -104,7 +104,7 @@ public final class KreftyEffects {
         return ResourceKey.create(Registries.DAMAGE_TYPE, Identifier.fromNamespaceAndPath(Nexus.MODID, name));
     }
     private static KreftyItem item() { return ModItems.KREFTY.get(); }
-    private static void say(ServerPlayer player, String text) { player.sendSystemMessage(Component.literal(text), true); }
+    private static void say(ServerPlayer player, Component text) { player.sendSystemMessage(text, true); }
 
     private static BlockHitResult target(Player player, double distance) {
         HitResult hit = player.pick(distance, 0.0F, false);
@@ -144,12 +144,12 @@ public final class KreftyEffects {
     /** Bloco permitido para este jogador? Envia o motivo quando nao. */
     private static boolean allowed(ServerPlayer player, BlockState state, BlockPos pos, boolean feedback) {
         if (KreftyRules.isBlocked(state, player.level(), pos)) {
-            if (feedback) say(player, "Esse bloco não pode ser copiado.");
+            if (feedback) say(player, Component.translatable("relic.nexus.krefty.esse_bloco_nao_pode_ser"));
             return false;
         }
         int min = KreftyRules.rule(state).minLevel();
         if (mastery(player) < min) {
-            if (feedback) say(player, "Bloco liberado na maestria " + min + ".");
+            if (feedback) say(player, Component.translatable("relic.nexus.krefty.bloco_liberado_na_maestria", min));
             return false;
         }
         return true;
@@ -226,7 +226,7 @@ public final class KreftyEffects {
         request = placeRequest;
         try {
             if (!krefty.triggerPassive(sp, main, KreftyItem.SLOT_COPY_BLOCKS) && magic.isCreated()
-                    && magic.getMana() < placeRequest.cost()) say(sp, "Mana insuficiente.");
+                    && magic.getMana() < placeRequest.cost()) say(sp, Component.translatable("relic.nexus.krefty.mana_insuficiente"));
         } finally {
             request = null;
         }
@@ -272,21 +272,21 @@ public final class KreftyEffects {
         if (hit == null || player.level().getBlockState(hit.getBlockPos()).isAir()) {
             if (hasCopy(stack)) {
                 CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> { tag.remove(COPY_TAG); tag.remove(COPY_NAME); });
-                say(player, "Cópia apagada.");
-            } else say(player, "Mire em um bloco a até " + KreftyRules.COPY_DISTANCE + " blocos.");
+                say(player, Component.translatable("relic.nexus.krefty.copia_apagada"));
+            } else say(player, Component.translatable("relic.nexus.krefty.mire_em_um_bloco_a", KreftyRules.COPY_DISTANCE));
             return false;
         }
         BlockPos pos = hit.getBlockPos();
         BlockState state = player.level().getBlockState(pos);
         if (!allowed(player, state, pos, true)) return false;
         if (KreftyRules.isMultiPart(state)) {
-            say(player, "Blocos de duas partes só pela outra mão.");
+            say(player, Component.translatable("relic.nexus.krefty.blocos_de_duas_partes_so"));
             return false;
         }
         CompoundTag stateTag = NbtUtils.writeBlockState(state);
         String name = state.getBlock().getDescriptionId();
         CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> { tag.put(COPY_TAG, stateTag); tag.putString(COPY_NAME, name); });
-        player.sendSystemMessage(Component.literal("Copiado: ").append(Component.translatable(name)), true);
+        player.sendSystemMessage(Component.translatable("relic.nexus.krefty.copiado").append(Component.translatable(name)), true);
         ((ServerLevel) player.level()).sendParticles(MANA, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 12, 0.4, 0.4, 0.4, 0);
         return true;
     }
@@ -297,22 +297,22 @@ public final class KreftyEffects {
     private static BlockPos[] markPoints(ServerPlayer player, int slot, int maxSide) {
         UUID id = player.getUUID();
         if (player.isShiftKeyDown()) {
-            if (PENDING.remove(id) != null) say(player, "Marcação cancelada.");
+            if (PENDING.remove(id) != null) say(player, Component.translatable("relic.nexus.krefty.marcacao_cancelada"));
             return null;
         }
         BlockHitResult hit = target(player, KreftyRules.MAX_TARGET_DISTANCE);
         if (hit == null) {
-            say(player, "Mire em um bloco (até " + KreftyRules.MAX_TARGET_DISTANCE + " blocos).");
+            say(player, Component.translatable("relic.nexus.krefty.mire_em_um_bloco_ate", KreftyRules.MAX_TARGET_DISTANCE));
             return null;
         }
         if (!hasPending(player, slot)) {
             PENDING.put(id, new Pending(slot, player.level().dimension(), hit.getBlockPos()));
-            say(player, "Ponto 1 marcado. Mire no ponto 2 e use de novo (Shift cancela).");
+            say(player, Component.translatable("relic.nexus.krefty.ponto_1_marcado_mire_no"));
             return null;
         }
         BlockPos first = PENDING.get(id).first(), second = hit.getBlockPos();
         if (!KreftyRules.fits(first, second, maxSide)) {
-            say(player, "Área grande demais (máx. " + maxSide + " blocos por lado).");
+            say(player, Component.translatable("relic.nexus.krefty.area_grande_demais_max_blocos", maxSide));
             return null;
         }
         PENDING.remove(id);
@@ -344,8 +344,8 @@ public final class KreftyEffects {
         AREAS.add(area);
         level.playSound(null, BlockPos.containing(box.getCenter()), kind == Kind.CONSTRUCTION ? SoundEvents.ANVIL_PLACE
                 : SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.6f, 1.2f);
-        say(player, kind == Kind.CONSTRUCTION ? "Área de Construção ativa por " + duration / 20 + "s."
-                : "Área de Demolição ativa por " + duration / 20 + "s.");
+        say(player, Component.translatable(kind == Kind.CONSTRUCTION ? "relic.nexus.krefty.area_construcao_ativa"
+                : "relic.nexus.krefty.area_demolicao_ativa", duration / 20));
         return true;
     }
 
@@ -534,7 +534,7 @@ public final class KreftyEffects {
             cost += KreftyRules.rule(state).cost();
         }
         if (count == 0) {
-            say(player, "A área marcada está vazia.");
+            say(player, Component.translatable("relic.nexus.krefty.a_area_marcada_esta_vazia"));
             return false;
         }
         String id = Blueprints.get(level.getServer()).add(new Blueprint(sx, sy, sz, palette, data));
@@ -542,32 +542,32 @@ public final class KreftyEffects {
         PlantaItem.write(planta, id, sx, sy, sz, count, cost);
         if (!player.getInventory().add(planta)) player.spawnAtLocation(level, planta);
         level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1.0f, 1.0f);
-        say(player, "Planta criada: " + sx + "×" + sy + "×" + sz + ", " + count + " blocos.");
+        say(player, Component.translatable("relic.nexus.krefty.planta_criada_blocos", sx, sy, sz, count));
         return true;
     }
 
     private static boolean erect(ServerPlayer player) {
         Blueprint blueprint = blueprint(player);
         if (blueprint == null) {
-            say(player, "Planta inválida.");
+            say(player, Component.translatable("relic.nexus.krefty.planta_invalida"));
             return false;
         }
         BlockPos origin = buildOrigin(player);
         if (origin == null) {
-            say(player, "Mire onde a construção vai ficar.");
+            say(player, Component.translatable("relic.nexus.krefty.mire_onde_a_construcao_vai"));
             return false;
         }
         ServerLevel level = (ServerLevel) player.level();
         Rotation rotation = PlantaItem.rotation(player.getOffhandItem());
         List<BlockPos> blocked = obstructed(level, blueprint, origin, rotation, 9999);
         if (!blocked.isEmpty()) {
-            say(player, "A área não está limpa: " + blocked.size() + " blocos no caminho.");
+            say(player, Component.translatable("relic.nexus.krefty.a_area_nao_esta_limpa", blocked.size()));
             return false;
         }
         int[] skipped = new int[1];
         List<Placement> list = placements(player, blueprint, origin, rotation, skipped);
         if (list.isEmpty()) {
-            say(player, "Nenhum bloco desta planta está liberado para você.");
+            say(player, Component.translatable("relic.nexus.krefty.nenhum_bloco_desta_planta_esta"));
             return false;
         }
         list.sort(Comparator.comparingDouble(p -> p.pos().distSqr(origin)));
@@ -576,7 +576,7 @@ public final class KreftyEffects {
         food.setFoodLevel(Math.max(0, food.getFoodLevel() - KreftyRules.FINAL_HUNGER));
         item().addMasteryXp(player, Math.max(1, list.size() / KreftyRules.BLUEPRINT_BLOCKS_PER_XP));
         level.playSound(null, origin, SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 1.0f, 1.4f);
-        say(player, "Construção Instantânea: " + list.size() + " blocos" + (skipped[0] > 0 ? " (" + skipped[0] + " pulados)" : "") + ".");
+        say(player, Component.translatable("relic.nexus.krefty.construcao_instantanea_blocos", list.size(), (skipped[0] > 0 ? Component.translatable("relic.nexus.krefty.pulados", skipped[0]) : Component.empty())));
         return true;
     }
 

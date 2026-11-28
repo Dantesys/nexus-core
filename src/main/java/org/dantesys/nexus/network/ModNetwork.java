@@ -1,5 +1,6 @@
 package org.dantesys.nexus.network;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.particles.ParticleTypes;
@@ -51,7 +52,7 @@ public class ModNetwork {
                     if (!(off.getItem() instanceof org.dantesys.nexus.items.PlantaItem)) return;
                     org.dantesys.nexus.items.PlantaItem.rotate(off);
                     int degrees = org.dantesys.nexus.items.PlantaItem.rotation(off).ordinal() * 90;
-                    player.sendSystemMessage(net.minecraft.network.chat.Component.literal("Planta girada: " + degrees + "°"), true);
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("message.nexus.modnetwork.planta_girada", degrees), true);
                 });
         registrar.playToServer(RiftyStepPayload.TYPE, RiftyStepPayload.STREAM_CODEC,
                 (payload, context) -> {

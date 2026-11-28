@@ -5,10 +5,10 @@
       "id": "nexus:matriz_sintetica"
     },
     "title": {
-      "text": "Resson\u00e2ncia Perfeita"
+      "translate": "advancements.nexus.ressonancia_perfeita.title"
     },
     "description": {
-      "text": "Alcance Resson\u00e2ncia S."
+      "translate": "advancements.nexus.ressonancia_perfeita.description"
     },
     "frame": "goal",
     "show_toast": true,
